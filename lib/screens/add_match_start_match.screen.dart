@@ -72,11 +72,11 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
 
   void startTimer() {
     const oneSec = const Duration(seconds: 1);
-    _timer = new Timer.periodic(
+    _timer = Timer.periodic(
       oneSec,
       (Timer timer) => setState(
         () {
-          if (_start > 180) {
+          if (_start > 179) {
             timer.cancel();
           } else {
             _start = _start + 1;
@@ -92,6 +92,13 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
 
   void stopTimer() {
     _timer.cancel();
+  }
+
+  String _printDuration(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, "0");
+    String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(90));
+    String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
+    return "$twoDigitMinutes:$twoDigitSeconds";
   }
 
   //Nachspielzeit Timer
@@ -116,9 +123,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
     final String awayTeam = widget.awayTeam.length > 15
         ? widget.awayTeam.substring(0, 15)
         : widget.awayTeam;
-    print(zones[0].homePercentage);
-    print(zones[1].homePercentage);
-    print(zones[2].homePercentage);
+    final time = _printDuration(Duration(seconds: _start));
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
@@ -146,7 +151,6 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                             )
                           : NormalTextSize(
                               title: awayTeam,
-                              color: Colors.white,
                             ),
                     ),
                     Positioned(
@@ -157,7 +161,6 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                         child: _homeTopOfField
                             ? NormalTextSize(
                                 title: awayTeam,
-                                color: Colors.white,
                               )
                             : NormalTextSize(
                                 title: homeTeam,
@@ -172,9 +175,32 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                           children: [
                             InkWell(
                               onTap: () => setZoneActive(0),
-                              child: Container(
-                                height: 250,
-                                width: screenWidth / 3,
+                              child: Stack(
+                                children: [
+                                  Container(
+                                    color: _activeZone == zones[0]
+                                        ? Colors.green[100]
+                                        : Colors.transparent,
+                                    height: 250,
+                                    width: screenWidth / 3,
+                                  ),
+                                  Positioned.fill(
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        NormalTextSize(
+                                            color: Colors.white,
+                                            title: _start != 0 &&
+                                                    zones[0].homePercentage !=
+                                                        0.0
+                                                ? '${((zones[0].homePercentage / _start) * 100).toStringAsFixed(2)} %'
+                                                : '0 %'),
+                                        NormalTextSize(title: '10%'),
+                                      ],
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                             InkWell(
@@ -196,18 +222,21 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                         Row(
                           children: [
                             InkWell(
+                              onTap: () => setZoneActive(3),
                               child: Container(
                                 height: 250,
                                 width: screenWidth / 3,
                               ),
                             ),
                             InkWell(
+                              onTap: () => setZoneActive(4),
                               child: Container(
                                 height: 250,
                                 width: screenWidth / 3,
                               ),
                             ),
                             InkWell(
+                              onTap: () => setZoneActive(5),
                               child: Container(
                                 height: 250,
                                 width: screenWidth / 3,
@@ -223,7 +252,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  NormalTextSize(title: '$_start'),
+                  NormalTextSize(title: '$time'),
                   Column(
                     children: [
                       RaisedButton(
@@ -234,7 +263,8 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                       RaisedButton(
                         color: Colors.grey,
                         onPressed: _start == 0 ? startTimer : stopTimer,
-                        child: Text('Start Match'),
+                        child:
+                            Text(_start == 0 ? 'Start Match' : 'Pause Match'),
                       ),
                     ],
                   ),

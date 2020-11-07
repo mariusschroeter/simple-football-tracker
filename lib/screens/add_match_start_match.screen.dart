@@ -11,12 +11,18 @@ class Zone {
 }
 
 class AddMatchStartMatchScreen extends StatefulWidget {
-  AddMatchStartMatchScreen({this.homeTeam, this.awayTeam, this.zonesCount = 3});
+  AddMatchStartMatchScreen({
+    this.homeTeam,
+    this.awayTeam,
+    this.zoneLines = 2,
+    this.zonesPerLine = 3,
+  });
 
   final String homeTeam;
   final String awayTeam;
 
-  final int zonesCount;
+  final int zoneLines;
+  final int zonesPerLine;
 
   @override
   _AddMatchStartMatchScreenState createState() =>
@@ -26,6 +32,9 @@ class AddMatchStartMatchScreen extends StatefulWidget {
 class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
   @override
   void initState() {
+    for (var i = 0; i < 6; i++) {
+      zones.add(Zone(homePercentage: 0.0));
+    }
     super.initState();
   }
 
@@ -47,19 +56,32 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
   // }
 
   //Feld Zonen
-  List<Zone> zones = [
-    Zone(homePercentage: 0),
-    Zone(homePercentage: 0),
-    Zone(homePercentage: 0),
-    Zone(homePercentage: 0),
-    Zone(homePercentage: 0),
-    Zone(homePercentage: 0),
-  ];
+
+  List<Zone> zones = [];
 
   Zone _activeZone;
 
-  setZoneActive(int index) {
-    _activeZone = zones[index];
+  setZoneActive(int line, int column) {
+    if (line == 1 && column == 0)
+      _activeZone = zones[0];
+    else {
+      int index = ((line - 1) * widget.zonesPerLine) + column;
+      _activeZone = zones[index];
+    }
+  }
+
+  List<double> getZonePercentages(int line) {
+    List<double> percentages = [];
+    int indexStart = ((line - 1) * widget.zonesPerLine);
+    int indexEnd = (line * widget.zonesPerLine);
+    for (var i = indexStart; i < indexEnd; i++) {
+      if (!_matchStart)
+        percentages.add(0.0);
+      else {
+        percentages.add((zones[i].homePercentage / _start) * 100);
+      }
+    }
+    return percentages;
   }
 
   //Wer hat den Ball?
@@ -69,6 +91,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
   //90 min
   Timer _timer;
   int _start = 0;
+  bool _matchStart = false;
 
   void startTimer() {
     const oneSec = const Duration(seconds: 1);
@@ -81,9 +104,10 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
           } else {
             _start = _start + 1;
             if (_activeZone == null) {
-              setZoneActive(1);
+              setZoneActive(1, 1);
             }
             _activeZone.homePercentage = _activeZone.homePercentage + 1;
+            _matchStart = true;
           }
         },
       ),
@@ -116,7 +140,6 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
   @override
   Widget build(BuildContext context) {
     double statusBarHeight = MediaQuery.of(context).padding.top;
-    double screenWidth = MediaQuery.of(context).size.width;
     final String homeTeam = widget.homeTeam.length > 15
         ? widget.homeTeam.substring(0, 15)
         : widget.homeTeam;
@@ -169,86 +192,23 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                       ),
                     ),
                     //Zonen
-                    Column(
-                      children: [
-                        Row(
-                          children: [
-                            InkWell(
-                              onTap: () => setZoneActive(0),
-                              child: Stack(
-                                children: [
-                                  Container(
-                                    color: _activeZone == zones[0]
-                                        ? Colors.green[100]
-                                        : Colors.transparent,
-                                    height: 250,
-                                    width: screenWidth / 3,
-                                  ),
-                                  Positioned.fill(
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        NormalTextSize(
-                                            color: Colors.white,
-                                            title: _start != 0 &&
-                                                    zones[0].homePercentage !=
-                                                        0.0
-                                                ? '${((zones[0].homePercentage / _start) * 100).toStringAsFixed(2)} %'
-                                                : '0 %'),
-                                        NormalTextSize(title: '10%'),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            InkWell(
-                              onTap: () => setZoneActive(1),
-                              child: Container(
-                                height: 250,
-                                width: screenWidth / 3,
-                              ),
-                            ),
-                            InkWell(
-                              onTap: () => setZoneActive(2),
-                              child: Container(
-                                height: 250,
-                                width: screenWidth / 3,
-                              ),
-                            ),
-                          ],
+                    ListView.builder(
+                      physics: NeverScrollableScrollPhysics(),
+                      itemBuilder: (ctx, i) => Container(
+                        height: 500 / widget.zoneLines,
+                        child: ZoneRow(
+                          setZoneActive: setZoneActive,
+                          line: i + 1,
+                          zoneCount: 3,
+                          percentages: getZonePercentages(i + 1),
                         ),
-                        Row(
-                          children: [
-                            InkWell(
-                              onTap: () => setZoneActive(3),
-                              child: Container(
-                                height: 250,
-                                width: screenWidth / 3,
-                              ),
-                            ),
-                            InkWell(
-                              onTap: () => setZoneActive(4),
-                              child: Container(
-                                height: 250,
-                                width: screenWidth / 3,
-                              ),
-                            ),
-                            InkWell(
-                              onTap: () => setZoneActive(5),
-                              child: Container(
-                                height: 250,
-                                width: screenWidth / 3,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
+                      ),
+                      itemCount: widget.zoneLines,
                     ),
                   ],
                 ),
               ),
+              //Zone end
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -279,6 +239,82 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
         onPressed: () {
           Navigator.pop(context, [widget.homeTeam, widget.awayTeam]);
         },
+      ),
+    );
+  }
+}
+
+class ZoneRow extends StatelessWidget {
+  const ZoneRow({
+    @required this.setZoneActive,
+    @required this.line,
+    @required this.zoneCount,
+    @required this.percentages,
+  });
+
+  final dynamic setZoneActive;
+  final int line;
+  final int zoneCount;
+  final List<double> percentages;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 250,
+      width: double.infinity,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        physics: NeverScrollableScrollPhysics(),
+        itemBuilder: (ctx, i) => FieldZone(
+          setZoneActive: setZoneActive,
+          line: line,
+          column: i,
+          percentage: percentages[i],
+        ),
+        itemCount: zoneCount,
+      ),
+    );
+  }
+}
+
+class FieldZone extends StatelessWidget {
+  const FieldZone({
+    Key key,
+    this.setZoneActive,
+    this.line,
+    this.column,
+    this.percentage,
+  }) : super(key: key);
+
+  final dynamic setZoneActive;
+  final int line;
+  final int column;
+  final double percentage;
+
+  @override
+  Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    return InkWell(
+      onTap: () => setZoneActive(line, column),
+      child: Stack(
+        children: [
+          Container(
+            height: 250,
+            width: screenWidth / 3,
+          ),
+          Positioned.fill(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                NormalTextSize(
+                  color: Colors.white,
+                  title: '${percentage.toStringAsFixed(2)}%',
+                ),
+                NormalTextSize(title: '10%'),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

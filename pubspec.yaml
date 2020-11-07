@@ -47,8 +47,9 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-   - lib/resources/images/football_field.png
-   - lib/resources/images/football_field.svg
+   - lib/resources/images/football_field.jpg
+   - lib/resources/images/football_field_original.jpg
+   - lib/resources/images/test.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

@@ -6,8 +6,18 @@ import 'package:football_provider_app/widgets/text_elements.dart';
 
 class Zone {
   double homePercentage;
+  double xStart;
+  double xEnd;
+  double yStart;
+  double yEnd;
 
-  Zone({this.homePercentage});
+  Zone({
+    this.homePercentage,
+    this.xStart,
+    this.xEnd,
+    this.yStart,
+    this.yEnd,
+  });
 }
 
 class AddMatchStartMatchScreen extends StatefulWidget {
@@ -32,10 +42,8 @@ class AddMatchStartMatchScreen extends StatefulWidget {
 class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
   @override
   void initState() {
-    for (var i = 0; i < 6; i++) {
-      zones.add(Zone(homePercentage: 0.0));
-    }
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _buildZones());
   }
 
   @override
@@ -55,7 +63,41 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
   //   setState(() {});
   // }
 
+  //Field Ball
+
+  Offset ballPosition;
+
+  _onBallMovement(TapDownDetails details) {
+    final xNew = details.localPosition.dx;
+    final yNew = details.localPosition.dy;
+    setState(() {
+      ballPosition = Offset(xNew - (26 / 2), yNew - (26 / 2));
+    });
+    //update active zone
+  }
+
   //Feld Zonen
+
+  _buildZones() {
+    double fieldWidth = MediaQuery.of(context).size.width;
+    double fieldHeight = 500;
+    double zoneWidth = fieldWidth / widget.zonesPerLine;
+    double zoneHeight = fieldHeight / widget.zoneLines;
+    for (var i = 1; i < widget.zoneLines + 1; i++) {
+      for (var ii = 1; ii < widget.zonesPerLine + 1; ii++) {
+        double xStart = zoneWidth * (ii - 1);
+        double yStart = zoneHeight * (i - 1);
+        double xEnd = zoneWidth * ii;
+        double yEnd = zoneHeight * i;
+        zones.add(Zone(
+            homePercentage: 0.0,
+            xStart: xStart,
+            yStart: yStart,
+            xEnd: xEnd,
+            yEnd: yEnd));
+      }
+    }
+  }
 
   List<Zone> zones = [];
 
@@ -153,59 +195,79 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
           padding: EdgeInsets.only(top: statusBarHeight),
           child: Column(
             children: [
-              Container(
-                height: 500,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image:
-                        AssetImage("lib/resources/images/football_field.jpg"),
-                    fit: BoxFit.fill,
-                  ),
-                ),
-                child: Stack(
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.only(left: 8.0),
-                      child: _homeTopOfField
-                          ? NormalTextSize(
-                              title: homeTeam,
-                              color: Colors.white,
-                            )
-                          : NormalTextSize(
-                              title: awayTeam,
-                            ),
+              GestureDetector(
+                onTapDown: (TapDownDetails details) => _onBallMovement(details),
+                child: Container(
+                  height: 500,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image:
+                          AssetImage("lib/resources/images/football_field.jpg"),
+                      fit: BoxFit.fill,
                     ),
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: Padding(
-                        padding: EdgeInsets.only(right: 8.0),
+                  ),
+                  child: Stack(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(left: 8.0),
                         child: _homeTopOfField
                             ? NormalTextSize(
-                                title: awayTeam,
-                              )
-                            : NormalTextSize(
                                 title: homeTeam,
                                 color: Colors.white,
+                              )
+                            : NormalTextSize(
+                                title: awayTeam,
                               ),
                       ),
-                    ),
-                    //Zonen
-                    ListView.builder(
-                      physics: NeverScrollableScrollPhysics(),
-                      itemBuilder: (ctx, i) => Container(
-                        height: 500 / widget.zoneLines,
-                        child: ZoneRow(
-                          setZoneActive: setZoneActive,
-                          line: i + 1,
-                          zoneCount: 3,
-                          percentages: getZonePercentages(i + 1),
+                      Positioned(
+                        top: ballPosition != null ? ballPosition.dy : 0,
+                        left: ballPosition != null ? ballPosition.dx : 0,
+                        child: GestureDetector(
+                          onDoubleTap: () {},
+                          child: Draggable(
+                            // onDraggableCanceled:
+                            //     (Velocity velocity, Offset offset) {
+                            //   _onDrag(offset);
+                            //   // _updateHeatMap();
+                            // },
+                            child: Icon(Icons.sports_soccer),
+                            feedback: Icon(Icons.sports_soccer),
+                            childWhenDragging: Icon(Icons.sports_soccer),
+                          ),
                         ),
                       ),
-                      itemCount: widget.zoneLines,
-                    ),
-                  ],
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: Padding(
+                          padding: EdgeInsets.only(right: 8.0),
+                          child: _homeTopOfField
+                              ? NormalTextSize(
+                                  title: awayTeam,
+                                )
+                              : NormalTextSize(
+                                  title: homeTeam,
+                                  color: Colors.white,
+                                ),
+                        ),
+                      ),
+                      //Zonen
+                      // ListView.builder(
+                      //   physics: NeverScrollableScrollPhysics(),
+                      //   itemBuilder: (ctx, i) => Container(
+                      //     height: 500 / widget.zoneLines,
+                      //     child: ZoneRow(
+                      //       setZoneActive: setZoneActive,
+                      //       line: i + 1,
+                      //       zoneCount: 3,
+                      //       percentages: getZonePercentages(i + 1),
+                      //     ),
+                      //   ),
+                      //   itemCount: widget.zoneLines,
+                      // ),
+                    ],
+                  ),
                 ),
               ),
               //Zone end
@@ -299,6 +361,7 @@ class FieldZone extends StatelessWidget {
       child: Stack(
         children: [
           Container(
+            color: Colors.lightGreen,
             height: 250,
             width: screenWidth / 3,
           ),

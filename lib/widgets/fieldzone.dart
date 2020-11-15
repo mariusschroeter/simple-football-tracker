@@ -20,7 +20,7 @@ class FieldZone extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
-    return InkWell(
+    return GestureDetector(
       onTapDown: (TapDownDetails details) =>
           setZoneActive(line, column, details),
       child: Stack(
@@ -66,7 +66,6 @@ class FieldZoneRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(percentages);
     return Container(
       height: 250,
       width: double.infinity,

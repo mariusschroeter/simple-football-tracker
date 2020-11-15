@@ -53,9 +53,13 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
 
   Offset ballPosition;
 
-  _onBallMovement(TapDownDetails details) {
-    final xNew = details.localPosition.dx;
-    final yNew = details.localPosition.dy;
+  _onBallMovement(int line, int column, TapDownDetails details) {
+    double fieldWidth = MediaQuery.of(context).size.width;
+    double zoneWidth = fieldWidth / widget.zonesPerLine;
+    double fieldHeight = 450;
+    double zoneHeight = fieldHeight / widget.zoneLines;
+    final xNew = details.localPosition.dx + (zoneWidth * column);
+    final yNew = details.localPosition.dy + (zoneHeight * (line - 1));
     setState(() {
       ballPosition = Offset(xNew - (26 / 2), yNew - (26 / 2));
     });
@@ -66,7 +70,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
 
   _buildZones() {
     double fieldWidth = MediaQuery.of(context).size.width;
-    double fieldHeight = 500;
+    double fieldHeight = 450;
     double zoneWidth = fieldWidth / widget.zonesPerLine;
     double zoneHeight = fieldHeight / widget.zoneLines;
     for (var i = 1; i < widget.zoneLines + 1; i++) {
@@ -97,7 +101,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
       int index = ((line - 1) * widget.zonesPerLine) + column;
       _activeZone = zones[index];
     }
-    //_onBallMovement(details);
+    _onBallMovement(line, column, details);
   }
 
   List<List<double>> getZonePercentages(int line) {
@@ -266,7 +270,8 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
           child: Column(
             children: [
               GestureDetector(
-                onTapDown: (TapDownDetails details) => _onBallMovement(details),
+                onTapDown: (TapDownDetails details) =>
+                    _onBallMovement(1, 1, details),
                 child: Container(
                   height: 500,
                   width: double.infinity,
@@ -290,23 +295,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                                 title: awayTeam,
                               ),
                       ),
-                      //Zone start ---
-                      Container(
-                        child: ListView.builder(
-                          physics: NeverScrollableScrollPhysics(),
-                          itemBuilder: (ctx, i) => Container(
-                            height: 450 / widget.zoneLines,
-                            child: FieldZoneRow(
-                              setZoneActive: setZoneActive,
-                              line: i + 1,
-                              zoneCount: 3,
-                              percentages: getZonePercentages(i + 1),
-                            ),
-                          ),
-                          itemCount: widget.zoneLines,
-                        ),
-                      ),
-                      //Zone end ---
+
                       Positioned(
                         top: ballPosition != null
                             ? ballPosition.dy
@@ -348,6 +337,21 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                                 ),
                         ),
                       ),
+                      //Zone start ---
+                      ListView.builder(
+                        physics: NeverScrollableScrollPhysics(),
+                        itemBuilder: (ctx, i) => Container(
+                          height: 450 / widget.zoneLines,
+                          child: FieldZoneRow(
+                            setZoneActive: setZoneActive,
+                            line: i + 1,
+                            zoneCount: 3,
+                            percentages: getZonePercentages(i + 1),
+                          ),
+                        ),
+                        itemCount: widget.zoneLines,
+                      ),
+                      //Zone end ---
                     ],
                   ),
                 ),

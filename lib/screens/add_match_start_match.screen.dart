@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:football_provider_app/widgets/countdown_card.dart';
 
 import 'package:football_provider_app/widgets/text_elements.dart';
 
@@ -134,8 +135,12 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
   Timer _timer;
   int _start = 0;
   bool _matchStart = false;
+  bool _matchPause = false;
 
-  void startTimer() {
+  void startTimer(int timerDuration) {
+    setState(() {
+      _start = timerDuration;
+    });
     const oneSec = const Duration(seconds: 1);
     _timer = Timer.periodic(
       oneSec,
@@ -150,15 +155,21 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
             }
             _activeZone.homePercentage = _activeZone.homePercentage + 1;
             _matchStart = true;
+            _matchPause = false;
           }
         },
       ),
     );
   }
 
-  void stopTimer() {
+  void pauseTimer() {
     _timer.cancel();
+    setState(() {
+      _matchPause = true;
+    });
   }
+
+  void unpauseTimer() => startTimer(_start);
 
   String _printDuration(Duration duration) {
     String twoDigits(int n) => n.toString().padLeft(2, "0");
@@ -252,7 +263,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                                 ),
                         ),
                       ),
-                      //Zonen
+                      //Zone start ---
                       // ListView.builder(
                       //   physics: NeverScrollableScrollPhysics(),
                       //   itemBuilder: (ctx, i) => Container(
@@ -270,7 +281,8 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                   ),
                 ),
               ),
-              //Zone end
+              //Zone end ---
+              //Timer Start ---
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -284,15 +296,22 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                       ),
                       RaisedButton(
                         color: Colors.grey,
-                        onPressed: _start == 0 ? startTimer : stopTimer,
-                        child:
-                            Text(_start == 0 ? 'Start Match' : 'Pause Match'),
+                        onPressed: _start == 0
+                            ? () => startTimer(0)
+                            : _matchPause
+                                ? unpauseTimer
+                                : pauseTimer,
+                        child: Text(_start == 0
+                            ? 'Start Match'
+                            : _matchPause
+                                ? 'Resume Match'
+                                : 'Pause Match'),
                       ),
                     ],
                   ),
                 ],
               ),
-              //Dann Timer
+              //Timer End ---
             ],
           ),
         ),

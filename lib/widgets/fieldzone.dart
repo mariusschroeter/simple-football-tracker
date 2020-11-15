@@ -7,13 +7,15 @@ class FieldZone extends StatelessWidget {
     this.setZoneActive,
     this.line,
     this.column,
-    this.percentage,
+    this.homePercentage,
+    this.awayPercentage,
   }) : super(key: key);
 
   final dynamic setZoneActive;
   final int line;
   final int column;
-  final double percentage;
+  final double homePercentage;
+  final double awayPercentage;
 
   @override
   Widget build(BuildContext context) {
@@ -33,9 +35,12 @@ class FieldZone extends StatelessWidget {
               children: [
                 NormalTextSize(
                   color: Colors.white,
-                  title: '${percentage.toStringAsFixed(2)}%',
+                  title: '${homePercentage.toStringAsFixed(2)}%',
                 ),
-                NormalTextSize(title: '10%'),
+                NormalTextSize(
+                  color: Colors.black,
+                  title: '${awayPercentage.toStringAsFixed(2)}%',
+                ),
               ],
             ),
           ),
@@ -56,10 +61,11 @@ class FieldZoneRow extends StatelessWidget {
   final dynamic setZoneActive;
   final int line;
   final int zoneCount;
-  final List<double> percentages;
+  final List<List<double>> percentages;
 
   @override
   Widget build(BuildContext context) {
+    print(percentages);
     return Container(
       height: 250,
       width: double.infinity,
@@ -70,7 +76,8 @@ class FieldZoneRow extends StatelessWidget {
           setZoneActive: setZoneActive,
           line: line,
           column: i,
-          percentage: percentages[i],
+          homePercentage: percentages[0][i],
+          awayPercentage: percentages[1][i],
         ),
         itemCount: zoneCount,
       ),

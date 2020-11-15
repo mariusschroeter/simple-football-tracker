@@ -1,5 +1,6 @@
 class Zone {
   double homePercentage;
+  double awayPercentage;
   double xStart;
   double xEnd;
   double yStart;
@@ -7,6 +8,7 @@ class Zone {
 
   Zone({
     this.homePercentage,
+    this.awayPercentage,
     this.xStart,
     this.xEnd,
     this.yStart,

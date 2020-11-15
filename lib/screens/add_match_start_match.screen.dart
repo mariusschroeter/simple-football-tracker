@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:football_provider_app/models/zone.dart';
+import 'package:football_provider_app/widgets/fieldzone.dart';
 
 import 'package:football_provider_app/widgets/text_elements.dart';
 
@@ -76,6 +77,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
         double yEnd = zoneHeight * i;
         zones.add(Zone(
             homePercentage: 0.0,
+            awayPercentage: 0.0,
             xStart: xStart,
             yStart: yStart,
             xEnd: xEnd,
@@ -97,22 +99,37 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
     }
   }
 
-  List<double> getZonePercentages(int line) {
-    List<double> percentages = [];
+  List<List<double>> getZonePercentages(int line) {
+    List<double> homePercentages = [];
+    List<double> awayPercentages = [];
     int indexStart = ((line - 1) * widget.zonesPerLine);
     int indexEnd = (line * widget.zonesPerLine);
     for (var i = indexStart; i < indexEnd; i++) {
       if (!_matchStart)
-        percentages.add(0.0);
+        homePercentages.add(0.0);
       else {
-        percentages.add((zones[i].homePercentage / _start) * 100);
+        homePercentages.add((zones[i].homePercentage / _start) * 100);
       }
     }
+    for (var i = indexStart; i < indexEnd; i++) {
+      if (!_matchStart)
+        awayPercentages.add(0.0);
+      else {
+        awayPercentages.add((zones[i].awayPercentage / _start) * 100);
+      }
+    }
+    List<List<double>> percentages = [homePercentages, awayPercentages];
     return percentages;
   }
 
   //Wer hat den Ball?
-  bool homeTeamBallPossession = true;
+  bool _homeTeamBallPossession = true;
+
+  void switchTeamBallPossession() {
+    setState(() {
+      _homeTeamBallPossession = !_homeTeamBallPossession;
+    });
+  }
 
   //Match Timer
   //90 min
@@ -138,7 +155,12 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
             if (_activeZone == null) {
               setZoneActive(1, 1);
             }
-            _activeZone.homePercentage = _activeZone.homePercentage + 1;
+            //Wer ist am Ball?
+            _homeTeamBallPossession
+                ? _activeZone.homePercentage = _activeZone.homePercentage + 1
+                : _activeZone.awayPercentage = _activeZone.awayPercentage + 1;
+
+            //Match starten
             _matchStart = true;
             _matchPause = false;
           }
@@ -179,14 +201,18 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
       child: Text("No"),
       onPressed: () {
         Navigator.of(context, rootNavigator: true).pop();
-        _matchExtraTime = true;
-        startTimer(0);
+        //implement extra time
+        // _matchExtraTime = true;
+        // startTimer(0);
+        //for now just pop.
+        endTimer();
       },
     );
     Widget itsHalftimeButton = FlatButton(
       child: Text("Yes"),
       onPressed: () {
         Navigator.of(context, rootNavigator: true).pop();
+        endTimer();
       },
     );
 
@@ -267,14 +293,19 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                         top: ballPosition != null ? ballPosition.dy : 0,
                         left: ballPosition != null ? ballPosition.dx : 0,
                         child: GestureDetector(
-                          onDoubleTap: () {},
+                          onDoubleTap: () {
+                            switchTeamBallPossession();
+                          },
                           child: Draggable(
                             // onDraggableCanceled:
                             //     (Velocity velocity, Offset offset) {
                             //   _onDrag(offset);
                             //   // _updateHeatMap();
                             // },
-                            child: Icon(Icons.sports_soccer),
+                            child: Icon(Icons.sports_soccer,
+                                color: _homeTeamBallPossession
+                                    ? Colors.white
+                                    : Colors.black),
                             feedback: Icon(Icons.sports_soccer),
                             childWhenDragging: Icon(Icons.sports_soccer),
                           ),
@@ -296,24 +327,24 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                         ),
                       ),
                       //Zone start ---
-                      // ListView.builder(
-                      //   physics: NeverScrollableScrollPhysics(),
-                      //   itemBuilder: (ctx, i) => Container(
-                      //     height: 500 / widget.zoneLines,
-                      //     child: FieldZoneRow(
-                      //       setZoneActive: setZoneActive,
-                      //       line: i + 1,
-                      //       zoneCount: 3,
-                      //       percentages: getZonePercentages(i + 1),
-                      //     ),
-                      //   ),
-                      //   itemCount: widget.zoneLines,
-                      // ),
+                      ListView.builder(
+                        physics: NeverScrollableScrollPhysics(),
+                        itemBuilder: (ctx, i) => Container(
+                          height: 450 / widget.zoneLines,
+                          child: FieldZoneRow(
+                            setZoneActive: setZoneActive,
+                            line: i + 1,
+                            zoneCount: 3,
+                            percentages: getZonePercentages(i + 1),
+                          ),
+                        ),
+                        itemCount: widget.zoneLines,
+                      ),
+                      //Zone end ---
                     ],
                   ),
                 ),
               ),
-              //Zone end ---
               //Timer Start ---
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,

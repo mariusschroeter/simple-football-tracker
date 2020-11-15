@@ -1,25 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:football_provider_app/widgets/countdown_card.dart';
+import 'package:football_provider_app/models/zone.dart';
 
 import 'package:football_provider_app/widgets/text_elements.dart';
-
-class Zone {
-  double homePercentage;
-  double xStart;
-  double xEnd;
-  double yStart;
-  double yEnd;
-
-  Zone({
-    this.homePercentage,
-    this.xStart,
-    this.xEnd,
-    this.yStart,
-    this.yEnd,
-  });
-}
 
 class AddMatchStartMatchScreen extends StatefulWidget {
   AddMatchStartMatchScreen({
@@ -146,8 +130,9 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
       oneSec,
       (Timer timer) => setState(
         () {
-          if (_start > 179) {
+          if (_start > 19 && !_matchExtraTime) {
             timer.cancel();
+            showAlertDialog(context);
           } else {
             _start = _start + 1;
             if (_activeZone == null) {
@@ -169,6 +154,14 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
     });
   }
 
+  void endTimer() {
+    _timer.cancel();
+    setState(() {
+      _matchStart = false;
+      _matchPause = false;
+    });
+  }
+
   void unpauseTimer() => startTimer(_start);
 
   String _printDuration(Duration duration) {
@@ -179,6 +172,42 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
   }
 
   //Nachspielzeit Timer
+  bool _matchExtraTime = false;
+  void showAlertDialog(BuildContext context) {
+    // set up the buttons
+    Widget itsNotHalftimeButton = FlatButton(
+      child: Text("No"),
+      onPressed: () {
+        Navigator.of(context, rootNavigator: true).pop();
+        _matchExtraTime = true;
+        startTimer(0);
+      },
+    );
+    Widget itsHalftimeButton = FlatButton(
+      child: Text("Yes"),
+      onPressed: () {
+        Navigator.of(context, rootNavigator: true).pop();
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Halftime?"),
+      content: Text("Is it Halftime yet?"),
+      actions: [
+        itsNotHalftimeButton,
+        itsHalftimeButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
   //
 
   //Show Home and Away Text
@@ -199,7 +228,10 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
     final String awayTeam = widget.awayTeam.length > 15
         ? widget.awayTeam.substring(0, 15)
         : widget.awayTeam;
-    final time = _printDuration(Duration(seconds: _start));
+    final time =
+        _matchExtraTime ? '45:00' : _printDuration(Duration(seconds: _start));
+    final extraTime =
+        _matchExtraTime ? _printDuration(Duration(seconds: _start)) : null;
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
@@ -268,7 +300,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                       //   physics: NeverScrollableScrollPhysics(),
                       //   itemBuilder: (ctx, i) => Container(
                       //     height: 500 / widget.zoneLines,
-                      //     child: ZoneRow(
+                      //     child: FieldZoneRow(
                       //       setZoneActive: setZoneActive,
                       //       line: i + 1,
                       //       zoneCount: 3,
@@ -286,7 +318,12 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  NormalTextSize(title: '$time'),
+                  Column(
+                    children: [
+                      NormalTextSize(title: '$time'),
+                      extraTime != null ? Text('+$extraTime') : SizedBox()
+                    ],
+                  ),
                   Column(
                     children: [
                       RaisedButton(
@@ -300,12 +337,16 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                             ? () => startTimer(0)
                             : _matchPause
                                 ? unpauseTimer
-                                : pauseTimer,
+                                : _matchExtraTime
+                                    ? endTimer
+                                    : pauseTimer,
                         child: Text(_start == 0
                             ? 'Start Match'
                             : _matchPause
                                 ? 'Resume Match'
-                                : 'Pause Match'),
+                                : _matchExtraTime
+                                    ? 'End Half'
+                                    : 'Pause Match'),
                       ),
                     ],
                   ),
@@ -320,83 +361,6 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
         onPressed: () {
           Navigator.pop(context, [widget.homeTeam, widget.awayTeam]);
         },
-      ),
-    );
-  }
-}
-
-class ZoneRow extends StatelessWidget {
-  const ZoneRow({
-    @required this.setZoneActive,
-    @required this.line,
-    @required this.zoneCount,
-    @required this.percentages,
-  });
-
-  final dynamic setZoneActive;
-  final int line;
-  final int zoneCount;
-  final List<double> percentages;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 250,
-      width: double.infinity,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        physics: NeverScrollableScrollPhysics(),
-        itemBuilder: (ctx, i) => FieldZone(
-          setZoneActive: setZoneActive,
-          line: line,
-          column: i,
-          percentage: percentages[i],
-        ),
-        itemCount: zoneCount,
-      ),
-    );
-  }
-}
-
-class FieldZone extends StatelessWidget {
-  const FieldZone({
-    Key key,
-    this.setZoneActive,
-    this.line,
-    this.column,
-    this.percentage,
-  }) : super(key: key);
-
-  final dynamic setZoneActive;
-  final int line;
-  final int column;
-  final double percentage;
-
-  @override
-  Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
-    return InkWell(
-      onTap: () => setZoneActive(line, column),
-      child: Stack(
-        children: [
-          Container(
-            color: Colors.lightGreen,
-            height: 250,
-            width: screenWidth / 3,
-          ),
-          Positioned.fill(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                NormalTextSize(
-                  color: Colors.white,
-                  title: '${percentage.toStringAsFixed(2)}%',
-                ),
-                NormalTextSize(title: '10%'),
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }

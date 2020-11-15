@@ -90,13 +90,14 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
 
   Zone _activeZone;
 
-  setZoneActive(int line, int column) {
+  setZoneActive(int line, int column, TapDownDetails details) {
     if (line == 1 && column == 0)
       _activeZone = zones[0];
     else {
       int index = ((line - 1) * widget.zonesPerLine) + column;
       _activeZone = zones[index];
     }
+    //_onBallMovement(details);
   }
 
   List<List<double>> getZonePercentages(int line) {
@@ -147,13 +148,13 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
       oneSec,
       (Timer timer) => setState(
         () {
-          if (_start > 19 && !_matchExtraTime) {
+          if (_start > 300 && !_matchExtraTime) {
             timer.cancel();
             showAlertDialog(context);
           } else {
             _start = _start + 1;
             if (_activeZone == null) {
-              setZoneActive(1, 1);
+              setZoneActive(1, 1, TapDownDetails());
             }
             //Wer ist am Ball?
             _homeTeamBallPossession
@@ -289,9 +290,30 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                                 title: awayTeam,
                               ),
                       ),
+                      //Zone start ---
+                      Container(
+                        child: ListView.builder(
+                          physics: NeverScrollableScrollPhysics(),
+                          itemBuilder: (ctx, i) => Container(
+                            height: 450 / widget.zoneLines,
+                            child: FieldZoneRow(
+                              setZoneActive: setZoneActive,
+                              line: i + 1,
+                              zoneCount: 3,
+                              percentages: getZonePercentages(i + 1),
+                            ),
+                          ),
+                          itemCount: widget.zoneLines,
+                        ),
+                      ),
+                      //Zone end ---
                       Positioned(
-                        top: ballPosition != null ? ballPosition.dy : 0,
-                        left: ballPosition != null ? ballPosition.dx : 0,
+                        top: ballPosition != null
+                            ? ballPosition.dy
+                            : MediaQuery.of(context).size.height / 2,
+                        left: ballPosition != null
+                            ? ballPosition.dx
+                            : MediaQuery.of(context).size.width / 2,
                         child: GestureDetector(
                           onDoubleTap: () {
                             switchTeamBallPossession();
@@ -326,21 +348,6 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                                 ),
                         ),
                       ),
-                      //Zone start ---
-                      ListView.builder(
-                        physics: NeverScrollableScrollPhysics(),
-                        itemBuilder: (ctx, i) => Container(
-                          height: 450 / widget.zoneLines,
-                          child: FieldZoneRow(
-                            setZoneActive: setZoneActive,
-                            line: i + 1,
-                            zoneCount: 3,
-                            percentages: getZonePercentages(i + 1),
-                          ),
-                        ),
-                        itemCount: widget.zoneLines,
-                      ),
-                      //Zone end ---
                     ],
                   ),
                 ),

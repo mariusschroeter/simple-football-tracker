@@ -21,11 +21,12 @@ class FieldZone extends StatelessWidget {
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     return InkWell(
-      onTap: () => setZoneActive(line, column),
+      onTapDown: (TapDownDetails details) =>
+          setZoneActive(line, column, details),
       child: Stack(
         children: [
           Container(
-            color: Colors.lightGreen,
+            color: Colors.transparent,
             height: 250,
             width: screenWidth / 3,
           ),

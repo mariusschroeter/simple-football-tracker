@@ -110,17 +110,17 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
     int indexStart = ((line - 1) * widget.zonesPerLine);
     int indexEnd = (line * widget.zonesPerLine);
     for (var i = indexStart; i < indexEnd; i++) {
-      if (!_matchStart)
+      if (!_matchStart || _homePossession == 0)
         homePercentages.add(0.0);
       else {
-        homePercentages.add((zones[i].homePercentage / _start) * 100);
+        homePercentages.add((zones[i].homePercentage / _homePossession) * 100);
       }
     }
     for (var i = indexStart; i < indexEnd; i++) {
-      if (!_matchStart)
+      if (!_matchStart || _awayPossession == 0)
         awayPercentages.add(0.0);
       else {
-        awayPercentages.add((zones[i].awayPercentage / _start) * 100);
+        awayPercentages.add((zones[i].awayPercentage / _awayPossession) * 100);
       }
     }
     List<List<double>> percentages = [homePercentages, awayPercentages];
@@ -128,6 +128,8 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
   }
 
   //Wer hat den Ball?
+  int _homePossession = 0;
+  int _awayPossession = 0;
   bool _homeTeamBallPossession = true;
 
   void switchTeamBallPossession() {
@@ -161,9 +163,13 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
               setZoneActive(1, 1, TapDownDetails());
             }
             //Wer ist am Ball?
-            _homeTeamBallPossession
-                ? _activeZone.homePercentage = _activeZone.homePercentage + 1
-                : _activeZone.awayPercentage = _activeZone.awayPercentage + 1;
+            if (_homeTeamBallPossession) {
+              _homePossession = _homePossession + 1;
+              _activeZone.homePercentage = _activeZone.homePercentage + 1;
+            } else {
+              _awayPossession = _awayPossession + 1;
+              _activeZone.awayPercentage = _activeZone.awayPercentage + 1;
+            }
 
             //Match starten
             _matchStart = true;
@@ -245,9 +251,11 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
   bool _homeTopOfField = true;
 
   _switchSides() {
-    setState(() {
-      _homeTopOfField = !_homeTopOfField;
-    });
+    if (!_matchStart) {
+      setState(() {
+        _homeTopOfField = !_homeTopOfField;
+      });
+    }
   }
 
   @override

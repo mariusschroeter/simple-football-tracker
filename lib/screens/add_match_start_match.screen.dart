@@ -152,6 +152,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
   int _start = 0;
   bool _matchStart = false;
   bool _matchPause = false;
+  bool _matchHalfTime = false;
 
   void startTimer(int timerDuration) {
     setState(() {
@@ -195,7 +196,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
     });
   }
 
-  void endTimer(bool isFirstHalf) {
+  void endTimer() {
     _timer.cancel();
     List<ZonePercentages> zonePercentages = [];
     zonePercentages = zones
@@ -203,21 +204,27 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
             homePercentage: e.homePercentage, awayPercentage: e.awayPercentage))
         .toList();
     setState(() {
-      if (isFirstHalf) {
-        _match.firstHalfZones = zonePercentages;
-      } else {
-        _match.secondHalfZones = zonePercentages;
-      }
       _matchStart = false;
       _matchPause = false;
       _start = 0;
       _homePossession = 0;
       _awayPossession = 0;
+      if (_matchHalfTime) {
+        _match.firstHalfZones = zonePercentages;
+        _matchHalfTime = true;
+      } else {
+        _match.secondHalfZones = zonePercentages;
+        endMatch();
+      }
       zones.forEach((element) {
         element.homePercentage = 0.0;
         element.awayPercentage = 0.0;
       });
     });
+  }
+
+  void endMatch() {
+    Navigator.of(context).pop();
   }
 
   void unpauseTimer() => startTimer(_start);
@@ -242,7 +249,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
       child: Text("Yes"),
       onPressed: () {
         Navigator.of(context, rootNavigator: true).pop();
-        endTimer(true);
+        endTimer();
       },
     );
 
@@ -426,15 +433,19 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                             : _matchPause
                                 ? unpauseTimer
                                 : _matchExtraTime
-                                    ? () => endTimer(true)
+                                    ? () => endTimer()
                                     : pauseTimer,
-                        child: Text(_start == 0
-                            ? 'Start Match'
-                            : _matchPause
-                                ? 'Resume Match'
-                                : _matchExtraTime
-                                    ? 'End Half'
-                                    : 'Pause Match'),
+                        child: Text(
+                          _start == 0 && !_matchHalfTime
+                              ? 'Start Match'
+                              : _start == 0 && _matchHalfTime
+                                  ? 'Start 2nd Half'
+                                  : _matchPause
+                                      ? 'Resume Match'
+                                      : _matchExtraTime
+                                          ? 'End Half'
+                                          : 'Pause Match',
+                        ),
                       ),
                     ],
                   ),

@@ -1,9 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:football_provider_app/models/zone.dart';
-import 'package:football_provider_app/widgets/fieldzone.dart';
+import 'package:uuid/uuid.dart';
 
+import 'package:football_provider_app/models/zone.dart';
+import 'package:football_provider_app/providers/match.dart';
+import 'package:football_provider_app/widgets/fieldzone.dart';
 import 'package:football_provider_app/widgets/text_elements.dart';
 
 class AddMatchStartMatchScreen extends StatefulWidget {
@@ -29,7 +31,10 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _buildZones());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _buildZones();
+      _buildMatch();
+    });
   }
 
   @override
@@ -38,22 +43,24 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
     super.dispose();
   }
 
-  //Field props
-  //final GlobalKey _footballField = GlobalKey();
-  // Size footballFieldSize;
+  //Match Stats
+  Match _match;
 
-  // getFieldSize() {
-  //   RenderBox _footballFieldBox =
-  //       _footballField.currentContext.findRenderObject();
-  //   footballFieldSize = _footballFieldBox.size;
-  //   setState(() {});
-  // }
+  void _buildMatch() {
+    _match = Match(
+      id: Uuid().v4(),
+      dateTime: DateTime.now(),
+      homeTeam: widget.homeTeam,
+      awayTeam: widget.awayTeam,
+      firstHalfZones: [],
+      secondHalfZones: [],
+    );
+  }
 
   //Field Ball
   Offset ballPosition;
 
   _onBallMovement(TapDownDetails details) {
-    print(details);
     final x = details.localPosition.dx;
     final y = details.localPosition.dy;
     setState(() {
@@ -155,7 +162,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
       oneSec,
       (Timer timer) => setState(
         () {
-          if (_start > 300 && !_matchExtraTime) {
+          if (_start > 5 && !_matchExtraTime) {
             timer.cancel();
             showAlertDialog(context);
           } else {
@@ -188,11 +195,28 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
     });
   }
 
-  void endTimer() {
+  void endTimer(bool isFirstHalf) {
     _timer.cancel();
+    List<ZonePercentages> zonePercentages = [];
+    zonePercentages = zones
+        .map((e) => new ZonePercentages(
+            homePercentage: e.homePercentage, awayPercentage: e.awayPercentage))
+        .toList();
     setState(() {
+      if (isFirstHalf) {
+        _match.firstHalfZones = zonePercentages;
+      } else {
+        _match.secondHalfZones = zonePercentages;
+      }
       _matchStart = false;
       _matchPause = false;
+      _start = 0;
+      _homePossession = 0;
+      _awayPossession = 0;
+      zones.forEach((element) {
+        element.homePercentage = 0.0;
+        element.awayPercentage = 0.0;
+      });
     });
   }
 
@@ -207,24 +231,18 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
 
   //Nachspielzeit Timer
   bool _matchExtraTime = false;
+
   void showAlertDialog(BuildContext context) {
     // set up the buttons
     Widget itsNotHalftimeButton = FlatButton(
       child: Text("No"),
-      onPressed: () {
-        Navigator.of(context, rootNavigator: true).pop();
-        //implement extra time
-        // _matchExtraTime = true;
-        // startTimer(0);
-        //for now just pop.
-        endTimer();
-      },
+      onPressed: () {},
     );
     Widget itsHalftimeButton = FlatButton(
       child: Text("Yes"),
       onPressed: () {
         Navigator.of(context, rootNavigator: true).pop();
-        endTimer();
+        endTimer(true);
       },
     );
 
@@ -233,7 +251,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
       title: Text("Halftime?"),
       content: Text("Is it Halftime yet?"),
       actions: [
-        itsNotHalftimeButton,
+        // itsNotHalftimeButton,
         itsHalftimeButton,
       ],
     );
@@ -408,7 +426,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                             : _matchPause
                                 ? unpauseTimer
                                 : _matchExtraTime
-                                    ? endTimer
+                                    ? () => endTimer(true)
                                     : pauseTimer,
                         child: Text(_start == 0
                             ? 'Start Match'

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:football_provider_app/models/zone.dart';
 
 //Ist eigetnlich noch ein model weil keine daten geändert werden
 class Match {
@@ -7,16 +8,20 @@ class Match {
   //Du bekommst diesen Wert wenn das Objekt erstellt wird!
   final String homeTeam;
   final String awayTeam;
-  List<int> score;
-  bool isWon;
+  List<ZonePercentages> firstHalfZones;
+  List<ZonePercentages> secondHalfZones;
+  List<int> score = [1, 0];
+  bool isWon = true;
 
   Match({
     this.id,
     this.dateTime,
     @required this.homeTeam,
     @required this.awayTeam,
+    this.firstHalfZones,
+    this.secondHalfZones,
     this.score,
-    this.isWon = false,
+    this.isWon,
   });
 
   void homeScored() {

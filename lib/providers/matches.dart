@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import './match.dart';
-import '../models/http_exception.dart';
 
 class MatchesProvider with ChangeNotifier {
   List<Match> _items = [

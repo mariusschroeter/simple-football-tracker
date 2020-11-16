@@ -50,23 +50,22 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
   // }
 
   //Field Ball
-
   Offset ballPosition;
 
-  _onBallMovement(int line, int column, TapDownDetails details) {
-    double fieldWidth = MediaQuery.of(context).size.width;
-    double zoneWidth = fieldWidth / widget.zonesPerLine;
-    double fieldHeight = 450;
-    double zoneHeight = fieldHeight / widget.zoneLines;
-    final xNew = details.localPosition.dx + (zoneWidth * column);
-    final yNew = details.localPosition.dy + (zoneHeight * (line - 1));
+  _onBallMovement(TapDownDetails details) {
+    print(details);
+    final x = details.localPosition.dx;
+    final y = details.localPosition.dy;
     setState(() {
-      ballPosition = Offset(xNew - (26 / 2), yNew - (26 / 2));
+      ballPosition = Offset(x - (26 / 2), y - (26 / 2));
     });
-    //update active zone
+    setZoneActive(x, y);
   }
 
   //Feld Zonen
+  List<Zone> zones = [];
+  Zone _activeZone;
+  bool _showHeatMap = false;
 
   _buildZones() {
     double fieldWidth = MediaQuery.of(context).size.width;
@@ -90,18 +89,14 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
     }
   }
 
-  List<Zone> zones = [];
-
-  Zone _activeZone;
-
-  setZoneActive(int line, int column, TapDownDetails details) {
-    if (line == 1 && column == 0)
-      _activeZone = zones[0];
-    else {
-      int index = ((line - 1) * widget.zonesPerLine) + column;
-      _activeZone = zones[index];
-    }
-    _onBallMovement(line, column, details);
+  setZoneActive(double x, double y) {
+    final activeZoneCopy = _activeZone;
+    _activeZone = zones.firstWhere((element) =>
+        element.xStart < x &&
+        element.xEnd > x &&
+        element.yStart < y &&
+        element.yEnd > y);
+    if (_activeZone == null) _activeZone = activeZoneCopy;
   }
 
   List<List<double>> getZonePercentages(int line) {
@@ -125,6 +120,12 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
     }
     List<List<double>> percentages = [homePercentages, awayPercentages];
     return percentages;
+  }
+
+  switchHeatMap() {
+    setState(() {
+      _showHeatMap = !_showHeatMap;
+    });
   }
 
   //Wer hat den Ball?
@@ -160,7 +161,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
           } else {
             _start = _start + 1;
             if (_activeZone == null) {
-              setZoneActive(1, 1, TapDownDetails());
+              setZoneActive(10, 10);
             }
             //Wer ist am Ball?
             if (_homeTeamBallPossession) {
@@ -277,10 +278,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
           padding: EdgeInsets.only(top: statusBarHeight),
           child: Column(
             children: [
-              GestureDetector(
-                onTapDown: (TapDownDetails details) =>
-                    _onBallMovement(1, 1, details),
-                child: Container(
+              Container(
                   height: 500,
                   width: double.infinity,
                   decoration: BoxDecoration(
@@ -290,7 +288,8 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                       fit: BoxFit.fill,
                     ),
                   ),
-                  child: Stack(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Padding(
                         padding: EdgeInsets.only(left: 8.0),
@@ -303,67 +302,88 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                                 title: awayTeam,
                               ),
                       ),
-
-                      Positioned(
-                        top: ballPosition != null
-                            ? ballPosition.dy
-                            : MediaQuery.of(context).size.height / 2,
-                        left: ballPosition != null
-                            ? ballPosition.dx
-                            : MediaQuery.of(context).size.width / 2,
+                      Expanded(
+                        flex: 1,
                         child: GestureDetector(
-                          onDoubleTap: () {
-                            switchTeamBallPossession();
-                          },
-                          child: Draggable(
-                            // onDraggableCanceled:
-                            //     (Velocity velocity, Offset offset) {
-                            //   _onDrag(offset);
-                            //   // _updateHeatMap();
-                            // },
-                            child: Icon(Icons.sports_soccer,
-                                color: _homeTeamBallPossession
-                                    ? Colors.white
-                                    : Colors.black),
-                            feedback: Icon(Icons.sports_soccer),
-                            childWhenDragging: Icon(Icons.sports_soccer),
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        bottom: 0,
-                        right: 0,
-                        child: Padding(
-                          padding: EdgeInsets.only(right: 8.0),
-                          child: _homeTopOfField
-                              ? NormalTextSize(
-                                  title: awayTeam,
-                                )
-                              : NormalTextSize(
-                                  title: homeTeam,
-                                  color: Colors.white,
+                          onTapDown: (TapDownDetails details) =>
+                              _onBallMovement(details),
+                          onDoubleTap: () => switchTeamBallPossession(),
+                          child: Container(
+                            color: Colors.transparent,
+                            height: 450,
+                            width: double.infinity,
+                            child: Stack(
+                              children: [
+                                //Zone start ---
+                                _showHeatMap
+                                    ? ListView.builder(
+                                        physics: NeverScrollableScrollPhysics(),
+                                        itemBuilder: (ctx, i) => Container(
+                                          height: 450 / widget.zoneLines,
+                                          child: FieldZoneRow(
+                                            zoneCount: 3,
+                                            percentages:
+                                                getZonePercentages(i + 1),
+                                          ),
+                                        ),
+                                        itemCount: widget.zoneLines,
+                                      )
+                                    : SizedBox(),
+                                //Zone end ---
+                                Positioned(
+                                  top: ballPosition != null
+                                      ? ballPosition.dy
+                                      : MediaQuery.of(context).size.height / 2,
+                                  left: ballPosition != null
+                                      ? ballPosition.dx
+                                      : MediaQuery.of(context).size.width / 2,
+                                  child: Draggable(
+                                    // onDraggableCanceled:
+                                    //     (Velocity velocity, Offset offset) {
+                                    //   _onDrag(offset);
+                                    //   // _updateHeatMap();
+                                    // },
+                                    child: Container(
+                                      height: 35,
+                                      width: 35,
+                                      color: Colors.transparent,
+                                      child: Icon(
+                                        Icons.sports_soccer,
+                                        color: _homeTeamBallPossession
+                                            ? Colors.white
+                                            : Colors.black,
+                                      ),
+                                    ),
+                                    feedback: Icon(Icons.sports_soccer),
+                                    childWhenDragging: Icon(
+                                      Icons.sports_soccer,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
                                 ),
-                        ),
-                      ),
-                      //Zone start ---
-                      ListView.builder(
-                        physics: NeverScrollableScrollPhysics(),
-                        itemBuilder: (ctx, i) => Container(
-                          height: 450 / widget.zoneLines,
-                          child: FieldZoneRow(
-                            setZoneActive: setZoneActive,
-                            line: i + 1,
-                            zoneCount: 3,
-                            percentages: getZonePercentages(i + 1),
+                              ],
+                            ),
                           ),
                         ),
-                        itemCount: widget.zoneLines,
                       ),
-                      //Zone end ---
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(right: 8.0),
+                            child: _homeTopOfField
+                                ? NormalTextSize(
+                                    title: awayTeam,
+                                  )
+                                : NormalTextSize(
+                                    title: homeTeam,
+                                    color: Colors.white,
+                                  ),
+                          ),
+                        ],
+                      ),
                     ],
-                  ),
-                ),
-              ),
+                  )),
               //Timer Start ---
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -409,7 +429,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.pop(context, [widget.homeTeam, widget.awayTeam]);
+          switchHeatMap();
         },
       ),
     );

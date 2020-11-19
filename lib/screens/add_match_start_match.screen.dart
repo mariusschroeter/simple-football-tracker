@@ -232,7 +232,8 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
   }
 
   void endMatch() {
-    Provider.of<MatchesProvider>(context, listen: false).addMatch(_match);
+    Provider.of<MatchesProvider>(context, listen: false)
+        .addMatchOffline(_match);
     Navigator.of(context).pop();
   }
 

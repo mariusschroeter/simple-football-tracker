@@ -35,6 +35,11 @@ class MatchesProvider with ChangeNotifier {
     return _items.firstWhere((match) => match.id == id);
   }
 
+  void addMatchOffline(Match match) {
+    _items.add(match);
+    notifyListeners();
+  }
+
   Future<void> addMatch(Match match) async {
     const url = 'https://football-tracker-3e8cc.firebaseio.com/matches';
     try {

@@ -137,6 +137,21 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
     });
   }
 
+  setPercentagesPerZone(int minute) {
+    List<ZonePercentages> zonePercentages = [];
+    zonePercentages = zones
+        .map((e) => new ZonePercentages(
+              minute: minute,
+              homePercentage: e.homePercentage != 0.0
+                  ? ((e.homePercentage / _homePossession) * 100)
+                  : 0.0,
+              awayPercentage: e.awayPercentage != 0.0
+                  ? ((e.awayPercentage / _awayPossession) * 100)
+                  : 0.0,
+            ))
+        .toList();
+  }
+
   //Wer hat den Ball?
   int _homePossession = 0;
   int _awayPossession = 0;
@@ -202,14 +217,16 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
     _timer.cancel();
     List<ZonePercentages> zonePercentages = [];
     zonePercentages = zones
-        .map((e) => new ZonePercentages(
-              homePercentage: e.homePercentage != 0.0
-                  ? ((e.homePercentage / _homePossession) * 100)
-                  : 0.0,
-              awayPercentage: e.awayPercentage != 0.0
-                  ? ((e.awayPercentage / _awayPossession) * 100)
-                  : 0.0,
-            ))
+        .map(
+          (e) => new ZonePercentages(
+            homePercentage: e.homePercentage != 0.0
+                ? ((e.homePercentage / _homePossession) * 100)
+                : 0.0,
+            awayPercentage: e.awayPercentage != 0.0
+                ? ((e.awayPercentage / _awayPossession) * 100)
+                : 0.0,
+          ),
+        )
         .toList();
     setState(() {
       _matchStart = false;

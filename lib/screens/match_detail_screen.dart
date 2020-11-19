@@ -11,13 +11,10 @@ class MatchDetailScreen extends StatelessWidget {
   static const routeName = "/match-detail";
 
   List<List<double>> getZonePercentages(List<ZonePercentages> zones, int line) {
-    print(zones);
     List<double> homePercentages = [];
     List<double> awayPercentages = [];
     int indexStart = (line - 1) * 3;
     int indexEnd = line * 3;
-    print("indexStart " + indexStart.toString());
-    print("indexEnd " + indexEnd.toString());
     for (var i = indexStart; i < indexEnd; i++) {
       homePercentages.add(zones[i].homePercentage);
     }
@@ -42,61 +39,128 @@ class MatchDetailScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(loadedMatch.homeTeam),
       ),
-      body: Container(
-        height: 500,
-        width: double.infinity,
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage("lib/resources/images/football_field.jpg"),
-            fit: BoxFit.fill,
-          ),
-        ),
+      body: SingleChildScrollView(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-                padding: EdgeInsets.only(left: 8.0),
-                child: NormalTextSize(
-                  title: loadedMatch.homeTeam,
-                  color: Colors.white,
-                )),
-            Expanded(
-              flex: 1,
-              child: Container(
-                color: Colors.green,
-                height: 450,
-                width: double.infinity,
-                child: Stack(
-                  children: [
-                    ListView.builder(
-                      physics: NeverScrollableScrollPhysics(),
-                      itemBuilder: (ctx, i) => Container(
-                        height: 450 / 2,
-                        child: FieldZoneRow(
-                          zoneCount: 3,
-                          percentages: getZonePercentages(
-                            loadedMatch.firstHalfZones,
-                            i + 1,
-                          ),
-                        ),
-                      ),
-                      itemCount: 2,
-                    ),
-                    //Zone end ---
-                  ],
+            Text('1st Half'),
+            Container(
+              height: 500,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage("lib/resources/images/football_field.jpg"),
+                  fit: BoxFit.fill,
                 ),
               ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Padding(
-                  padding: EdgeInsets.only(right: 8.0),
-                  child: NormalTextSize(
-                    title: loadedMatch.awayTeam,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                      padding: EdgeInsets.only(left: 8.0),
+                      child: NormalTextSize(
+                        title: loadedMatch.homeTeam,
+                        color: Colors.white,
+                      )),
+                  Expanded(
+                    flex: 1,
+                    child: Container(
+                      color: Colors.green,
+                      height: 450,
+                      width: double.infinity,
+                      child: Stack(
+                        children: [
+                          ListView.builder(
+                            physics: NeverScrollableScrollPhysics(),
+                            itemBuilder: (ctx, i) => Container(
+                              height: 450 / 2,
+                              child: FieldZoneRow(
+                                zoneCount: 3,
+                                percentages: getZonePercentages(
+                                  loadedMatch.firstHalfZones,
+                                  i + 1,
+                                ),
+                              ),
+                            ),
+                            itemCount: 2,
+                          ),
+                          //Zone end ---
+                        ],
+                      ),
+                    ),
                   ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(right: 8.0),
+                        child: NormalTextSize(
+                          title: loadedMatch.awayTeam,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            Text('2st Half'),
+            Container(
+              height: 500,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage("lib/resources/images/football_field.jpg"),
+                  fit: BoxFit.fill,
                 ),
-              ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                      padding: EdgeInsets.only(left: 8.0),
+                      child: NormalTextSize(
+                        title: loadedMatch.homeTeam,
+                        color: Colors.white,
+                      )),
+                  Expanded(
+                    flex: 1,
+                    child: Container(
+                      color: Colors.green,
+                      height: 450,
+                      width: double.infinity,
+                      child: Stack(
+                        children: [
+                          ListView.builder(
+                            physics: NeverScrollableScrollPhysics(),
+                            itemBuilder: (ctx, i) => Container(
+                              height: 450 / 2,
+                              child: FieldZoneRow(
+                                zoneCount: 3,
+                                percentages: getZonePercentages(
+                                  loadedMatch.secondHalfZones,
+                                  i + 1,
+                                ),
+                              ),
+                            ),
+                            itemCount: 2,
+                          ),
+                          //Zone end ---
+                        ],
+                      ),
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(right: 8.0),
+                        child: NormalTextSize(
+                          title: loadedMatch.awayTeam,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ],
         ),

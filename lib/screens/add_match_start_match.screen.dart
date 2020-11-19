@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:football_provider_app/providers/matches.dart';
+import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
 import 'package:football_provider_app/models/zone.dart';
@@ -230,14 +232,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
   }
 
   void endMatch() {
-    _match.firstHalfZones.forEach((element) =>
-        print("HomePercentage " + element.homePercentage.toString()));
-    _match.firstHalfZones.forEach((element) =>
-        print("AwayPercentage " + element.awayPercentage.toString()));
-    _match.secondHalfZones.forEach((element) =>
-        print("HomePercentage2 " + element.homePercentage.toString()));
-    _match.secondHalfZones.forEach((element) =>
-        print("AwayPercentage2 " + element.awayPercentage.toString()));
+    Provider.of<MatchesProvider>(context, listen: false).addMatch(_match);
     Navigator.of(context).pop();
   }
 

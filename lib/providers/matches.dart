@@ -38,11 +38,27 @@ class MatchesProvider with ChangeNotifier {
   Future<void> addMatch(Match match) async {
     const url = 'https://football-tracker-3e8cc.firebaseio.com/matches';
     try {
+      List<Map<String, dynamic>> firstHalf = new List<Map<String, dynamic>>();
+      for (var i = 0; i < match.firstHalfZones.length; i++) {
+        var zone = match.firstHalfZones[i];
+        firstHalf.add({
+          'zone$i': [zone.homePercentage, zone.awayPercentage]
+        });
+      }
+      List<Map<String, dynamic>> secondHalf = new List<Map<String, dynamic>>();
+      for (var i = 0; i < match.secondHalfZones.length; i++) {
+        var zone = match.secondHalfZones[i];
+        secondHalf.add({
+          'zone$i': [zone.homePercentage, zone.awayPercentage]
+        });
+      }
       await http.post(url,
           body: json.encode({
-            'homeTeam': 'ksjdf',
-            'awayTeam': 'ksajhdfk',
+            'homeTeam': match.homeTeam,
+            'awayTeam': match.awayTeam,
             'isWon': true,
+            // 'firstHalfPercentages': firstHalf,
+            // 'secondHalfPercentages': secondHalf,
           }));
       notifyListeners();
     } catch (error) {
@@ -65,6 +81,8 @@ class MatchesProvider with ChangeNotifier {
           isWon: matchData['isWon'],
           dateTime: DateTime.now(),
           score: [0, 0],
+          firstHalfZones: matchData['firstHalfPercentages'],
+          secondHalfZones: matchData['secondHalfPercentages'],
         ));
       });
       _items = loadedMatches;

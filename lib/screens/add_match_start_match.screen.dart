@@ -201,7 +201,13 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
     List<ZonePercentages> zonePercentages = [];
     zonePercentages = zones
         .map((e) => new ZonePercentages(
-            homePercentage: e.homePercentage, awayPercentage: e.awayPercentage))
+              homePercentage: e.homePercentage != 0.0
+                  ? ((e.homePercentage / _homePossession) * 100)
+                  : 0.0,
+              awayPercentage: e.awayPercentage != 0.0
+                  ? ((e.awayPercentage / _awayPossession) * 100)
+                  : 0.0,
+            ))
         .toList();
     setState(() {
       _matchStart = false;
@@ -209,7 +215,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
       _start = 0;
       _homePossession = 0;
       _awayPossession = 0;
-      if (_matchHalfTime) {
+      if (!_matchHalfTime) {
         _match.firstHalfZones = zonePercentages;
         _matchHalfTime = true;
       } else {
@@ -224,6 +230,14 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
   }
 
   void endMatch() {
+    _match.firstHalfZones.forEach((element) =>
+        print("HomePercentage " + element.homePercentage.toString()));
+    _match.firstHalfZones.forEach((element) =>
+        print("AwayPercentage " + element.awayPercentage.toString()));
+    _match.secondHalfZones.forEach((element) =>
+        print("HomePercentage2 " + element.homePercentage.toString()));
+    _match.secondHalfZones.forEach((element) =>
+        print("AwayPercentage2 " + element.awayPercentage.toString()));
     Navigator.of(context).pop();
   }
 

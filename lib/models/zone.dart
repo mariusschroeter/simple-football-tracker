@@ -28,3 +28,10 @@ class ZonePercentages {
 
   ZonePercentages({this.minute, this.homePercentage, this.awayPercentage});
 }
+
+class ZoneStats {
+  List<List<double>> percentages;
+  List<Color> colors;
+
+  ZoneStats({this.percentages, this.colors});
+}

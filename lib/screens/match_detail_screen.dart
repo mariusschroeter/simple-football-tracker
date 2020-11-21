@@ -10,7 +10,7 @@ import '../providers/matches.dart';
 class MatchDetailScreen extends StatelessWidget {
   static const routeName = "/match-detail";
 
-  List<List<double>> getZonePercentages(List<ZonePercentages> zones, int line) {
+  ZoneStats getZonePercentages(List<ZonePercentages> zones, int line) {
     List<double> homePercentages = [];
     List<double> awayPercentages = [];
     int indexStart = (line - 1) * 3;
@@ -25,7 +25,8 @@ class MatchDetailScreen extends StatelessWidget {
       homePercentages,
       awayPercentages,
     ];
-    return percentages;
+    ZoneStats stats = ZoneStats(percentages: percentages);
+    return stats;
   }
 
   //Hier kommen dann die ganzen Statistiken rein
@@ -78,7 +79,7 @@ class MatchDetailScreen extends StatelessWidget {
                                 percentages: getZonePercentages(
                                   loadedMatch.firstHalfZones,
                                   i + 1,
-                                ),
+                                ).percentages,
                               ),
                             ),
                             itemCount: 2,
@@ -138,7 +139,7 @@ class MatchDetailScreen extends StatelessWidget {
                                 percentages: getZonePercentages(
                                   loadedMatch.secondHalfZones,
                                   i + 1,
-                                ),
+                                ).percentages,
                               ),
                             ),
                             itemCount: 2,

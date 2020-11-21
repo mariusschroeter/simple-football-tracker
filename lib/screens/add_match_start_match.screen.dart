@@ -116,16 +116,20 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
     if (_activeZone == null) _activeZone = activeZoneCopy;
   }
 
-  List<List<double>> _getZonePercentages(int line) {
+  ZoneStats _getZonePercentages(int line) {
     List<double> homePercentages = [];
     List<double> awayPercentages = [];
+    List<Color> colors = [];
     int indexStart = ((line - 1) * widget.zonesPerLine);
     int indexEnd = (line * widget.zonesPerLine);
     for (var i = indexStart; i < indexEnd; i++) {
-      if (!_matchStart || _homePossession == 0)
+      if (!_matchStart || _homePossession == 0) {
         homePercentages.add(0.0);
-      else {
-        homePercentages.add((zones[i].homePercentage / _homePossession) * 100);
+        colors.add(Colors.green);
+      } else {
+        final percentage = (zones[i].homePercentage / _homePossession) * 100;
+        homePercentages.add(percentage);
+        colors.add(Colors.yellow);
       }
     }
     for (var i = indexStart; i < indexEnd; i++) {
@@ -136,7 +140,8 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
       }
     }
     List<List<double>> percentages = [homePercentages, awayPercentages];
-    return percentages;
+    ZoneStats stats = ZoneStats(percentages: percentages, colors: colors);
+    return stats;
   }
 
   _switchPercentages() {
@@ -433,7 +438,12 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                                             zoneCount: 3,
                                             percentages: _showPercentages
                                                 ? _getZonePercentages(i + 1)
+                                                    .percentages
                                                 : null,
+                                            colors: _getZonePercentages(i + 1)
+                                                .colors,
+                                            showColor: _showHeatMap,
+                                            showPercentages: _showPercentages,
                                           ),
                                         ),
                                         itemCount: widget.zoneLines,
@@ -462,6 +472,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                                               children: [
                                                 Text('HZ'),
                                                 FieldZone(
+                                                  showPercentages: true,
                                                   homePercentage:
                                                       _homePossession != 0
                                                           ? ((_homePossession /
@@ -484,6 +495,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                                                 children: [
                                                   Text('TOTAL'),
                                                   FieldZone(
+                                                    showPercentages: true,
                                                     homePercentage:
                                                         (((_homePossession +
                                                                     _totalHomePossession) /

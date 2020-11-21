@@ -300,16 +300,16 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
   }
   //
 
-  //Show Home and Away Text
-  bool _homeTopOfField = true;
+  //Allow switch of sides
+  //bool _homeTopOfField = true;
 
-  _switchSides() {
-    if (!_matchStart) {
-      setState(() {
-        _homeTopOfField = !_homeTopOfField;
-      });
-    }
-  }
+  // _switchSides() {
+  //   if (!_matchStart) {
+  //     setState(() {
+  //       _homeTopOfField = !_homeTopOfField;
+  //     });
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -344,16 +344,17 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Padding(
-                        padding: EdgeInsets.only(left: 8.0),
-                        child: _homeTopOfField
-                            ? NormalTextSize(
-                                title: homeTeam,
-                                color: Colors.white,
-                              )
-                            : NormalTextSize(
-                                title: awayTeam,
-                              ),
-                      ),
+                          padding: EdgeInsets.only(left: 8.0),
+                          child:
+                              //?
+                              NormalTextSize(
+                            title: homeTeam,
+                            color: Colors.white,
+                          )
+                          // : NormalTextSize(
+                          //     title: awayTeam,
+                          //   ),
+                          ),
                       Expanded(
                         flex: 1,
                         child: GestureDetector(
@@ -422,16 +423,17 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           Padding(
-                            padding: EdgeInsets.only(right: 8.0),
-                            child: _homeTopOfField
-                                ? NormalTextSize(
-                                    title: awayTeam,
-                                  )
-                                : NormalTextSize(
-                                    title: homeTeam,
-                                    color: Colors.white,
-                                  ),
-                          ),
+                              padding: EdgeInsets.only(right: 8.0),
+                              child:
+                                  // ?
+                                  NormalTextSize(
+                                title: awayTeam,
+                              )
+                              // : NormalTextSize(
+                              //     title: homeTeam,
+                              //     color: Colors.white,
+                              //   ),
+                              ),
                         ],
                       ),
                     ],
@@ -448,11 +450,11 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                   ),
                   Column(
                     children: [
-                      RaisedButton(
-                        color: Colors.grey,
-                        onPressed: _switchSides,
-                        child: Text('Switch Sides'),
-                      ),
+                      // RaisedButton(
+                      //   color: Colors.grey,
+                      //   onPressed: _switchSides,
+                      //   child: Text('Switch Sides'),
+                      // ),
                       RaisedButton(
                         color: Colors.grey,
                         onPressed: _start == 0
@@ -469,9 +471,11 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                                   ? 'Start 2nd Half'
                                   : _matchPause
                                       ? 'Resume Match'
-                                      : _matchExtraTime
+                                      : _matchExtraTime && !_matchHalfTime
                                           ? 'End Half'
-                                          : 'Pause Match',
+                                          : _matchExtraTime && _matchHalfTime
+                                              ? 'End Match'
+                                              : 'Pause Match',
                         ),
                       ),
                     ],

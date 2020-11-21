@@ -188,7 +188,6 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
 
             if (_isExtraTime) _extraTime = _extraTime + 1;
 
-            if (_activeZone == null) setZoneActive(10, 10);
             //Wer ist am Ball?
             if (_homeTeamBallPossession) {
               _homePossession = _homePossession + 1;
@@ -248,6 +247,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
         element.homePercentage = 0.0;
         element.awayPercentage = 0.0;
       });
+      _isPossessionQuestion = true;
     });
   }
 
@@ -325,6 +325,27 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
   //   }
   // }
 
+  //Who has the ball at start?
+  bool _isPossessionQuestion = true;
+
+  void _setPossessionAtMatchStart(bool isHome) {
+    double x = MediaQuery.of(context).size.width / 2;
+    double y = 450 / 2;
+    if (isHome) {
+      y -= 20;
+    } else {
+      y += 20;
+    }
+
+    TapDownDetails details = TapDownDetails(localPosition: Offset(x, y));
+    _onBallMovement(details);
+
+    setState(() {
+      _homeTeamBallPossession = isHome;
+      _isPossessionQuestion = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     double statusBarHeight = MediaQuery.of(context).padding.top;
@@ -400,7 +421,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                                 Positioned(
                                   top: ballPosition != null
                                       ? ballPosition.dy
-                                      : MediaQuery.of(context).size.height / 2,
+                                      : 450 / 2,
                                   left: ballPosition != null
                                       ? ballPosition.dx
                                       : MediaQuery.of(context).size.width / 2,
@@ -425,6 +446,52 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                                     childWhenDragging: Icon(
                                       Icons.sports_soccer,
                                       color: Colors.grey,
+                                    ),
+                                  ),
+                                ),
+                                Visibility(
+                                  visible: _isPossessionQuestion,
+                                  child: Container(
+                                    height: 500,
+                                    width: double.infinity,
+                                    color: Colors.grey,
+                                    child: Column(
+                                      children: [
+                                        NormalTextSize(
+                                          title: 'Who has the ball?',
+                                        ),
+                                        Expanded(
+                                          flex: 1,
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceAround,
+                                            children: [
+                                              InkWell(
+                                                onTap: () =>
+                                                    _setPossessionAtMatchStart(
+                                                        true),
+                                                child: Container(
+                                                  height: 100,
+                                                  child: NormalTextSize(
+                                                    title: 'Home',
+                                                  ),
+                                                ),
+                                              ),
+                                              InkWell(
+                                                onTap: () =>
+                                                    _setPossessionAtMatchStart(
+                                                        false),
+                                                child: Container(
+                                                  height: 100,
+                                                  child: NormalTextSize(
+                                                    title: 'Away',
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ),

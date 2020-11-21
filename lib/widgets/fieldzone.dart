@@ -6,10 +6,12 @@ class FieldZone extends StatelessWidget {
     Key key,
     this.homePercentage,
     this.awayPercentage,
+    this.isTotalZone = false,
   }) : super(key: key);
 
   final double homePercentage;
   final double awayPercentage;
+  final bool isTotalZone;
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +20,7 @@ class FieldZone extends StatelessWidget {
       children: [
         Container(
           color: Colors.transparent,
-          height: 250,
+          height: isTotalZone ? 100 : 250,
           width: screenWidth / 3,
         ),
         Positioned.fill(

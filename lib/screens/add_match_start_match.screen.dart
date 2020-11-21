@@ -154,7 +154,9 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
 
   //Wer hat den Ball?
   int _homePossession = 0;
+  int _totalHomePossession = 0;
   int _awayPossession = 0;
+  int _totalAwayPossession = 0;
   bool _homeTeamBallPossession = true;
 
   void switchTeamBallPossession() {
@@ -167,6 +169,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
   //90 min
   Timer _timer;
   int _start = 0;
+  int _totalTime = 0;
   bool _matchStart = false;
   bool _matchPause = false;
   bool _matchHalfTime = false;
@@ -233,8 +236,11 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
       _matchPause = false;
       _isExtraTime = false;
       _extraTime = 0;
+      _totalTime = _start;
       _start = 0;
+      _totalHomePossession = _homePossession;
       _homePossession = 0;
+      _totalAwayPossession = _awayPossession;
       _awayPossession = 0;
       if (!_matchHalfTime) {
         _match.firstHalfZones = zonePercentages;
@@ -418,6 +424,66 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                                       )
                                     : SizedBox(),
                                 //Zone end ---
+                                //show total possession --
+                                _showHeatMap
+                                    ? Positioned(
+                                        top: 200,
+                                        left:
+                                            MediaQuery.of(context).size.width /
+                                                3 /
+                                                2,
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Column(
+                                              children: [
+                                                Text('HZ'),
+                                                FieldZone(
+                                                  homePercentage:
+                                                      _homePossession != 0
+                                                          ? ((_homePossession /
+                                                                  _start) *
+                                                              100)
+                                                          : 0.0,
+                                                  awayPercentage:
+                                                      _awayPossession != 0
+                                                          ? ((_awayPossession /
+                                                                  _start) *
+                                                              100)
+                                                          : 0.0,
+                                                  isTotalZone: true,
+                                                ),
+                                              ],
+                                            ),
+                                            Visibility(
+                                              visible: _matchHalfTime,
+                                              child: Column(
+                                                children: [
+                                                  Text('TOTAL'),
+                                                  FieldZone(
+                                                    homePercentage:
+                                                        (((_homePossession +
+                                                                    _totalHomePossession) /
+                                                                (_start +
+                                                                    _totalTime)) *
+                                                            100),
+                                                    awayPercentage:
+                                                        (((_awayPossession +
+                                                                    _totalAwayPossession) /
+                                                                (_start +
+                                                                    _totalTime)) *
+                                                            100),
+                                                    isTotalZone: true,
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                                    : SizedBox(),
+                                //end total possession--
                                 Positioned(
                                   top: ballPosition != null
                                       ? ballPosition.dy

@@ -180,14 +180,15 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
       oneSec,
       (Timer timer) => setState(
         () {
-          if (_start > 5 && !_matchExtraTime) {
-            timer.cancel();
+          if (_start > 15 && !_isExtraTime) {
+            pauseTimer();
             showAlertDialog(context);
           } else {
             _start = _start + 1;
-            if (_activeZone == null) {
-              setZoneActive(10, 10);
-            }
+
+            if (_isExtraTime) _extraTime = _extraTime + 1;
+
+            if (_activeZone == null) setZoneActive(10, 10);
             //Wer ist am Ball?
             if (_homeTeamBallPossession) {
               _homePossession = _homePossession + 1;
@@ -231,6 +232,8 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
     setState(() {
       _matchStart = false;
       _matchPause = false;
+      _isExtraTime = false;
+      _extraTime = 0;
       _start = 0;
       _homePossession = 0;
       _awayPossession = 0;
@@ -264,13 +267,24 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
   }
 
   //Nachspielzeit Timer
-  bool _matchExtraTime = false;
+  bool _isExtraTime = false;
+  int _extraTime = 0;
+
+  void startExtraTime() {
+    setState(() {
+      _isExtraTime = true;
+    });
+    unpauseTimer();
+  }
 
   void showAlertDialog(BuildContext context) {
     // set up the buttons
     Widget itsNotHalftimeButton = FlatButton(
       child: Text("No"),
-      onPressed: () {},
+      onPressed: () {
+        Navigator.of(context, rootNavigator: true).pop();
+        startExtraTime();
+      },
     );
     Widget itsHalftimeButton = FlatButton(
       child: Text("Yes"),
@@ -285,7 +299,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
       title: Text("Halftime?"),
       content: Text("Is it Halftime yet?"),
       actions: [
-        // itsNotHalftimeButton,
+        itsNotHalftimeButton,
         itsHalftimeButton,
       ],
     );
@@ -321,9 +335,9 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
         ? widget.awayTeam.substring(0, 15)
         : widget.awayTeam;
     final time =
-        _matchExtraTime ? '45:00' : _printDuration(Duration(seconds: _start));
+        _isExtraTime ? '45:00' : _printDuration(Duration(seconds: _start));
     final extraTime =
-        _matchExtraTime ? _printDuration(Duration(seconds: _start)) : null;
+        _isExtraTime ? _printDuration(Duration(seconds: _extraTime)) : null;
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
@@ -461,7 +475,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                             ? () => startTimer(0)
                             : _matchPause
                                 ? unpauseTimer
-                                : _matchExtraTime
+                                : _isExtraTime
                                     ? () => endTimer()
                                     : pauseTimer,
                         child: Text(
@@ -471,9 +485,9 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                                   ? 'Start 2nd Half'
                                   : _matchPause
                                       ? 'Resume Match'
-                                      : _matchExtraTime && !_matchHalfTime
+                                      : _isExtraTime && !_matchHalfTime
                                           ? 'End Half'
-                                          : _matchExtraTime && _matchHalfTime
+                                          : _isExtraTime && _matchHalfTime
                                               ? 'End Match'
                                               : 'Pause Match',
                         ),

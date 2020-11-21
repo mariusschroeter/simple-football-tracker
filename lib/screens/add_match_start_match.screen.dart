@@ -45,6 +45,9 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
     super.dispose();
   }
 
+  //other
+  bool _showSettings = false;
+
   //Match Stats
   Match _match;
 
@@ -60,20 +63,25 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
   }
 
   //Field Ball
-  Offset ballPosition;
+  Offset _ballPosition;
 
   _onBallMovement(TapDownDetails details) {
     final x = details.localPosition.dx;
     final y = details.localPosition.dy;
     setState(() {
-      ballPosition = Offset(x - (26 / 2), y - (26 / 2));
+      _ballPosition = Offset(x - (26 / 2), y - (26 / 2));
     });
-    setZoneActive(x, y);
+    _setZoneActive(x, y);
   }
+
+  //Field Heatmap
+  Color colorLow = Color.fromRGBO(82, 175, 80, 1);
+  Color colorHigh = Color.fromRGBO(238, 70, 52, 1);
 
   //Feld Zonen
   List<Zone> zones = [];
   Zone _activeZone;
+  bool _showPercentages = false;
   bool _showHeatMap = false;
 
   _buildZones() {
@@ -98,7 +106,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
     }
   }
 
-  setZoneActive(double x, double y) {
+  _setZoneActive(double x, double y) {
     final activeZoneCopy = _activeZone;
     _activeZone = zones.firstWhere((element) =>
         element.xStart < x &&
@@ -108,7 +116,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
     if (_activeZone == null) _activeZone = activeZoneCopy;
   }
 
-  List<List<double>> getZonePercentages(int line) {
+  List<List<double>> _getZonePercentages(int line) {
     List<double> homePercentages = [];
     List<double> awayPercentages = [];
     int indexStart = ((line - 1) * widget.zonesPerLine);
@@ -131,7 +139,13 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
     return percentages;
   }
 
-  switchHeatMap() {
+  _switchPercentages() {
+    setState(() {
+      _showPercentages = !_showPercentages;
+    });
+  }
+
+  _switchHeatMap() {
     setState(() {
       _showHeatMap = !_showHeatMap;
     });
@@ -159,7 +173,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
   int _totalAwayPossession = 0;
   bool _homeTeamBallPossession = true;
 
-  void switchTeamBallPossession() {
+  _switchTeamBallPossession() {
     setState(() {
       _homeTeamBallPossession = !_homeTeamBallPossession;
     });
@@ -174,7 +188,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
   bool _matchPause = false;
   bool _matchHalfTime = false;
 
-  void startTimer(int timerDuration) {
+  _startTimer(int timerDuration) {
     setState(() {
       _start = timerDuration;
     });
@@ -184,7 +198,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
       (Timer timer) => setState(
         () {
           if (_start > 5 && !_isExtraTime) {
-            pauseTimer();
+            _pauseTimer();
             showAlertDialog(context);
           } else {
             _start = _start + 1;
@@ -209,14 +223,14 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
     );
   }
 
-  void pauseTimer() {
+  _pauseTimer() {
     _timer.cancel();
     setState(() {
       _matchPause = true;
     });
   }
 
-  void endTimer() {
+  _endTimer() {
     _timer.cancel();
     List<ZonePercentages> zonePercentages = [];
     zonePercentages = zones
@@ -247,7 +261,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
         _matchHalfTime = true;
       } else {
         _match.secondHalfZones = zonePercentages;
-        endMatch();
+        _endMatch();
       }
       zones.forEach((element) {
         element.homePercentage = 0.0;
@@ -257,13 +271,13 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
     });
   }
 
-  void endMatch() {
+  _endMatch() {
     Provider.of<MatchesProvider>(context, listen: false)
         .addMatchOffline(_match);
     Navigator.of(context).pop();
   }
 
-  void unpauseTimer() => startTimer(_start);
+  unpauseTimer() => _startTimer(_start);
 
   String _printDuration(Duration duration) {
     String twoDigits(int n) => n.toString().padLeft(2, "0");
@@ -296,7 +310,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
       child: Text("Yes"),
       onPressed: () {
         Navigator.of(context, rootNavigator: true).pop();
-        endTimer();
+        _endTimer();
       },
     );
 
@@ -385,24 +399,24 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Padding(
-                          padding: EdgeInsets.only(left: 8.0),
-                          child:
-                              //?
-                              NormalTextSize(
-                            title: homeTeam,
-                            color: Colors.white,
-                          )
-                          // : NormalTextSize(
-                          //     title: awayTeam,
-                          //   ),
-                          ),
+                      // Padding(
+                      //     padding: EdgeInsets.only(left: 8.0),
+                      //     child:
+                      //         //?
+                      //         NormalTextSize(
+                      //       title: homeTeam,
+                      //       color: Colors.white,
+                      //     )
+                      //     // : NormalTextSize(
+                      //     //     title: awayTeam,
+                      //     //   ),
+                      //     ),
                       Expanded(
                         flex: 1,
                         child: GestureDetector(
                           onTapDown: (TapDownDetails details) =>
                               _onBallMovement(details),
-                          onDoubleTap: () => switchTeamBallPossession(),
+                          onDoubleTap: () => _switchTeamBallPossession(),
                           child: Container(
                             color: Colors.transparent,
                             height: 450,
@@ -410,15 +424,16 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                             child: Stack(
                               children: [
                                 //Zone start ---
-                                _showHeatMap
+                                _showPercentages || _showHeatMap
                                     ? ListView.builder(
                                         physics: NeverScrollableScrollPhysics(),
                                         itemBuilder: (ctx, i) => Container(
                                           height: 450 / widget.zoneLines,
                                           child: FieldZoneRow(
                                             zoneCount: 3,
-                                            percentages:
-                                                getZonePercentages(i + 1),
+                                            percentages: _showPercentages
+                                                ? _getZonePercentages(i + 1)
+                                                : null,
                                           ),
                                         ),
                                         itemCount: widget.zoneLines,
@@ -426,7 +441,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                                     : SizedBox(),
                                 //Zone end ---
                                 //show total possession --
-                                _showHeatMap
+                                _showPercentages
                                     ? Positioned(
                                         top: 200,
                                         left: _matchHalfTime
@@ -492,11 +507,11 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                                     : SizedBox(),
                                 //end total possession--
                                 Positioned(
-                                  top: ballPosition != null
-                                      ? ballPosition.dy
+                                  top: _ballPosition != null
+                                      ? _ballPosition.dy
                                       : 450 / 2,
-                                  left: ballPosition != null
-                                      ? ballPosition.dx
+                                  left: _ballPosition != null
+                                      ? _ballPosition.dx
                                       : MediaQuery.of(context).size.width / 2,
                                   child: Draggable(
                                     // onDraggableCanceled:
@@ -612,12 +627,12 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                       RaisedButton(
                         color: Colors.grey,
                         onPressed: _start == 0
-                            ? () => startTimer(0)
+                            ? () => _startTimer(0)
                             : _matchPause
                                 ? unpauseTimer
                                 : _isExtraTime
-                                    ? () => endTimer()
-                                    : pauseTimer,
+                                    ? () => _endTimer()
+                                    : _pauseTimer,
                         child: Text(
                           _start == 0 && !_matchHalfTime
                               ? 'Start Match'
@@ -641,10 +656,46 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          switchHeatMap();
-        },
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Visibility(
+            visible: _showSettings,
+            child: Column(
+              children: [
+                FloatingActionButton(
+                  child: Icon(Icons.invert_colors),
+                  onPressed: () {
+                    _switchHeatMap();
+                  },
+                ),
+                SizedBox(
+                  height: 8,
+                ),
+                FloatingActionButton(
+                  child: Text(
+                    "%",
+                    style: TextStyle(fontSize: 24),
+                  ),
+                  onPressed: () {
+                    _switchPercentages();
+                  },
+                ),
+              ],
+            ),
+          ),
+          SizedBox(
+            height: 8,
+          ),
+          FloatingActionButton(
+            child: Icon(Icons.settings),
+            onPressed: () {
+              setState(() {
+                _showSettings = !_showSettings;
+              });
+            },
+          ),
+        ],
       ),
     );
   }

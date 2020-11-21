@@ -1,4 +1,7 @@
+import 'package:flutter/material.dart';
+
 class Zone extends ZonePercentages {
+  Color color;
   double xStart;
   double xEnd;
   double yStart;
@@ -7,6 +10,7 @@ class Zone extends ZonePercentages {
   Zone({
     homePercentage,
     awayPercentage,
+    color,
     this.xStart,
     this.xEnd,
     this.yStart,

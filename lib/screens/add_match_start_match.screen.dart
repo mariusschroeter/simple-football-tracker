@@ -183,7 +183,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
       oneSec,
       (Timer timer) => setState(
         () {
-          if (_start > 15 && !_isExtraTime) {
+          if (_start > 5 && !_isExtraTime) {
             pauseTimer();
             showAlertDialog(context);
           } else {
@@ -302,8 +302,9 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
 
     // set up the AlertDialog
     AlertDialog alert = AlertDialog(
-      title: Text("Halftime?"),
-      content: Text("Is it Halftime yet?"),
+      title: Text(_matchHalfTime ? "Match End" : "Halftime"),
+      content: Text(
+          _matchHalfTime ? "Has the match ended yet?" : "Is it Halftime yet?"),
       actions: [
         itsNotHalftimeButton,
         itsHalftimeButton,

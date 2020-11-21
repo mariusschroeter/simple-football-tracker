@@ -429,10 +429,16 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                                 _showHeatMap
                                     ? Positioned(
                                         top: 200,
-                                        left:
-                                            MediaQuery.of(context).size.width /
-                                                3 /
-                                                2,
+                                        left: _matchHalfTime
+                                            ? (MediaQuery.of(context)
+                                                        .size
+                                                        .width /
+                                                    3) /
+                                                2
+                                            : MediaQuery.of(context)
+                                                    .size
+                                                    .width /
+                                                3,
                                         child: Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.center,

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:football_provider_app/widgets/global_colors.dart';
 import 'package:provider/provider.dart';
 
 import './screens/matches_screen.dart';
@@ -12,13 +14,26 @@ void main() => runApp(MyApp());
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle(statusBarColor: GlobalColors.primary));
     return ChangeNotifierProvider(
       create: (ctx) => MatchesProvider(),
       child: MaterialApp(
         title: 'MyMatches',
         theme: ThemeData(
-          primarySwatch: Colors.purple,
-          accentColor: Colors.deepOrange,
+          // Define the default brightness and colors.
+          brightness: Brightness.dark,
+          primaryColor: GlobalColors.primary,
+          accentColor: GlobalColors.accent,
+
+          // Define the default font family.
+          fontFamily: 'Georgia',
+
+          // Define the default TextTheme. Use this to specify the default
+          // text styling for headlines, titles, bodies of text, and more.
+          textTheme: TextTheme(
+            headline1: TextStyle(fontSize: 72.0, fontWeight: FontWeight.bold),
+          ),
         ),
         home: MatchesScreen(),
         routes: {

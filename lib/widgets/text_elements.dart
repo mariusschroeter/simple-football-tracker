@@ -4,8 +4,14 @@ class NormalTextSize extends StatelessWidget {
   final String title;
   final Color color;
   final double padding;
+  final double size;
 
-  NormalTextSize({this.title, this.color = Colors.black, this.padding = 0.0});
+  NormalTextSize({
+    this.title,
+    this.color = Colors.black,
+    this.padding = 0.0,
+    this.size = 20,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +19,7 @@ class NormalTextSize extends StatelessWidget {
       padding: EdgeInsets.all(padding),
       child: Text(
         title,
-        style: TextStyle(fontSize: 20, color: color),
+        style: TextStyle(fontSize: size, color: color),
       ),
     );
   }

@@ -43,7 +43,9 @@ class MatchDetailScreen extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Text('1st Half'),
+            Center(
+                child: Text('1st Half',
+                    style: Theme.of(context).textTheme.headline1)),
             Container(
               height: 500,
               width: double.infinity,
@@ -57,15 +59,15 @@ class MatchDetailScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                      padding: EdgeInsets.only(left: 8.0),
-                      child: NormalTextSize(
-                        title: loadedMatch.homeTeam,
-                        color: Colors.white,
-                      )),
+                    padding: EdgeInsets.only(left: 8.0),
+                    child: NormalTextSize(
+                      title: loadedMatch.homeTeam,
+                      color: Colors.white,
+                    ),
+                  ),
                   Expanded(
                     flex: 1,
                     child: Container(
-                      color: Colors.green,
                       height: 450,
                       width: double.infinity,
                       child: Stack(
@@ -104,7 +106,9 @@ class MatchDetailScreen extends StatelessWidget {
                 ],
               ),
             ),
-            Text('2st Half'),
+            Center(
+                child: Text('2nd Half',
+                    style: Theme.of(context).textTheme.headline1)),
             Container(
               height: 500,
               width: double.infinity,
@@ -126,7 +130,6 @@ class MatchDetailScreen extends StatelessWidget {
                   Expanded(
                     flex: 1,
                     child: Container(
-                      color: Colors.green,
                       height: 450,
                       width: double.infinity,
                       child: Stack(

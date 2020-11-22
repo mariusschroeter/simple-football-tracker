@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:football_provider_app/providers/matches.dart';
+import 'package:football_provider_app/widgets/global_colors.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
@@ -554,13 +555,12 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                                 Visibility(
                                   visible: _isPossessionQuestion,
                                   child: Container(
-                                    height: 500,
                                     width: double.infinity,
-                                    color: Colors.grey,
                                     child: Column(
                                       children: [
                                         NormalTextSize(
                                           title: 'Who has the ball?',
+                                          padding: 16.0,
                                         ),
                                         Expanded(
                                           flex: 1,
@@ -573,7 +573,8 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                                                     _setPossessionAtMatchStart(
                                                         true),
                                                 child: Container(
-                                                  height: 100,
+                                                  color: Colors.white,
+                                                  height: 50,
                                                   child: NormalTextSize(
                                                     title: 'Home',
                                                   ),
@@ -584,7 +585,8 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                                                     _setPossessionAtMatchStart(
                                                         false),
                                                 child: Container(
-                                                  height: 100,
+                                                  height: 50,
+                                                  color: Colors.white,
                                                   child: NormalTextSize(
                                                     title: 'Away',
                                                   ),
@@ -625,43 +627,61 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Column(
-                    children: [
-                      NormalTextSize(title: '$time'),
-                      extraTime != null ? Text('+$extraTime') : SizedBox()
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      // RaisedButton(
-                      //   color: Colors.grey,
-                      //   onPressed: _switchSides,
-                      //   child: Text('Switch Sides'),
-                      // ),
-                      RaisedButton(
-                        color: Colors.grey,
-                        onPressed: _start == 0
-                            ? () => _startTimer(0)
-                            : _matchPause
-                                ? unpauseTimer
-                                : _isExtraTime
-                                    ? () => _endTimer()
-                                    : _pauseTimer,
-                        child: Text(
-                          _start == 0 && !_matchHalfTime
-                              ? 'Start Match'
-                              : _start == 0 && _matchHalfTime
-                                  ? 'Start 2nd Half'
-                                  : _matchPause
-                                      ? 'Resume Match'
-                                      : _isExtraTime && !_matchHalfTime
-                                          ? 'End Half'
-                                          : _isExtraTime && _matchHalfTime
-                                              ? 'End Match'
-                                              : 'Pause Match',
+                  Padding(
+                    padding: EdgeInsets.only(top: 8.0, right: 50.0),
+                    child: Row(
+                      children: [
+                        Column(
+                          children: [
+                            NormalTextSize(title: '$time', color: Colors.white),
+                            extraTime != null
+                                ? NormalTextSize(
+                                    title: '$time',
+                                    color: Colors.white,
+                                    size: 16)
+                                : SizedBox()
+                          ],
                         ),
-                      ),
-                    ],
+                        SizedBox(
+                          width: 24.0,
+                        ),
+                        Column(
+                          children: [
+                            // RaisedButton(
+                            //   color: Colors.grey,
+                            //   onPressed: _switchSides,
+                            //   child: Text('Switch Sides'),
+                            // ),
+                            RaisedButton(
+                              color: Theme.of(context).primaryColor,
+                              onPressed: _start == 0 && !_isPossessionQuestion
+                                  ? () => _startTimer(0)
+                                  : _isPossessionQuestion
+                                      ? null
+                                      : _matchPause
+                                          ? unpauseTimer
+                                          : _isExtraTime
+                                              ? () => _endTimer()
+                                              : _pauseTimer,
+                              child: NormalTextSize(
+                                color: Colors.white,
+                                title: _start == 0 && !_matchHalfTime
+                                    ? 'Start Match'
+                                    : _start == 0 && _matchHalfTime
+                                        ? 'Start 2nd Half'
+                                        : _matchPause
+                                            ? 'Resume Match'
+                                            : _isExtraTime && !_matchHalfTime
+                                                ? 'End Half'
+                                                : _isExtraTime && _matchHalfTime
+                                                    ? 'End Match'
+                                                    : 'Pause Match',
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),

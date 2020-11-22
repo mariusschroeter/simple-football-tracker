@@ -80,7 +80,11 @@ class _MatchesScreenState extends State<MatchesScreen> {
               child: Container(
                 child: Column(
                   children: <Widget>[
-                    Expanded(child: MatchesList(_showWonOnly))
+                    Expanded(
+                        child: Padding(
+                      padding: const EdgeInsets.only(top: 16.0),
+                      child: MatchesList(_showWonOnly),
+                    ))
                   ],
                 ),
               ),

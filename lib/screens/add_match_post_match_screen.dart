@@ -48,6 +48,39 @@ class _AddMatchPostMatchScreenState extends State<AddMatchPostMatchScreen> {
               },
             ),
           ),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: TextFormField(
+              enabled: false,
+              controller: null,
+              decoration: InputDecoration(hintText: 'Zones to track: 6'),
+              // validator: (value) {
+              //   return _checkInputs(value);
+              // },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: TextFormField(
+              enabled: false,
+              controller: null,
+              decoration: InputDecoration(hintText: 'Field Width: 45m'),
+              // validator: (value) {
+              //   return _checkInputs(value);
+              // },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: TextFormField(
+              enabled: false,
+              controller: null,
+              decoration: InputDecoration(hintText: 'Field Height: 90m'),
+              // validator: (value) {
+              //   return _checkInputs(value);
+              // },
+            ),
+          ),
         ]),
       ),
       floatingActionButton: FloatingActionButton(

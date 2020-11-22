@@ -276,8 +276,13 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
   }
 
   _endMatch() {
-    Provider.of<MatchesProvider>(context, listen: false).addMatch(_match);
-    Navigator.of(context).pop();
+    Provider.of<MatchesProvider>(context, listen: false)
+        .addMatch(_match)
+        .then((value) =>
+            Navigator.of(context).pop('Match added! Pull to refresh.'))
+        .catchError((error) {
+      Navigator.of(context).pop('An error occurred!');
+    });
   }
 
   unpauseTimer() => _startTimer(_start);

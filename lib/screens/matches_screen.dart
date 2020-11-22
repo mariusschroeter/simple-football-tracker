@@ -21,8 +21,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
   var _showWonOnly = false;
   var _isLoading = false;
 
-  @override
-  void initState() {
+  Future<void> _refreshMatches() async {
     Future.delayed(Duration.zero).then((_) {
       setState(() {
         _isLoading = true;
@@ -35,6 +34,11 @@ class _MatchesScreenState extends State<MatchesScreen> {
         });
       });
     });
+  }
+
+  @override
+  void initState() {
+    _refreshMatches();
     super.initState();
   }
 
@@ -71,9 +75,14 @@ class _MatchesScreenState extends State<MatchesScreen> {
           ? Center(
               child: CircularProgressIndicator(),
             )
-          : Container(
-              child: Column(
-                children: <Widget>[Expanded(child: MatchesList(_showWonOnly))],
+          : RefreshIndicator(
+              onRefresh: () => _refreshMatches(),
+              child: Container(
+                child: Column(
+                  children: <Widget>[
+                    Expanded(child: MatchesList(_showWonOnly))
+                  ],
+                ),
               ),
             ),
     );

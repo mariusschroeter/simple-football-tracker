@@ -75,7 +75,7 @@ class MatchesList extends StatelessWidget {
                 title: Text(matches[i].homeTeam + ' vs ' + matches[i].awayTeam),
                 subtitle:
                     Text(DateFormat('dd.MM.yyyy').format(matches[i].dateTime)),
-                trailing: Text('1 : 0'),
+                trailing: Text('0 : 0'),
               ),
             ),
           ),

@@ -87,12 +87,12 @@ class _AddMatchPostMatchScreenState extends State<AddMatchPostMatchScreen> {
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           if (_formKey.currentState.validate()) {
-            var matchResult = await Navigator.push(context,
+            var matchResponse = await Navigator.push(context,
                 MaterialPageRoute(builder: (context) {
               return AddMatchStartMatchScreen(
                   homeTeam: _homeTeam.text, awayTeam: _awayTeam.text);
             }));
-            Navigator.pop(context, [_homeTeam.text, _awayTeam.text]);
+            Navigator.pop(context, matchResponse);
           }
         },
         tooltip: 'Start Match',

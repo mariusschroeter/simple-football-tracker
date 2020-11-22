@@ -8,18 +8,16 @@ class AddMatchButton extends StatelessWidget {
     return FloatingActionButton(
       onPressed: () async {
         Scaffold.of(context).removeCurrentSnackBar();
-        Scaffold.of(context).showSnackBar(SnackBar(
-          content: Text('Match added!'),
-        ));
-        // matches.addMatch(match)
         //Add Screen on top of the stack and save the match result
-        var matchResult =
+        var matchResponse =
             await Navigator.push(context, MaterialPageRoute(builder: (context) {
           return AddMatchPostMatchScreen();
         }));
-
-        print(matchResult);
-        //if (matchResult != null) //add match
+        if (matchResponse != null) {
+          Scaffold.of(context).showSnackBar(SnackBar(
+            content: Text(matchResponse),
+          ));
+        }
       },
       child: Icon(Icons.add),
     );

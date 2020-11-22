@@ -436,14 +436,11 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                                           height: 450 / widget.zoneLines,
                                           child: FieldZoneRow(
                                             zoneCount: 3,
-                                            percentages: _showPercentages
-                                                ? _getZonePercentages(i + 1)
-                                                    .percentages
-                                                : null,
-                                            colors: _getZonePercentages(i + 1)
-                                                .colors,
-                                            showColor: _showHeatMap,
+                                            percentages:
+                                                _getZonePercentages(i + 1)
+                                                    .percentages,
                                             showPercentages: _showPercentages,
+                                            showHeatMap: _showHeatMap,
                                           ),
                                         ),
                                         itemCount: widget.zoneLines,
@@ -472,7 +469,8 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                                               children: [
                                                 Text('HZ'),
                                                 FieldZone(
-                                                  showPercentages: true,
+                                                  showPercentages:
+                                                      _showPercentages,
                                                   homePercentage:
                                                       _homePossession != 0
                                                           ? ((_homePossession /
@@ -495,7 +493,8 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                                                 children: [
                                                   Text('TOTAL'),
                                                   FieldZone(
-                                                    showPercentages: true,
+                                                    showPercentages:
+                                                        _showPercentages,
                                                     homePercentage:
                                                         (((_homePossession +
                                                                     _totalHomePossession) /

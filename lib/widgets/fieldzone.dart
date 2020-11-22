@@ -8,52 +8,54 @@ class FieldZone extends StatelessWidget {
     this.homePercentage,
     this.awayPercentage,
     this.isTotalZone = false,
-    this.color = Colors.green,
-    this.showColor = false,
     this.showPercentages = false,
+    this.showHeatMap = false,
   }) : super(key: key);
 
   final double homePercentage;
   final double awayPercentage;
   final bool isTotalZone;
-  final Color color;
-  final bool showColor;
   final bool showPercentages;
+  final bool showHeatMap;
 
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
-    Color colorAdjust = homePercentage != null
-        ? color.withOpacity(homePercentage / 100)
-        : color.withOpacity(0.1);
+    final color = !showHeatMap
+        ? Colors.transparent
+        : homePercentage <= 10
+            ? Colors.green.withOpacity(homePercentage / 100 + 0.2)
+            : homePercentage <= 20 && homePercentage > 10
+                ? Colors.yellow.withOpacity(homePercentage / 100)
+                : homePercentage > 20
+                    ? Colors.red.withOpacity(homePercentage / 100 - 0.1)
+                    : Colors.transparent;
     return Stack(
       children: [
         Container(
-          color: showColor ? colorAdjust : Colors.transparent,
+          color: color,
           height: isTotalZone ? 100 : 250,
           width: screenWidth / 3,
         ),
-        showPercentages
-            ? Positioned.fill(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    NormalTextSize(
-                      color: Colors.white,
-                      title: homePercentage != null
-                          ? '${homePercentage.toStringAsFixed(2)}%'
-                          : '',
-                    ),
-                    NormalTextSize(
-                      color: Colors.black,
-                      title: awayPercentage != null
-                          ? '${awayPercentage.toStringAsFixed(2)}%'
-                          : '',
-                    ),
-                  ],
-                ),
-              )
-            : SizedBox(),
+        Positioned.fill(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              NormalTextSize(
+                color: Colors.white,
+                title: showPercentages
+                    ? '${homePercentage.toStringAsFixed(2)}%'
+                    : '',
+              ),
+              NormalTextSize(
+                color: Colors.black,
+                title: showPercentages
+                    ? '${awayPercentage.toStringAsFixed(2)}%'
+                    : '',
+              ),
+            ],
+          ),
+        )
       ],
     );
   }
@@ -63,16 +65,15 @@ class FieldZoneRow extends StatelessWidget {
   const FieldZoneRow({
     @required this.zoneCount,
     @required this.percentages,
-    this.colors,
-    this.showColor,
-    this.showPercentages,
+    this.showPercentages = false,
+    this.showHeatMap = false,
   });
 
   final int zoneCount;
   final List<List<double>> percentages;
-  final List<Color> colors;
-  final bool showColor;
   final bool showPercentages;
+  final bool showHeatMap;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -82,11 +83,10 @@ class FieldZoneRow extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         physics: NeverScrollableScrollPhysics(),
         itemBuilder: (ctx, i) => FieldZone(
-          homePercentage: percentages != null ? percentages[0][i] : null,
-          awayPercentage: percentages != null ? percentages[1][i] : null,
-          color: colors[i],
-          showColor: showColor,
+          homePercentage: percentages[0][i],
+          awayPercentage: percentages[1][i],
           showPercentages: showPercentages,
+          showHeatMap: showHeatMap,
         ),
         itemCount: zoneCount,
       ),

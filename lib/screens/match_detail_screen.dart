@@ -75,6 +75,7 @@ class MatchDetailScreen extends StatelessWidget {
                             itemBuilder: (ctx, i) => Container(
                               height: 450 / 2,
                               child: FieldZoneRow(
+                                showPercentages: true,
                                 zoneCount: 3,
                                 percentages: getZonePercentages(
                                   loadedMatch.firstHalfZones,
@@ -135,6 +136,7 @@ class MatchDetailScreen extends StatelessWidget {
                             itemBuilder: (ctx, i) => Container(
                               height: 450 / 2,
                               child: FieldZoneRow(
+                                showPercentages: true,
                                 zoneCount: 3,
                                 percentages: getZonePercentages(
                                   loadedMatch.secondHalfZones,

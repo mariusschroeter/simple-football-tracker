@@ -22,11 +22,11 @@ class Zone extends ZonePercentages {
 }
 
 class ZonePercentages {
-  int minute;
+  //int minute;
   double homePercentage;
   double awayPercentage;
 
-  ZonePercentages({this.minute, this.homePercentage, this.awayPercentage});
+  ZonePercentages({this.homePercentage, this.awayPercentage});
 }
 
 class ZoneStats {

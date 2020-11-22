@@ -160,7 +160,6 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
     List<ZonePercentages> zonePercentages = [];
     zonePercentages = zones
         .map((e) => new ZonePercentages(
-              minute: minute,
               homePercentage: e.homePercentage != 0.0
                   ? ((e.homePercentage / _homePossession) * 100)
                   : 0.0,
@@ -277,8 +276,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
   }
 
   _endMatch() {
-    Provider.of<MatchesProvider>(context, listen: false)
-        .addMatchOffline(_match);
+    Provider.of<MatchesProvider>(context, listen: false).addMatch(_match);
     Navigator.of(context).pop();
   }
 

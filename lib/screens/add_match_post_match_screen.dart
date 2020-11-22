@@ -25,6 +25,7 @@ class _AddMatchPostMatchScreenState extends State<AddMatchPostMatchScreen> {
       appBar: AppBar(
         title: Text('Post Match Settings'),
       ),
+      resizeToAvoidBottomInset: false,
       body: Form(
         key: _formKey,
         child: Column(children: <Widget>[

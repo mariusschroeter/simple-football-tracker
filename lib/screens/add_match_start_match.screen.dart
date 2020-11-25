@@ -64,7 +64,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
   }
 
   //Field Ball
-  Offset _ballPosition;
+  Offset _ballPosition = Offset(0, 0);
 
   _onBallMovement(TapDownDetails details) {
     final x = details.localPosition.dx;
@@ -105,6 +105,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
             yEnd: yEnd));
       }
     }
+    _switchTeamBallPossession(isHome: true, isInit: true);
   }
 
   _setZoneActive(double x, double y) {
@@ -146,30 +147,34 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
   }
 
   _switchPercentages() {
+    bool percentages = !_showPercentages;
+    if (_isPossessionQuestion) percentages = false;
     setState(() {
-      _showPercentages = !_showPercentages;
+      _showPercentages = percentages;
     });
   }
 
   _switchHeatMap() {
+    bool heatMap = !_showHeatMap;
+    if (_isPossessionQuestion) heatMap = false;
     setState(() {
-      _showHeatMap = !_showHeatMap;
+      _showHeatMap = heatMap;
     });
   }
 
-  setPercentagesPerZone(int minute) {
-    List<ZonePercentages> zonePercentages = [];
-    zonePercentages = zones
-        .map((e) => new ZonePercentages(
-              homePercentage: e.homePercentage != 0.0
-                  ? ((e.homePercentage / _homePossession) * 100)
-                  : 0.0,
-              awayPercentage: e.awayPercentage != 0.0
-                  ? ((e.awayPercentage / _awayPossession) * 100)
-                  : 0.0,
-            ))
-        .toList();
-  }
+  // setPercentagesPerZone(int minute) {
+  //   List<ZonePercentages> zonePercentages = [];
+  //   zonePercentages = zones
+  //       .map((e) => new ZonePercentages(
+  //             homePercentage: e.homePercentage != 0.0
+  //                 ? ((e.homePercentage / _homePossession) * 100)
+  //                 : 0.0,
+  //             awayPercentage: e.awayPercentage != 0.0
+  //                 ? ((e.awayPercentage / _awayPossession) * 100)
+  //                 : 0.0,
+  //           ))
+  //       .toList();
+  // }
 
   //Wer hat den Ball?
   int _homePossession = 0;
@@ -178,9 +183,24 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
   int _totalAwayPossession = 0;
   bool _homeTeamBallPossession = true;
 
-  _switchTeamBallPossession() {
+  _switchTeamBallPossession({bool isHome, isInit = false}) {
+    var home = isHome;
+    if (home == null && !isInit) {
+      home = !_homeTeamBallPossession;
+    } else {
+      double x = MediaQuery.of(context).size.width / 2 - 5;
+      double y = 450 / 2;
+      if (home) {
+        y -= 20;
+      } else {
+        y += 10;
+      }
+
+      TapDownDetails details = TapDownDetails(localPosition: Offset(x, y));
+      _onBallMovement(details);
+    }
     setState(() {
-      _homeTeamBallPossession = !_homeTeamBallPossession;
+      _homeTeamBallPossession = home;
     });
   }
 
@@ -220,6 +240,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
             }
 
             //Match starten
+            _isPossessionQuestion = false;
             _matchStart = true;
             _matchPause = false;
           }
@@ -274,6 +295,9 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
       });
       _isPossessionQuestion = true;
     });
+    _switchHeatMap();
+    _switchPercentages();
+    _switchTeamBallPossession(isHome: true, isInit: true);
   }
 
   _endMatch() {
@@ -358,24 +382,6 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
   //Who has the ball at start?
   bool _isPossessionQuestion = true;
 
-  void _setPossessionAtMatchStart(bool isHome) {
-    double x = MediaQuery.of(context).size.width / 2;
-    double y = 450 / 2;
-    if (isHome) {
-      y -= 20;
-    } else {
-      y += 20;
-    }
-
-    TapDownDetails details = TapDownDetails(localPosition: Offset(x, y));
-    _onBallMovement(details);
-
-    setState(() {
-      _homeTeamBallPossession = isHome;
-      _isPossessionQuestion = false;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     double statusBarHeight = MediaQuery.of(context).padding.top;
@@ -408,199 +414,182 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Padding(
-                      //     padding: EdgeInsets.only(left: 8.0),
-                      //     child:
-                      //         //?
-                      //         NormalTextSize(
-                      //       title: homeTeam,
-                      //       color: Colors.white,
-                      //     )
-                      //     // : NormalTextSize(
-                      //     //     title: awayTeam,
-                      //     //   ),
-                      //     ),
-                      Expanded(
-                        flex: 1,
-                        child: GestureDetector(
-                          onTapDown: (TapDownDetails details) =>
-                              _onBallMovement(details),
-                          onDoubleTap: () => _switchTeamBallPossession(),
-                          child: Container(
-                            color: Colors.transparent,
-                            height: 450,
-                            width: double.infinity,
-                            child: Stack(
-                              children: [
-                                //Zone start ---
-                                _showPercentages || _showHeatMap
-                                    ? ListView.builder(
-                                        physics: NeverScrollableScrollPhysics(),
-                                        itemBuilder: (ctx, i) => Container(
-                                          height: 450 / widget.zoneLines,
-                                          child: FieldZoneRow(
-                                            zoneCount: 3,
-                                            percentages:
-                                                _getZonePercentages(i + 1)
-                                                    .percentages,
-                                            showPercentages: _showPercentages,
-                                            showHeatMap: _showHeatMap,
-                                          ),
+                      Container(
+                        height: 25,
+                        child: Padding(
+                            padding: EdgeInsets.only(left: 8.0),
+                            child: NormalTextSize(
+                              title: homeTeam,
+                              color: Colors.white,
+                            )),
+                      ),
+                      GestureDetector(
+                        onTapDown: (TapDownDetails details) =>
+                            _onBallMovement(details),
+                        onDoubleTap: () => _switchTeamBallPossession(),
+                        child: Container(
+                          color: Colors.transparent,
+                          height: 450,
+                          width: double.infinity,
+                          child: Stack(
+                            children: [
+                              //Zone start ---
+                              _showPercentages || _showHeatMap
+                                  ? ListView.builder(
+                                      padding: EdgeInsets.all(0),
+                                      physics: NeverScrollableScrollPhysics(),
+                                      itemBuilder: (ctx, i) => Container(
+                                        height: 450 / widget.zoneLines,
+                                        child: FieldZoneRow(
+                                          zoneCount: 3,
+                                          percentages:
+                                              _getZonePercentages(i + 1)
+                                                  .percentages,
+                                          showPercentages: _showPercentages,
+                                          showHeatMap: _showHeatMap,
                                         ),
-                                        itemCount: widget.zoneLines,
-                                      )
-                                    : SizedBox(),
-                                //Zone end ---
-                                //show total possession --
-                                _showPercentages
-                                    ? Positioned(
-                                        top: 200,
-                                        left: _matchHalfTime
-                                            ? (MediaQuery.of(context)
-                                                        .size
-                                                        .width /
-                                                    3) /
-                                                2
-                                            : MediaQuery.of(context)
-                                                    .size
-                                                    .width /
-                                                3,
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Column(
+                                      ),
+                                      itemCount: widget.zoneLines,
+                                    )
+                                  : SizedBox(),
+                              //Zone end ---
+                              //show total possession --
+                              _showPercentages
+                                  ? Positioned(
+                                      top: 200,
+                                      left: _matchHalfTime
+                                          ? (MediaQuery.of(context).size.width /
+                                                  3) /
+                                              2
+                                          : MediaQuery.of(context).size.width /
+                                              3,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Column(
+                                            children: [
+                                              Text('HZ'),
+                                              FieldZone(
+                                                showPercentages:
+                                                    _showPercentages,
+                                                homePercentage:
+                                                    _homePossession != 0
+                                                        ? ((_homePossession /
+                                                                _start) *
+                                                            100)
+                                                        : 0.0,
+                                                awayPercentage:
+                                                    _awayPossession != 0
+                                                        ? ((_awayPossession /
+                                                                _start) *
+                                                            100)
+                                                        : 0.0,
+                                                isTotalZone: true,
+                                              ),
+                                            ],
+                                          ),
+                                          Visibility(
+                                            visible: _matchHalfTime,
+                                            child: Column(
                                               children: [
-                                                Text('HZ'),
+                                                Text('TOTAL'),
                                                 FieldZone(
                                                   showPercentages:
                                                       _showPercentages,
                                                   homePercentage:
-                                                      _homePossession != 0
-                                                          ? ((_homePossession /
-                                                                  _start) *
-                                                              100)
-                                                          : 0.0,
+                                                      (((_homePossession +
+                                                                  _totalHomePossession) /
+                                                              (_start +
+                                                                  _totalTime)) *
+                                                          100),
                                                   awayPercentage:
-                                                      _awayPossession != 0
-                                                          ? ((_awayPossession /
-                                                                  _start) *
-                                                              100)
-                                                          : 0.0,
+                                                      (((_awayPossession +
+                                                                  _totalAwayPossession) /
+                                                              (_start +
+                                                                  _totalTime)) *
+                                                          100),
                                                   isTotalZone: true,
                                                 ),
                                               ],
                                             ),
-                                            Visibility(
-                                              visible: _matchHalfTime,
-                                              child: Column(
-                                                children: [
-                                                  Text('TOTAL'),
-                                                  FieldZone(
-                                                    showPercentages:
-                                                        _showPercentages,
-                                                    homePercentage:
-                                                        (((_homePossession +
-                                                                    _totalHomePossession) /
-                                                                (_start +
-                                                                    _totalTime)) *
-                                                            100),
-                                                    awayPercentage:
-                                                        (((_awayPossession +
-                                                                    _totalAwayPossession) /
-                                                                (_start +
-                                                                    _totalTime)) *
-                                                            100),
-                                                    isTotalZone: true,
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      )
-                                    : SizedBox(),
-                                //end total possession--
-                                Positioned(
-                                  top: _ballPosition != null
-                                      ? _ballPosition.dy
-                                      : 450 / 2,
-                                  left: _ballPosition != null
-                                      ? _ballPosition.dx
-                                      : MediaQuery.of(context).size.width / 2,
-                                  child: Draggable(
-                                    // onDraggableCanceled:
-                                    //     (Velocity velocity, Offset offset) {
-                                    //   _onDrag(offset);
-                                    //   // _updateHeatMap();
-                                    // },
-                                    child: Container(
-                                      height: 35,
-                                      width: 35,
-                                      color: Colors.transparent,
-                                      child: Icon(
-                                        Icons.sports_soccer,
-                                        color: _homeTeamBallPossession
-                                            ? Colors.white
-                                            : Colors.black,
+                                          ),
+                                        ],
                                       ),
-                                    ),
-                                    feedback: Icon(Icons.sports_soccer),
-                                    childWhenDragging: Icon(
+                                    )
+                                  : SizedBox(),
+                              //end total possession--
+                              Positioned(
+                                top: _ballPosition.dy,
+                                left: _ballPosition.dx,
+                                child: Draggable(
+                                  // onDraggableCanceled:
+                                  //     (Velocity velocity, Offset offset) {
+                                  //   _onDrag(offset);
+                                  //   // _updateHeatMap();
+                                  // },
+                                  child: Container(
+                                    height: 35,
+                                    width: 35,
+                                    color: Colors.transparent,
+                                    child: Icon(
                                       Icons.sports_soccer,
-                                      color: Colors.grey,
+                                      color: _homeTeamBallPossession
+                                          ? Colors.white
+                                          : Colors.black,
                                     ),
                                   ),
+                                  feedback: Icon(Icons.sports_soccer),
+                                  childWhenDragging: Icon(
+                                    Icons.sports_soccer,
+                                    color: Colors.grey,
+                                  ),
                                 ),
-                                Visibility(
-                                  visible: _isPossessionQuestion,
-                                  child: Container(
-                                    width: double.infinity,
-                                    child: Column(
-                                      children: [
-                                        NormalTextSize(
-                                          title: 'Who has the ball?',
-                                          padding: 16.0,
-                                        ),
-                                        Expanded(
-                                          flex: 1,
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceAround,
-                                            children: [
-                                              InkWell(
-                                                onTap: () =>
-                                                    _setPossessionAtMatchStart(
-                                                        true),
-                                                child: Container(
-                                                  color: Colors.white,
-                                                  height: 50,
-                                                  child: NormalTextSize(
-                                                    title: 'Home',
-                                                  ),
-                                                ),
-                                              ),
-                                              InkWell(
-                                                onTap: () =>
-                                                    _setPossessionAtMatchStart(
-                                                        false),
-                                                child: Container(
-                                                  height: 50,
-                                                  color: Colors.white,
-                                                  child: NormalTextSize(
-                                                    title: 'Away',
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
+                              ),
+                              Visibility(
+                                visible: _isPossessionQuestion,
+                                child: Column(
+                                  children: [
+                                    InkWell(
+                                      onTap: () => _switchTeamBallPossession(
+                                          isHome: true),
+                                      child: Container(
+                                        color: _homeTeamBallPossession
+                                            ? Colors.transparent
+                                            : Colors.grey.withOpacity(0.5),
+                                        width: double.infinity,
+                                        height: 225,
+                                        child: Center(
+                                          child: NormalTextSize(
+                                            size: 30,
+                                            title: 'Home',
+                                            color: Colors.white,
                                           ),
                                         ),
-                                      ],
+                                      ),
                                     ),
-                                  ),
+                                    InkWell(
+                                      onTap: () => _switchTeamBallPossession(
+                                          isHome: false),
+                                      child: Container(
+                                        color: !_homeTeamBallPossession
+                                            ? Colors.transparent
+                                            : Colors.grey.withOpacity(0.5),
+                                        width: double.infinity,
+                                        height: 225,
+                                        child: Center(
+                                          child: NormalTextSize(
+                                            size: 30,
+                                            title: 'Away',
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
@@ -654,15 +643,13 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                             // ),
                             RaisedButton(
                               color: Theme.of(context).primaryColor,
-                              onPressed: _start == 0 && !_isPossessionQuestion
+                              onPressed: _start == 0
                                   ? () => _startTimer(0)
-                                  : _isPossessionQuestion
-                                      ? null
-                                      : _matchPause
-                                          ? unpauseTimer
-                                          : _isExtraTime
-                                              ? () => _endTimer()
-                                              : _pauseTimer,
+                                  : _matchPause
+                                      ? unpauseTimer
+                                      : _isExtraTime
+                                          ? () => _endTimer()
+                                          : _pauseTimer,
                               child: NormalTextSize(
                                 color: Colors.white,
                                 title: _start == 0 && !_matchHalfTime
@@ -698,6 +685,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
             child: Column(
               children: [
                 FloatingActionButton(
+                  heroTag: 'heatmap',
                   child: Icon(Icons.invert_colors),
                   onPressed: () {
                     _switchHeatMap();
@@ -707,6 +695,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                   height: 8,
                 ),
                 FloatingActionButton(
+                  heroTag: 'percentages',
                   child: Text(
                     "%",
                     style: TextStyle(fontSize: 24),
@@ -722,6 +711,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
             height: 8,
           ),
           FloatingActionButton(
+            heroTag: 'settings',
             child: Icon(Icons.settings),
             onPressed: () {
               setState(() {

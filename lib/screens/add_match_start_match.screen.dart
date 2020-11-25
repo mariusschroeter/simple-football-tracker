@@ -624,7 +624,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                             NormalTextSize(title: '$time', color: Colors.white),
                             extraTime != null
                                 ? NormalTextSize(
-                                    title: '$time',
+                                    title: '$extraTime',
                                     color: Colors.white,
                                     size: 16)
                                 : SizedBox()

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:football_provider_app/models/http_exception.dart';
 import 'package:football_provider_app/models/zone.dart';
 import 'package:http/http.dart' as http;
 
@@ -114,9 +115,21 @@ class MatchesProvider with ChangeNotifier {
     }
   }
 
-  void deleteMatch(String matchId) {
-    _items.remove(matchId);
-    notifyListeners();
-    // print(_items.length);
+  void deleteMatch(String matchId) async {
+    final url =
+        'https://football-tracker-3e8cc.firebaseio.com/matches/$matchId.json';
+    var existingIndex = _items.indexWhere((element) => element.id == matchId);
+    var matchToBeDeleted = _items[existingIndex];
+    if (matchToBeDeleted != null) {
+      _items.remove(matchToBeDeleted);
+      notifyListeners();
+      final response = await http.delete(url);
+      if (response.statusCode >= 400) {
+        _items.insert(existingIndex, matchToBeDeleted);
+        notifyListeners();
+        throw HttpException('Could not delete the Match!');
+      }
+      matchToBeDeleted = null;
+    }
   }
 }

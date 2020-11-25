@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:football_provider_app/models/zone.dart';
 import 'package:football_provider_app/widgets/text_elements.dart';
 
 class FieldZone extends StatelessWidget {

@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:football_provider_app/providers/matches.dart';
-import 'package:football_provider_app/widgets/global_colors.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:football_provider_app/models/zone.dart';
 import 'package:football_provider_app/widgets/fieldzone.dart';
-import 'package:football_provider_app/widgets/matches_list.dart';
 import 'package:football_provider_app/widgets/text_elements.dart';
 import 'package:provider/provider.dart';
 

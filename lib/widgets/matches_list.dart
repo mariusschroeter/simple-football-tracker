@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:football_provider_app/models/zone.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -53,7 +52,14 @@ class MatchesList extends StatelessWidget {
                   ));
         },
         onDismissed: (direction) {
-          // Provider.of<MatchesProvider>(context, listen: false).deleteMatch(matches[i].id);
+          try {
+            Provider.of<MatchesProvider>(context, listen: false)
+                .deleteMatch(matches[i].id);
+          } catch (e) {
+            Scaffold.of(context).showSnackBar(SnackBar(
+              content: Text('Deleting failed.'),
+            ));
+          }
         },
         child: GestureDetector(
           onTap: () {

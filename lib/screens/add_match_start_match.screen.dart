@@ -518,32 +518,11 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                                     )
                                   : SizedBox(),
                               //end total possession--
-                              Positioned(
-                                top: _ballPosition.dy,
-                                left: _ballPosition.dx,
-                                child: Draggable(
-                                  // onDraggableCanceled:
-                                  //     (Velocity velocity, Offset offset) {
-                                  //   _onDrag(offset);
-                                  //   // _updateHeatMap();
-                                  // },
-                                  child: Container(
-                                    height: 35,
-                                    width: 35,
-                                    color: Colors.transparent,
-                                    child: Icon(
-                                      Icons.sports_soccer,
-                                      color: _homeTeamBallPossession
-                                          ? Colors.white
-                                          : Colors.black,
-                                    ),
-                                  ),
-                                  feedback: Icon(Icons.sports_soccer),
-                                  childWhenDragging: Icon(
-                                    Icons.sports_soccer,
-                                    color: Colors.grey,
-                                  ),
-                                ),
+                              MatchBall(
+                                ballPosition: _ballPosition,
+                                color: _homeTeamBallPossession
+                                    ? Colors.white
+                                    : Colors.black,
                               ),
                               Visibility(
                                 visible: _isPossessionQuestion,
@@ -719,6 +698,42 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
             },
           ),
         ],
+      ),
+    );
+  }
+}
+
+class MatchBall extends StatelessWidget {
+  MatchBall({this.color, this.ballPosition});
+
+  final Offset ballPosition;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+      top: ballPosition.dy,
+      left: ballPosition.dx,
+      child: Draggable(
+        // onDraggableCanceled:
+        //     (Velocity velocity, Offset offset) {
+        //   _onDrag(offset);
+        //   // _updateHeatMap();
+        // },
+        child: Container(
+          height: 35,
+          width: 35,
+          color: Colors.transparent,
+          child: Icon(
+            Icons.sports_soccer,
+            color: color,
+          ),
+        ),
+        feedback: Icon(Icons.sports_soccer),
+        childWhenDragging: Icon(
+          Icons.sports_soccer,
+          color: color.withOpacity(0.5),
+        ),
       ),
     );
   }

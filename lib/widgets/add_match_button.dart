@@ -8,7 +8,6 @@ class AddMatchButton extends StatelessWidget {
     return FloatingActionButton(
       onPressed: () async {
         Scaffold.of(context).removeCurrentSnackBar();
-        //Add Screen on top of the stack and save the match result
         var matchResponse =
             await Navigator.push(context, MaterialPageRoute(builder: (context) {
           return AddMatchPostMatchScreen();

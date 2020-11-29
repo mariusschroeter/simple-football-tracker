@@ -12,7 +12,7 @@ class MatchGoal extends StatelessWidget {
       builder: (context, candidates, rejects) {
         return Container(
           height: 25,
-          width: 45,
+          width: 60,
           color: Colors.green,
         );
       },

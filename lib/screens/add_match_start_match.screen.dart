@@ -14,6 +14,8 @@ import 'package:football_provider_app/widgets/fieldzone.dart';
 import 'package:football_provider_app/widgets/text_elements.dart';
 
 class AddMatchStartMatchScreen extends StatefulWidget {
+  static const routeName = '/start-match';
+
   AddMatchStartMatchScreen({
     this.homeTeam,
     this.awayTeam,
@@ -370,7 +372,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
       });
     } else {
       setState(() {
-        _awayTeamShots = _homeTeamShots + 1;
+        _awayTeamShots = _awayTeamShots + 1;
         if (isGoal) {
           _awayTeamGoals = _awayTeamGoals + 1;
           _switchTeamBallPossession(isHome: false, isInit: true);
@@ -398,6 +400,10 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
     }
   }
 
+  //switch between tabs
+  int _currentIndex = 0;
+  final List<Widget> _children = [];
+
   @override
   Widget build(BuildContext context) {
     double statusBarHeight = MediaQuery.of(context).padding.top;
@@ -412,6 +418,19 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
     final extraTime =
         _isExtraTime ? _printDuration(Duration(seconds: _extraTime)) : null;
     return Scaffold(
+      // bottomNavigationBar: BottomNavigationBar(
+      //   currentIndex: 0, // this will be set when a new tab is tapped
+      //   items: [
+      //     BottomNavigationBarItem(
+      //       label: 'Match',
+      //       icon: Icon(Icons.sports_soccer),
+      //     ),
+      //     BottomNavigationBarItem(
+      //       label: 'Stats',
+      //       icon: Icon(Icons.data_usage),
+      //     ),
+      //   ],
+      // ),
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.only(top: statusBarHeight),

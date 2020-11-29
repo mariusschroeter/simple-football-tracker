@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:football_provider_app/providers/matches.dart';
+import 'package:football_provider_app/widgets/global_colors.dart';
 import 'package:football_provider_app/widgets/match_ball.dart';
+import 'package:football_provider_app/widgets/match_goal.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
@@ -325,63 +327,6 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
     unpauseTimer();
   }
 
-  showAlertDialog(BuildContext context,
-      {bool goalCheck = false, bool isHomeShot}) {
-    Widget itsNotHalftimeButton = FlatButton(
-      child: Text("No"),
-      onPressed: () {
-        if (goalCheck) {
-          Navigator.of(context, rootNavigator: true).pop();
-          _onShot(isGoal: false, isHomeShot: isHomeShot);
-        } else {
-          Navigator.of(context, rootNavigator: true).pop();
-          _startExtraTime();
-        }
-      },
-    );
-    Widget itsHalftimeButton = FlatButton(
-      child: Text("Yes"),
-      onPressed: () {
-        if (goalCheck) {
-          Navigator.of(context, rootNavigator: true).pop();
-          _onShot(isGoal: true, isHomeShot: isHomeShot);
-        } else {
-          Navigator.of(context, rootNavigator: true).pop();
-          _endTimer();
-        }
-      },
-    );
-
-    final title = goalCheck
-        ? "Goal Check"
-        : _matchHalfTime
-            ? "Match End"
-            : "Halftime";
-    final subtitle = goalCheck
-        ? "Was this shot a goal?"
-        : _matchHalfTime
-            ? "Has the match ended yet?"
-            : "Is it Halftime yet?";
-
-    // set up the AlertDialog
-    AlertDialog alert = AlertDialog(
-      title: Text(title),
-      content: Text(subtitle),
-      actions: [
-        itsNotHalftimeButton,
-        itsHalftimeButton,
-      ],
-    );
-
-    // show the dialog
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return alert;
-      },
-    );
-  }
-
   //Who has the ball at start?
   bool _isPossessionQuestion = true;
 
@@ -395,21 +340,59 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
     showAlertDialog(context, goalCheck: true, isHomeShot: isHome);
   }
 
-  _onShot({isHomeShot, isGoal}) {
+  _onShot({isHomeShot, isGoal = false, isSaved = false, isPast = false}) {
     if (isHomeShot) {
       setState(() {
         _homeTeamShots = _homeTeamShots + 1;
         if (isGoal) {
           _homeTeamGoals = _homeTeamGoals + 1;
           _switchTeamBallPossession(isHome: false, isInit: true);
+        } else if (isSaved) {
+          TapDownDetails details =
+              TapDownDetails(localPosition: Offset(_screenWidth / 2, 430));
+          _onBallMovement(details);
+          _switchTeamBallPossession();
+        } else if (isPast) {
+          TapDownDetails details =
+              TapDownDetails(localPosition: Offset(_screenWidth / 2, 430));
+          _onBallMovement(details);
+          _switchTeamBallPossession();
+        } else {
+          TapDownDetails details;
+          if (_ballPosition.dx < (_screenWidth / 2)) {
+            details = TapDownDetails(localPosition: Offset(10, 440));
+          } else {
+            details =
+                TapDownDetails(localPosition: Offset(_screenWidth - 20, 440));
+          }
+          _onBallMovement(details);
         }
       });
     } else {
       setState(() {
-        _awayTeamShots = _awayTeamShots + 1;
+        _awayTeamShots = _homeTeamShots + 1;
         if (isGoal) {
           _awayTeamGoals = _awayTeamGoals + 1;
-          _switchTeamBallPossession(isHome: true, isInit: true);
+          _switchTeamBallPossession(isHome: false, isInit: true);
+        } else if (isSaved) {
+          TapDownDetails details =
+              TapDownDetails(localPosition: Offset(_screenWidth / 2, 20));
+          _onBallMovement(details);
+          _switchTeamBallPossession();
+        } else if (isPast) {
+          TapDownDetails details =
+              TapDownDetails(localPosition: Offset(_screenWidth / 2, 20));
+          _onBallMovement(details);
+          _switchTeamBallPossession();
+        } else {
+          TapDownDetails details;
+          if (_ballPosition.dx < (_screenWidth / 2)) {
+            details = TapDownDetails(localPosition: Offset(10, 0));
+          } else {
+            details =
+                TapDownDetails(localPosition: Offset(_screenWidth - 20, 0));
+          }
+          _onBallMovement(details);
         }
       });
     }
@@ -736,6 +719,80 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  showAlertDialog(BuildContext context,
+      {bool goalCheck = false, bool isHomeShot}) {
+    Widget itsNotHalftimeButton = FlatButton(
+      child: Text("No"),
+      onPressed: () {
+        Navigator.of(context, rootNavigator: true).pop();
+        _startExtraTime();
+      },
+    );
+    Widget itsHalftimeButton = FlatButton(
+      child: Text("Yes"),
+      onPressed: () {
+        Navigator.of(context, rootNavigator: true).pop();
+        _endTimer();
+      },
+    );
+    Widget goalButton = FlatButton(
+      child: Text("Goal!"),
+      color: GlobalColors.accent,
+      onPressed: () {
+        Navigator.of(context, rootNavigator: true).pop();
+        _onShot(isGoal: true, isHomeShot: isHomeShot);
+      },
+    );
+    Widget saved = FlatButton(
+      child: Text("Saved"),
+      onPressed: () {
+        Navigator.of(context, rootNavigator: true).pop();
+        _onShot(isGoal: false, isHomeShot: isHomeShot, isSaved: true);
+      },
+    );
+    Widget savedAndCorner = FlatButton(
+      child: Text("Saved/Blocked and corner"),
+      onPressed: () {
+        Navigator.of(context, rootNavigator: true).pop();
+        _onShot(isGoal: false, isHomeShot: isHomeShot);
+      },
+    );
+    Widget pastGoal = FlatButton(
+      child: Text("Past the goal"),
+      onPressed: () {
+        Navigator.of(context, rootNavigator: true).pop();
+        _onShot(isGoal: false, isHomeShot: isHomeShot, isPast: true);
+      },
+    );
+
+    final title = goalCheck
+        ? "Goal Check"
+        : _matchHalfTime
+            ? "Match End"
+            : "Halftime";
+    final subtitle = goalCheck
+        ? "What is the result of this shot?"
+        : _matchHalfTime
+            ? "Has the match ended yet?"
+            : "Is it Halftime yet?";
+
+    final actions = goalCheck
+        ? [goalButton, saved, savedAndCorner, pastGoal]
+        : [itsNotHalftimeButton, itsHalftimeButton];
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(subtitle),
+          actions: actions,
+        );
+      },
     );
   }
 }

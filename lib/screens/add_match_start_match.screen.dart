@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:football_provider_app/providers/matches.dart';
+import 'package:football_provider_app/widgets/match_ball.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
@@ -34,6 +35,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      _setScreenWidth();
       _buildZones();
       _buildMatch();
     });
@@ -43,6 +45,14 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
   void dispose() {
     _timer.cancel();
     super.dispose();
+  }
+
+  double _screenWidth;
+
+  _setScreenWidth() {
+    setState(() {
+      _screenWidth = MediaQuery.of(context).size.width;
+    });
   }
 
   //other
@@ -85,7 +95,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
   bool _showHeatMap = false;
 
   _buildZones() {
-    double fieldWidth = MediaQuery.of(context).size.width;
+    double fieldWidth = _screenWidth;
     double fieldHeight = 450;
     double zoneWidth = fieldWidth / widget.zonesPerLine;
     double zoneHeight = fieldHeight / widget.zoneLines;
@@ -161,20 +171,6 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
     });
   }
 
-  // setPercentagesPerZone(int minute) {
-  //   List<ZonePercentages> zonePercentages = [];
-  //   zonePercentages = zones
-  //       .map((e) => new ZonePercentages(
-  //             homePercentage: e.homePercentage != 0.0
-  //                 ? ((e.homePercentage / _homePossession) * 100)
-  //                 : 0.0,
-  //             awayPercentage: e.awayPercentage != 0.0
-  //                 ? ((e.awayPercentage / _awayPossession) * 100)
-  //                 : 0.0,
-  //           ))
-  //       .toList();
-  // }
-
   //Wer hat den Ball?
   int _homePossession = 0;
   int _totalHomePossession = 0;
@@ -187,7 +183,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
     if (home == null && !isInit) {
       home = !_homeTeamBallPossession;
     } else {
-      double x = MediaQuery.of(context).size.width / 2 - 5;
+      double x = _screenWidth / 2 - 5;
       double y = 450 / 2;
       if (home) {
         y -= 20;
@@ -322,35 +318,55 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
   bool _isExtraTime = false;
   int _extraTime = 0;
 
-  void startExtraTime() {
+  _startExtraTime() {
     setState(() {
       _isExtraTime = true;
     });
     unpauseTimer();
   }
 
-  void showAlertDialog(BuildContext context) {
-    // set up the buttons
+  showAlertDialog(BuildContext context,
+      {bool goalCheck = false, bool isHomeShot}) {
     Widget itsNotHalftimeButton = FlatButton(
       child: Text("No"),
       onPressed: () {
-        Navigator.of(context, rootNavigator: true).pop();
-        startExtraTime();
+        if (goalCheck) {
+          Navigator.of(context, rootNavigator: true).pop();
+          _onShot(isGoal: false, isHomeShot: isHomeShot);
+        } else {
+          Navigator.of(context, rootNavigator: true).pop();
+          _startExtraTime();
+        }
       },
     );
     Widget itsHalftimeButton = FlatButton(
       child: Text("Yes"),
       onPressed: () {
-        Navigator.of(context, rootNavigator: true).pop();
-        _endTimer();
+        if (goalCheck) {
+          Navigator.of(context, rootNavigator: true).pop();
+          _onShot(isGoal: true, isHomeShot: isHomeShot);
+        } else {
+          Navigator.of(context, rootNavigator: true).pop();
+          _endTimer();
+        }
       },
     );
 
+    final title = goalCheck
+        ? "Goal Check"
+        : _matchHalfTime
+            ? "Match End"
+            : "Halftime";
+    final subtitle = goalCheck
+        ? "Was this shot a goal?"
+        : _matchHalfTime
+            ? "Has the match ended yet?"
+            : "Is it Halftime yet?";
+
     // set up the AlertDialog
     AlertDialog alert = AlertDialog(
-      title: Text(_matchHalfTime ? "Match End" : "Halftime"),
-      content: Text(
-          _matchHalfTime ? "Has the match ended yet?" : "Is it Halftime yet?"),
+      title: Text(title),
+      content: Text(subtitle),
       actions: [
         itsNotHalftimeButton,
         itsHalftimeButton,
@@ -365,21 +381,33 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
       },
     );
   }
-  //
-
-  //Allow switch of sides
-  //bool _homeTopOfField = true;
-
-  // _switchSides() {
-  //   if (!_matchStart) {
-  //     setState(() {
-  //       _homeTopOfField = !_homeTopOfField;
-  //     });
-  //   }
-  // }
 
   //Who has the ball at start?
   bool _isPossessionQuestion = true;
+
+  //Goal and Shot tracking
+  int _homeTeamGoals = 0;
+  int _homeTeamShots = 0;
+  int _awayTeamGoals = 0;
+  int _awayTeamShots = 0;
+
+  _checkShot(isHome) {
+    showAlertDialog(context, goalCheck: true, isHomeShot: isHome);
+  }
+
+  _onShot({isHomeShot, isGoal}) {
+    if (isHomeShot) {
+      setState(() {
+        _homeTeamShots = _homeTeamShots + 1;
+        if (isGoal) _homeTeamGoals = _homeTeamGoals + 1;
+      });
+    } else {
+      setState(() {
+        _awayTeamShots = _awayTeamShots + 1;
+        if (isGoal) _awayTeamGoals = _awayTeamGoals + 1;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -400,6 +428,31 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
           padding: EdgeInsets.only(top: statusBarHeight),
           child: Column(
             children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  children: [
+                    NormalTextSize(
+                      title: 'Score',
+                      color: Colors.white,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        NormalTextSize(
+                            title: "$homeTeam: " + _homeTeamGoals.toString(),
+                            color: Colors.white),
+                        SizedBox(
+                          width: 12,
+                        ),
+                        NormalTextSize(
+                            title: "$awayTeam: " + _awayTeamGoals.toString(),
+                            color: Colors.white),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
               Container(
                   height: 500,
                   width: double.infinity,
@@ -457,11 +510,8 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                                   ? Positioned(
                                       top: 200,
                                       left: _matchHalfTime
-                                          ? (MediaQuery.of(context).size.width /
-                                                  3) /
-                                              2
-                                          : MediaQuery.of(context).size.width /
-                                              3,
+                                          ? (_screenWidth / 3) / 2
+                                          : _screenWidth / 3,
                                       child: Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
@@ -523,6 +573,22 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                                 color: _homeTeamBallPossession
                                     ? Colors.white
                                     : Colors.black,
+                              ),
+                              Positioned(
+                                top: 0,
+                                left: _screenWidth / 2 - 20,
+                                child: MatchGoal(
+                                  onShot: _checkShot,
+                                  isHomeShot: false,
+                                ),
+                              ),
+                              Positioned(
+                                bottom: 0,
+                                left: _screenWidth / 2 - 20,
+                                child: MatchGoal(
+                                  onShot: _checkShot,
+                                  isHomeShot: true,
+                                ),
                               ),
                               Visibility(
                                 visible: _isPossessionQuestion,
@@ -698,42 +764,6 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
             },
           ),
         ],
-      ),
-    );
-  }
-}
-
-class MatchBall extends StatelessWidget {
-  MatchBall({this.color, this.ballPosition});
-
-  final Offset ballPosition;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Positioned(
-      top: ballPosition.dy,
-      left: ballPosition.dx,
-      child: Draggable(
-        // onDraggableCanceled:
-        //     (Velocity velocity, Offset offset) {
-        //   _onDrag(offset);
-        //   // _updateHeatMap();
-        // },
-        child: Container(
-          height: 35,
-          width: 35,
-          color: Colors.transparent,
-          child: Icon(
-            Icons.sports_soccer,
-            color: color,
-          ),
-        ),
-        feedback: Icon(Icons.sports_soccer),
-        childWhenDragging: Icon(
-          Icons.sports_soccer,
-          color: color.withOpacity(0.5),
-        ),
       ),
     );
   }

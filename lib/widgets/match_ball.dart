@@ -49,12 +49,12 @@ class MatchGoal extends StatelessWidget {
     return DragTarget(
       builder: (context, candidates, rejects) {
         return Container(
-          height: 40,
-          width: 40,
+          height: 25,
+          width: 45,
           color: Colors.green,
         );
       },
-      onAccept: (value) => onShot(isHomeShot),
+      onAccept: (_) => onShot(isHomeShot),
     );
   }
 }

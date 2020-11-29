@@ -399,12 +399,18 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
     if (isHomeShot) {
       setState(() {
         _homeTeamShots = _homeTeamShots + 1;
-        if (isGoal) _homeTeamGoals = _homeTeamGoals + 1;
+        if (isGoal) {
+          _homeTeamGoals = _homeTeamGoals + 1;
+          _switchTeamBallPossession(isHome: false, isInit: true);
+        }
       });
     } else {
       setState(() {
         _awayTeamShots = _awayTeamShots + 1;
-        if (isGoal) _awayTeamGoals = _awayTeamGoals + 1;
+        if (isGoal) {
+          _awayTeamGoals = _awayTeamGoals + 1;
+          _switchTeamBallPossession(isHome: true, isInit: true);
+        }
       });
     }
   }
@@ -464,16 +470,10 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                     ),
                   ),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        height: 25,
-                        child: Padding(
-                            padding: EdgeInsets.only(left: 8.0),
-                            child: NormalTextSize(
-                              title: homeTeam,
-                              color: Colors.white,
-                            )),
+                      MatchGoal(
+                        onShot: _checkShot,
+                        isHomeShot: false,
                       ),
                       GestureDetector(
                         onTapDown: (TapDownDetails details) =>
@@ -574,22 +574,6 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                                     ? Colors.white
                                     : Colors.black,
                               ),
-                              Positioned(
-                                top: 0,
-                                left: _screenWidth / 2 - 20,
-                                child: MatchGoal(
-                                  onShot: _checkShot,
-                                  isHomeShot: false,
-                                ),
-                              ),
-                              Positioned(
-                                bottom: 0,
-                                left: _screenWidth / 2 - 20,
-                                child: MatchGoal(
-                                  onShot: _checkShot,
-                                  isHomeShot: true,
-                                ),
-                              ),
                               Visibility(
                                 visible: _isPossessionQuestion,
                                 child: Column(
@@ -637,22 +621,9 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                           ),
                         ),
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Padding(
-                              padding: EdgeInsets.only(right: 8.0),
-                              child:
-                                  // ?
-                                  NormalTextSize(
-                                title: awayTeam,
-                              )
-                              // : NormalTextSize(
-                              //     title: homeTeam,
-                              //     color: Colors.white,
-                              //   ),
-                              ),
-                        ],
+                      MatchGoal(
+                        onShot: _checkShot,
+                        isHomeShot: true,
                       ),
                     ],
                   )),

@@ -6,6 +6,7 @@ import 'package:football_provider_app/widgets/global_colors.dart';
 import 'package:football_provider_app/widgets/match_ball.dart';
 import 'package:football_provider_app/widgets/match_goal.dart';
 import 'package:football_provider_app/widgets/stats_barchart.dart';
+import 'package:football_provider_app/widgets/stats_list.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
@@ -426,12 +427,11 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
   Map<String, List<num>> _statsMap = {
     'Possession': [0, 0],
     'Goals': [0, 0],
-    'shots': [0, 0],
+    'Shots': [0, 0],
   };
 
   //switch between tabs
   int _currentIndex = 0;
-  final List<Widget> _children = [];
 
   @override
   Widget build(BuildContext context) {
@@ -755,18 +755,15 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                     ],
                   )
                 : Container(
-                    height: 400,
-                    child: ListView.builder(
-                      itemBuilder: (ctx, i) => Container(
-                        height: 100,
-                        child: StatsBarchart(
-                          title: statsList[i].title,
-                          homeValue: statsList[i].values[0],
-                          awayValue: statsList[i].values[1],
-                          isPossession: i == 0,
-                        ),
-                      ),
-                      itemCount: widget.zoneLines,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Flexible(
+                            fit: FlexFit.loose,
+                            child: StatsList(
+                              stats: statsList,
+                            ))
+                      ],
                     ),
                   ),
           ),

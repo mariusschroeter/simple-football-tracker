@@ -1,61 +1,61 @@
 import 'package:flutter/material.dart';
 import 'package:football_provider_app/widgets/global_colors.dart';
-import 'package:football_provider_app/widgets/text_elements.dart';
 
 class StatsBarchart extends StatelessWidget {
   final String title;
   final num homeValue;
   final num awayValue;
-  final bool isPossession;
 
-  StatsBarchart(
-      {this.title, this.homeValue, this.awayValue, this.isPossession = false});
+  StatsBarchart({this.title, this.homeValue, this.awayValue});
 
   @override
   Widget build(BuildContext context) {
     final homeValueFormatted = homeValue.toStringAsFixed(0);
     final awayValueFormatted = awayValue.toStringAsFixed(0);
-    final titleFormatted = isPossession ? title + " (%)" : title;
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(titleFormatted),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Container(
-                  width: 30,
-                  child: Text(
-                    '$homeValueFormatted',
-                    textAlign: TextAlign.right,
-                  )),
-              SizedBox(
-                width: 16,
-              ),
-              Expanded(
-                flex: 1,
-                child: Container(
-                  height: 30,
-                  width: double.infinity,
-                  child: CustomPaint(
-                      painter: StatsBarchartPainter(
-                          homeValue: homeValue, awayValue: awayValue)),
+    return Container(
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 8.0),
+        child: Column(
+          children: [
+            Text(
+              title,
+              style: TextStyle(color: Colors.white.withOpacity(0.9)),
+            ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                    width: 30,
+                    child: Text(
+                      '$homeValueFormatted',
+                      textAlign: TextAlign.left,
+                    )),
+                SizedBox(
+                  width: 16,
                 ),
-              ),
-              SizedBox(
-                width: 16,
-              ),
-              Container(
-                  width: 30,
-                  child: Text(
-                    '$awayValueFormatted',
-                    textAlign: TextAlign.left,
-                  )),
-            ],
-          ),
-        ],
+                Expanded(
+                  flex: 1,
+                  child: Container(
+                    height: 30,
+                    width: double.infinity,
+                    child: CustomPaint(
+                        painter: StatsBarchartPainter(
+                            homeValue: homeValue, awayValue: awayValue)),
+                  ),
+                ),
+                SizedBox(
+                  width: 16,
+                ),
+                Container(
+                    width: 30,
+                    child: Text(
+                      '$awayValueFormatted',
+                      textAlign: TextAlign.right,
+                    )),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -84,7 +84,7 @@ class StatsBarchartPainter extends CustomPainter {
 
     var paint = Paint()
       ..color = Colors.white
-      ..strokeWidth = 2
+      ..strokeWidth = 0.5
       ..style = PaintingStyle.fill;
 
     canvas.drawLine(center, centerParallel, paint);

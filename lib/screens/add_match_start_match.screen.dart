@@ -5,6 +5,7 @@ import 'package:football_provider_app/providers/matches.dart';
 import 'package:football_provider_app/widgets/global_colors.dart';
 import 'package:football_provider_app/widgets/match_ball.dart';
 import 'package:football_provider_app/widgets/match_goal.dart';
+import 'package:football_provider_app/widgets/scoreboard.dart';
 import 'package:football_provider_app/widgets/stats_barchart.dart';
 import 'package:football_provider_app/widgets/stats_list.dart';
 import 'package:provider/provider.dart';
@@ -161,11 +162,15 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
     return stats;
   }
 
-  _getTotalPercentage(bool isHome) {
+  _getPercentage({bool isHome, bool isTotal = false}) {
     final possession = isHome ? _homePossession : _awayPossession;
-    final totalPossession =
-        isHome ? _totalHomePossession : _totalAwayPossession;
-    return (((possession + totalPossession) / (_start + _totalTime)) * 100);
+    final totalTime = isTotal ? _totalTime : 0;
+    final totalPossession = isHome && isTotal
+        ? _totalHomePossession
+        : !isHome && isTotal
+            ? _totalAwayPossession
+            : 0;
+    return (((possession + totalPossession) / (_start + totalTime)) * 100);
   }
 
   _switchPercentages() {
@@ -346,9 +351,14 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
 
   //Goal and Shot tracking
   int _homeTeamGoals = 0;
-  int _homeTeamShots = 0;
+  int _homeTeamShotsOnTarget = 0;
+  int _homeTeamShotsOffTarget = 0;
+  int _homeTeamCornerKicks = 0;
+
   int _awayTeamGoals = 0;
-  int _awayTeamShots = 0;
+  int _awayTeamShotsOnTarget = 0;
+  int _awayTeamShotsOffTarget = 0;
+  int _awayTeamCornerKicks = 0;
 
   _checkShot(isHome) {
     showAlertDialog(context, goalCheck: true, isHomeShot: isHome);
@@ -357,21 +367,24 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
   _onShot({isHomeShot, isGoal = false, isSaved = false, isPast = false}) {
     if (isHomeShot) {
       setState(() {
-        _homeTeamShots = _homeTeamShots + 1;
         if (isGoal) {
           _homeTeamGoals = _homeTeamGoals + 1;
           _switchTeamBallPossession(isHome: false, isInit: true);
         } else if (isSaved) {
+          _homeTeamShotsOnTarget++;
           TapDownDetails details =
               TapDownDetails(localPosition: Offset(_screenWidth / 2, 430));
           _onBallMovement(details);
           _switchTeamBallPossession();
         } else if (isPast) {
+          _homeTeamShotsOffTarget++;
           TapDownDetails details =
               TapDownDetails(localPosition: Offset(_screenWidth / 2, 430));
           _onBallMovement(details);
           _switchTeamBallPossession();
         } else {
+          _homeTeamShotsOnTarget++;
+          _homeTeamCornerKicks++;
           TapDownDetails details;
           if (_ballPosition.dx < (_screenWidth / 2)) {
             details = TapDownDetails(localPosition: Offset(10, 440));
@@ -384,21 +397,24 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
       });
     } else {
       setState(() {
-        _awayTeamShots = _awayTeamShots + 1;
         if (isGoal) {
           _awayTeamGoals = _awayTeamGoals + 1;
           _switchTeamBallPossession(isHome: false, isInit: true);
         } else if (isSaved) {
+          _awayTeamShotsOnTarget++;
           TapDownDetails details =
               TapDownDetails(localPosition: Offset(_screenWidth / 2, 20));
           _onBallMovement(details);
           _switchTeamBallPossession();
         } else if (isPast) {
+          _awayTeamShotsOffTarget++;
           TapDownDetails details =
               TapDownDetails(localPosition: Offset(_screenWidth / 2, 20));
           _onBallMovement(details);
           _switchTeamBallPossession();
         } else {
+          _awayTeamShotsOnTarget++;
+          _awayTeamCornerKicks++;
           TapDownDetails details;
           if (_ballPosition.dx < (_screenWidth / 2)) {
             details = TapDownDetails(localPosition: Offset(10, 0));
@@ -415,19 +431,42 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
 
   _updateStatsMap() {
     setState(() {
-      _statsMap['Possession'] = [
-        _getTotalPercentage(true),
-        _getTotalPercentage(false)
-      ];
-      _statsMap['Goals'] = [_homeTeamGoals, _awayTeamGoals];
-      _statsMap['Shots'] = [_homeTeamShots, _awayTeamShots];
+      _statsMap = {
+        'Possession': {
+          'Total': [
+            _getPercentage(isHome: true, isTotal: true),
+            _getPercentage(isHome: false, isTotal: true),
+          ],
+          'First Half': [
+            _getPercentage(isHome: true, isTotal: false),
+            _getPercentage(isHome: false, isTotal: false),
+          ]
+        },
+        'Shots': {
+          'On Target': [_homeTeamShotsOnTarget, _awayTeamShotsOnTarget],
+          'Off Target': [_homeTeamShotsOffTarget, _awayTeamShotsOffTarget],
+        },
+        'Other': {
+          'Corner Kicks': [_homeTeamCornerKicks, _awayTeamCornerKicks],
+        }
+      };
     });
   }
 
-  Map<String, List<num>> _statsMap = {
-    'Possession': [0, 0],
-    'Goals': [0, 0],
-    'Shots': [0, 0],
+  Map<String, Map<String, List<num>>> _statsMap = {
+    'Possession': {
+      'Total': [0, 0],
+      'First Half': [0, 0],
+      // 'Second Half': [0,0],
+    },
+    'Shots': {
+      'On Target': [0, 0],
+      'Off Target': [0, 0],
+    },
+    'Other': {
+      'Corner kicks': [0, 0],
+      // 'Fouls': [0,0],
+    }
   };
 
   //switch between tabs
@@ -448,22 +487,10 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
         _isExtraTime ? _printDuration(Duration(seconds: _extraTime)) : null;
 
     final statsList = _statsMap.entries
-        .map((e) => BarchartStat(title: e.key, values: e.value))
+        .map((e) => BarchartList(title: e.key, values: e.value))
         .toList();
+    print(statsList);
     return Scaffold(
-      // bottomNavigationBar: BottomNavigationBar(
-      //   currentIndex: 0, // this will be set when a new tab is tapped
-      //   items: [
-      //     BottomNavigationBarItem(
-      //       label: 'Match',
-      //       icon: Icon(Icons.sports_soccer),
-      //     ),
-      //     BottomNavigationBarItem(
-      //       label: 'Stats',
-      //       icon: Icon(Icons.data_usage),
-      //     ),
-      //   ],
-      // ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         selectedItemColor: Colors.white,
@@ -486,333 +513,355 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
         ],
       ),
       body: SingleChildScrollView(
-        child: Container(
-          child: Padding(
-            padding: EdgeInsets.only(top: statusBarHeight),
-            child: _currentIndex == 0
-                ? Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          children: [
-                            NormalTextSize(
-                              title: 'Score',
-                              color: Colors.white,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                NormalTextSize(
-                                    title: "$homeTeam: " +
-                                        _homeTeamGoals.toString(),
-                                    color: Colors.white),
-                                SizedBox(
-                                  width: 12,
-                                ),
-                                NormalTextSize(
-                                    title: "$awayTeam: " +
-                                        _awayTeamGoals.toString(),
-                                    color: Colors.white),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                          height: 500,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            image: DecorationImage(
-                              image: AssetImage(
-                                  "lib/resources/images/football_field.jpg"),
-                              fit: BoxFit.fill,
-                            ),
-                          ),
-                          child: Column(
-                            children: [
-                              MatchGoal(
-                                onShot: _checkShot,
-                                isHomeShot: false,
+        child: Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.only(top: statusBarHeight),
+              child: Scoreboard(
+                isLive: false,
+                homeTeam: homeTeam,
+                awayTeam: awayTeam,
+                homeGoals: _homeTeamGoals,
+                awayGoals: _awayTeamGoals,
+              ),
+            ),
+            Container(
+              child: _currentIndex == 0
+                  ? Column(
+                      children: [
+                        Container(
+                            height: 500,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                image: AssetImage(
+                                    "lib/resources/images/football_field.jpg"),
+                                fit: BoxFit.fill,
                               ),
-                              GestureDetector(
-                                onTapDown: (TapDownDetails details) =>
-                                    _onBallMovement(details),
-                                onDoubleTap: () => _switchTeamBallPossession(),
-                                child: Container(
-                                  color: Colors.transparent,
-                                  height: 450,
-                                  width: double.infinity,
-                                  child: Stack(
-                                    children: [
-                                      //Zone start ---
-                                      _showPercentages || _showHeatMap
-                                          ? ListView.builder(
-                                              padding: EdgeInsets.all(0),
-                                              physics:
-                                                  NeverScrollableScrollPhysics(),
-                                              itemBuilder: (ctx, i) =>
-                                                  Container(
-                                                height: 450 / widget.zoneLines,
-                                                child: FieldZoneRow(
-                                                  zoneCount: 3,
-                                                  percentages:
-                                                      _getZonePercentages(i + 1)
-                                                          .percentages,
-                                                  showPercentages:
-                                                      _showPercentages,
-                                                  showHeatMap: _showHeatMap,
-                                                ),
-                                              ),
-                                              itemCount: widget.zoneLines,
-                                            )
-                                          : SizedBox(),
-                                      //Zone end ---
-                                      //show total possession --
-                                      _showPercentages
-                                          ? Positioned(
-                                              top: 200,
-                                              left: _matchHalfTime
-                                                  ? (_screenWidth / 3) / 2
-                                                  : _screenWidth / 3,
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  Column(
-                                                    children: [
-                                                      Text('HZ'),
-                                                      FieldZone(
-                                                        showPercentages:
-                                                            _showPercentages,
-                                                        homePercentage:
-                                                            _homePossession != 0
-                                                                ? ((_homePossession /
-                                                                        _start) *
-                                                                    100)
-                                                                : 0.0,
-                                                        awayPercentage:
-                                                            _awayPossession != 0
-                                                                ? ((_awayPossession /
-                                                                        _start) *
-                                                                    100)
-                                                                : 0.0,
-                                                        isTotalZone: true,
-                                                      ),
-                                                    ],
+                            ),
+                            child: Column(
+                              children: [
+                                MatchGoal(
+                                  onShot: _checkShot,
+                                  isHomeShot: false,
+                                ),
+                                GestureDetector(
+                                  onTapDown: (TapDownDetails details) =>
+                                      _onBallMovement(details),
+                                  onDoubleTap: () =>
+                                      _switchTeamBallPossession(),
+                                  child: Container(
+                                    color: Colors.transparent,
+                                    height: 450,
+                                    width: double.infinity,
+                                    child: Stack(
+                                      children: [
+                                        //Zone start ---
+                                        _showPercentages || _showHeatMap
+                                            ? ListView.builder(
+                                                padding: EdgeInsets.all(0),
+                                                physics:
+                                                    NeverScrollableScrollPhysics(),
+                                                itemBuilder: (ctx, i) =>
+                                                    Container(
+                                                  height:
+                                                      450 / widget.zoneLines,
+                                                  child: FieldZoneRow(
+                                                    zoneCount: 3,
+                                                    percentages:
+                                                        _getZonePercentages(
+                                                                i + 1)
+                                                            .percentages,
+                                                    showPercentages:
+                                                        _showPercentages,
+                                                    showHeatMap: _showHeatMap,
                                                   ),
-                                                  Visibility(
-                                                    visible: _matchHalfTime,
-                                                    child: Column(
+                                                ),
+                                                itemCount: widget.zoneLines,
+                                              )
+                                            : SizedBox(),
+                                        //Zone end ---
+                                        //show total possession --
+                                        _showPercentages
+                                            ? Positioned(
+                                                top: 200,
+                                                left: _matchHalfTime
+                                                    ? (_screenWidth / 3) / 2
+                                                    : _screenWidth / 3,
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Column(
                                                       children: [
-                                                        Text('TOTAL'),
+                                                        Text('HZ'),
                                                         FieldZone(
                                                           showPercentages:
                                                               _showPercentages,
                                                           homePercentage:
-                                                              _getTotalPercentage(
-                                                                  true),
+                                                              _getPercentage(
+                                                                  isHome: true,
+                                                                  isTotal:
+                                                                      false),
                                                           awayPercentage:
-                                                              _getTotalPercentage(
-                                                                  false),
+                                                              _getPercentage(
+                                                                  isHome: false,
+                                                                  isTotal:
+                                                                      false),
                                                           isTotalZone: true,
                                                         ),
                                                       ],
                                                     ),
-                                                  ),
-                                                ],
-                                              ),
-                                            )
-                                          : SizedBox(),
-                                      //end total possession--
-                                      MatchBall(
-                                        ballPosition: _ballPosition,
-                                        color: _homeTeamBallPossession
-                                            ? Colors.white
-                                            : Colors.black,
-                                      ),
-                                      Visibility(
-                                        visible: _isPossessionQuestion,
-                                        child: Column(
-                                          children: [
-                                            InkWell(
-                                              onTap: () =>
-                                                  _switchTeamBallPossession(
-                                                      isHome: true),
-                                              child: Container(
-                                                color: _homeTeamBallPossession
-                                                    ? Colors.transparent
-                                                    : Colors.grey
-                                                        .withOpacity(0.5),
-                                                width: double.infinity,
-                                                height: 225,
-                                                child: Center(
-                                                  child: NormalTextSize(
-                                                    size: 30,
-                                                    title: 'Home',
-                                                    color: Colors.white,
+                                                    Visibility(
+                                                      visible: _matchHalfTime,
+                                                      child: Column(
+                                                        children: [
+                                                          Text('TOTAL'),
+                                                          FieldZone(
+                                                            showPercentages:
+                                                                _showPercentages,
+                                                            homePercentage:
+                                                                _getPercentage(
+                                                                    isHome:
+                                                                        true,
+                                                                    isTotal:
+                                                                        true),
+                                                            awayPercentage:
+                                                                _getPercentage(
+                                                                    isHome:
+                                                                        false,
+                                                                    isTotal:
+                                                                        true),
+                                                            isTotalZone: true,
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              )
+                                            : SizedBox(),
+                                        //end total possession--
+                                        MatchBall(
+                                          ballPosition: _ballPosition,
+                                          color: _homeTeamBallPossession
+                                              ? Colors.white
+                                              : Colors.black,
+                                        ),
+                                        Visibility(
+                                          visible: _isPossessionQuestion,
+                                          child: Column(
+                                            children: [
+                                              InkWell(
+                                                onTap: () =>
+                                                    _switchTeamBallPossession(
+                                                        isHome: true),
+                                                child: Container(
+                                                  color: _homeTeamBallPossession
+                                                      ? Colors.transparent
+                                                      : Colors.grey
+                                                          .withOpacity(0.5),
+                                                  width: double.infinity,
+                                                  height: 225,
+                                                  child: Center(
+                                                    child: NormalTextSize(
+                                                      size: 30,
+                                                      title: 'Home',
+                                                      color: Colors.white,
+                                                    ),
                                                   ),
                                                 ),
                                               ),
-                                            ),
-                                            InkWell(
-                                              onTap: () =>
-                                                  _switchTeamBallPossession(
-                                                      isHome: false),
-                                              child: Container(
-                                                color: !_homeTeamBallPossession
-                                                    ? Colors.transparent
-                                                    : Colors.grey
-                                                        .withOpacity(0.5),
-                                                width: double.infinity,
-                                                height: 225,
-                                                child: Center(
-                                                  child: NormalTextSize(
-                                                    size: 30,
-                                                    title: 'Away',
-                                                    color: Colors.black,
+                                              InkWell(
+                                                onTap: () =>
+                                                    _switchTeamBallPossession(
+                                                        isHome: false),
+                                                child: Container(
+                                                  color:
+                                                      !_homeTeamBallPossession
+                                                          ? Colors.transparent
+                                                          : Colors.grey
+                                                              .withOpacity(0.5),
+                                                  width: double.infinity,
+                                                  height: 225,
+                                                  child: Center(
+                                                    child: NormalTextSize(
+                                                      size: 30,
+                                                      title: 'Away',
+                                                      color: Colors.black,
+                                                    ),
                                                   ),
                                                 ),
                                               ),
-                                            ),
-                                          ],
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                MatchGoal(
+                                  onShot: _checkShot,
+                                  isHomeShot: true,
+                                ),
+                              ],
+                            )),
+                        //Timer Start ---
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.only(top: 8.0, right: 50.0),
+                              child: Row(
+                                children: [
+                                  Column(
+                                    children: [
+                                      NormalTextSize(
+                                          title: '$time', color: Colors.white),
+                                      extraTime != null
+                                          ? NormalTextSize(
+                                              title: '$extraTime',
+                                              color: Colors.white,
+                                              size: 16)
+                                          : SizedBox()
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    width: 24.0,
+                                  ),
+                                  Column(
+                                    children: [
+                                      // RaisedButton(
+                                      //   color: Colors.grey,
+                                      //   onPressed: _switchSides,
+                                      //   child: Text('Switch Sides'),
+                                      // ),
+                                      RaisedButton(
+                                        color: Theme.of(context).primaryColor,
+                                        onPressed: _start == 0
+                                            ? () => _startTimer(0)
+                                            : _matchPause
+                                                ? unpauseTimer
+                                                : _isExtraTime
+                                                    ? () => _endTimer()
+                                                    : _pauseTimer,
+                                        child: NormalTextSize(
+                                          color: Colors.white,
+                                          title: _start == 0 && !_matchHalfTime
+                                              ? 'Start Match'
+                                              : _start == 0 && _matchHalfTime
+                                                  ? 'Start 2nd Half'
+                                                  : _matchPause
+                                                      ? 'Resume Match'
+                                                      : _isExtraTime &&
+                                                              !_matchHalfTime
+                                                          ? 'End Half'
+                                                          : _isExtraTime &&
+                                                                  _matchHalfTime
+                                                              ? 'End Match'
+                                                              : 'Pause Match',
                                         ),
                                       ),
                                     ],
                                   ),
-                                ),
+                                ],
                               ),
-                              MatchGoal(
-                                onShot: _checkShot,
-                                isHomeShot: true,
-                              ),
-                            ],
-                          )),
-                      //Timer Start ---
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.only(top: 8.0, right: 50.0),
-                            child: Row(
-                              children: [
-                                Column(
-                                  children: [
-                                    NormalTextSize(
-                                        title: '$time', color: Colors.white),
-                                    extraTime != null
-                                        ? NormalTextSize(
-                                            title: '$extraTime',
-                                            color: Colors.white,
-                                            size: 16)
-                                        : SizedBox()
-                                  ],
-                                ),
-                                SizedBox(
-                                  width: 24.0,
-                                ),
-                                Column(
-                                  children: [
-                                    // RaisedButton(
-                                    //   color: Colors.grey,
-                                    //   onPressed: _switchSides,
-                                    //   child: Text('Switch Sides'),
-                                    // ),
-                                    RaisedButton(
-                                      color: Theme.of(context).primaryColor,
-                                      onPressed: _start == 0
-                                          ? () => _startTimer(0)
-                                          : _matchPause
-                                              ? unpauseTimer
-                                              : _isExtraTime
-                                                  ? () => _endTimer()
-                                                  : _pauseTimer,
-                                      child: NormalTextSize(
-                                        color: Colors.white,
-                                        title: _start == 0 && !_matchHalfTime
-                                            ? 'Start Match'
-                                            : _start == 0 && _matchHalfTime
-                                                ? 'Start 2nd Half'
-                                                : _matchPause
-                                                    ? 'Resume Match'
-                                                    : _isExtraTime &&
-                                                            !_matchHalfTime
-                                                        ? 'End Half'
-                                                        : _isExtraTime &&
-                                                                _matchHalfTime
-                                                            ? 'End Match'
-                                                            : 'Pause Match',
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
                             ),
-                          ),
-                        ],
-                      ),
-                      //Timer End ---
-                    ],
-                  )
-                : Container(
-                    child: Column(
+                          ],
+                        ),
+                        //Timer End ---
+                      ],
+                    )
+                  : Column(
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
                         Flexible(
-                            fit: FlexFit.loose,
-                            child: StatsList(
-                              stats: statsList,
-                            ))
+                          child: MediaQuery.removePadding(
+                            context: context,
+                            removeTop: true,
+                            child: ListView.builder(
+                              physics: NeverScrollableScrollPhysics(),
+                              itemBuilder: (ctx, i) => Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 20.0, vertical: 12.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Padding(
+                                      padding: EdgeInsets.only(bottom: 8.0),
+                                      child: Text(
+                                        i == 0
+                                            ? '${statsList[i].title} (%)'
+                                            : '${statsList[i].title}',
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w600),
+                                      ),
+                                    ),
+                                    StatsList(
+                                      stats: statsList[i].values,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              itemCount: statsList.length,
+                              shrinkWrap: true,
+                            ),
+                          ),
+                        )
                       ],
                     ),
-                  ),
-          ),
+            ),
+          ],
         ),
       ),
-      floatingActionButton: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Visibility(
-            visible: _showSettings,
-            child: Column(
+      floatingActionButton: _currentIndex == 0
+          ? Column(
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                FloatingActionButton(
-                  heroTag: 'heatmap',
-                  child: Icon(Icons.invert_colors),
-                  onPressed: () {
-                    _switchHeatMap();
-                  },
+                Visibility(
+                  visible: _showSettings,
+                  child: Column(
+                    children: [
+                      FloatingActionButton(
+                        heroTag: 'heatmap',
+                        child: Icon(Icons.invert_colors),
+                        onPressed: () {
+                          _switchHeatMap();
+                        },
+                      ),
+                      SizedBox(
+                        height: 8,
+                      ),
+                      FloatingActionButton(
+                        heroTag: 'percentages',
+                        child: Text(
+                          "%",
+                          style: TextStyle(fontSize: 24),
+                        ),
+                        onPressed: () {
+                          _switchPercentages();
+                        },
+                      ),
+                    ],
+                  ),
                 ),
                 SizedBox(
                   height: 8,
                 ),
                 FloatingActionButton(
-                  heroTag: 'percentages',
-                  child: Text(
-                    "%",
-                    style: TextStyle(fontSize: 24),
-                  ),
+                  heroTag: 'settings',
+                  child: Icon(Icons.settings),
                   onPressed: () {
-                    _switchPercentages();
+                    setState(() {
+                      _showSettings = !_showSettings;
+                    });
                   },
                 ),
               ],
-            ),
-          ),
-          SizedBox(
-            height: 8,
-          ),
-          FloatingActionButton(
-            heroTag: 'settings',
-            child: Icon(Icons.settings),
-            onPressed: () {
-              setState(() {
-                _showSettings = !_showSettings;
-              });
-            },
-          ),
-        ],
-      ),
+            )
+          : SizedBox(),
     );
   }
 
@@ -891,9 +940,9 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
   }
 }
 
-class BarchartStat {
+class BarchartList {
   String title;
-  List<num> values;
+  Map<String, List<num>> values;
 
-  BarchartStat({this.title, this.values});
+  BarchartList({this.title, this.values});
 }

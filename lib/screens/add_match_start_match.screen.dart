@@ -399,7 +399,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
       setState(() {
         if (isGoal) {
           _awayTeamGoals = _awayTeamGoals + 1;
-          _switchTeamBallPossession(isHome: false, isInit: true);
+          _switchTeamBallPossession(isHome: true, isInit: true);
         } else if (isSaved) {
           _awayTeamShotsOnTarget++;
           TapDownDetails details =

@@ -14,8 +14,9 @@ void main() => runApp(MyApp());
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(
-        SystemUiOverlayStyle(statusBarColor: GlobalColors.primary));
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: GlobalColors.primary,
+    ));
     return ChangeNotifierProvider(
       create: (ctx) => MatchesProvider(),
       child: MaterialApp(

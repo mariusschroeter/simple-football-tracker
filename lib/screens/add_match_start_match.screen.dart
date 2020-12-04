@@ -644,8 +644,8 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                                         MatchBall(
                                           ballPosition: _ballPosition,
                                           color: _homeTeamBallPossession
-                                              ? Colors.white
-                                              : Colors.black,
+                                              ? GlobalColors.primary
+                                              : GlobalColors.secondary,
                                         ),
                                         Visibility(
                                           visible: _isPossessionQuestion,
@@ -663,10 +663,28 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                                                   width: double.infinity,
                                                   height: 225,
                                                   child: Center(
-                                                    child: NormalTextSize(
-                                                      size: 30,
-                                                      title: 'Home',
-                                                      color: Colors.white,
+                                                    child: Container(
+                                                      decoration: BoxDecoration(
+                                                          color: GlobalColors
+                                                              .primary
+                                                              .withOpacity(
+                                                                  _homeTeamBallPossession
+                                                                      ? 0.3
+                                                                      : 0.1),
+                                                          border: Border.all(
+                                                              width: 0.1,
+                                                              color: Colors
+                                                                  .white)),
+                                                      child: NormalTextSize(
+                                                        size: 30,
+                                                        title: 'Home',
+                                                        color: Colors.white,
+                                                        padding:
+                                                            const EdgeInsets
+                                                                    .symmetric(
+                                                                horizontal:
+                                                                    8.0),
+                                                      ),
                                                     ),
                                                   ),
                                                 ),
@@ -684,10 +702,28 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                                                   width: double.infinity,
                                                   height: 225,
                                                   child: Center(
-                                                    child: NormalTextSize(
-                                                      size: 30,
-                                                      title: 'Away',
-                                                      color: Colors.black,
+                                                    child: Container(
+                                                      decoration: BoxDecoration(
+                                                          color: GlobalColors
+                                                              .secondary
+                                                              .withOpacity(
+                                                                  !_homeTeamBallPossession
+                                                                      ? 0.3
+                                                                      : 0.1),
+                                                          border: Border.all(
+                                                              width: 0.1,
+                                                              color: Colors
+                                                                  .white)),
+                                                      child: NormalTextSize(
+                                                        size: 30,
+                                                        title: 'Away',
+                                                        color: Colors.white,
+                                                        padding:
+                                                            const EdgeInsets
+                                                                    .symmetric(
+                                                                horizontal:
+                                                                    8.0),
+                                                      ),
                                                     ),
                                                   ),
                                                 ),
@@ -783,12 +819,12 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                               physics: NeverScrollableScrollPhysics(),
                               itemBuilder: (ctx, i) => Padding(
                                 padding: const EdgeInsets.symmetric(
-                                    horizontal: 20.0, vertical: 12.0),
+                                    horizontal: 20.0, vertical: 10.0),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Padding(
-                                      padding: EdgeInsets.only(bottom: 8.0),
+                                      padding: EdgeInsets.only(bottom: 2.0),
                                       child: Text(
                                         i == 0
                                             ? '${statsList[i].title} (%)'
@@ -796,7 +832,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                                         style: TextStyle(
                                             fontSize: 16,
                                             color: Colors.white,
-                                            fontWeight: FontWeight.w600),
+                                            fontWeight: FontWeight.bold),
                                       ),
                                     ),
                                     StatsList(
@@ -883,7 +919,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
     );
     Widget goalButton = FlatButton(
       child: Text("Goal!"),
-      color: GlobalColors.accent,
+      color: GlobalColors.secondary,
       onPressed: () {
         Navigator.of(context, rootNavigator: true).pop();
         _onShot(isGoal: true, isHomeShot: isHomeShot);

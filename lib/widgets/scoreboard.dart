@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:football_provider_app/widgets/global_colors.dart';
 import 'package:intl/intl.dart';
 
 class Scoreboard extends StatelessWidget {
@@ -19,36 +20,87 @@ class Scoreboard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.only(top: 8, right: 4, bottom: 8, left: 4),
+      shape: Border.all(
+        width: 0.5,
+        color: Colors.white,
+      ),
+      margin: const EdgeInsets.only(top: 8, right: 16, bottom: 8, left: 16),
       child: Column(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 4.0, right: 4.0),
-                child: Text(
-                  DateFormat('dd.MM.yyyy').format(DateTime.now()),
-                ),
-              ),
-            ],
-          ),
-          ListTile(
-            leading: Text('15:00'),
-            title: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Row(
+                Padding(
+                  padding: const EdgeInsets.only(
+                    left: 20.0,
+                  ),
+                  child: Column(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                            color: GlobalColors.primary.withOpacity(0.1),
+                            border:
+                                Border.all(width: 0.1, color: Colors.white)),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Text(
+                            homeTeam.toUpperCase(),
+                            style: TextStyle(fontSize: 22),
+                          ),
+                        ),
+                      ),
+                      Text(
+                        homeGoals.toString(),
+                        style: TextStyle(fontSize: 24),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  width: 20,
+                ),
+                Column(
                   children: [
-                    Expanded(flex: 1, child: Text(homeTeam)),
-                    Text(homeGoals.toString())
+                    Text(
+                      '45:00',
+                      style: TextStyle(fontSize: 30),
+                      textAlign: TextAlign.center,
+                    ),
+                    Text(
+                      '45:00',
+                      style: TextStyle(fontSize: 16),
+                      textAlign: TextAlign.center,
+                    ),
                   ],
                 ),
-                Row(
-                  children: [
-                    Expanded(flex: 1, child: Text(awayTeam)),
-                    Text(awayGoals.toString())
-                  ],
+                SizedBox(
+                  width: 20,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(right: 20.0),
+                  child: Column(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                            color: GlobalColors.secondary.withOpacity(0.1),
+                            border:
+                                Border.all(width: 0.1, color: Colors.white)),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Text(
+                            awayTeam.toUpperCase(),
+                            style: TextStyle(fontSize: 22),
+                          ),
+                        ),
+                      ),
+                      Text(
+                        homeGoals.toString(),
+                        style: TextStyle(fontSize: 24),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),

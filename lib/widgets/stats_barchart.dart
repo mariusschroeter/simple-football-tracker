@@ -14,7 +14,7 @@ class StatsBarchart extends StatelessWidget {
     final awayValueFormatted = awayValue.toStringAsFixed(0);
     return Container(
       child: Padding(
-        padding: const EdgeInsets.only(bottom: 8.0),
+        padding: const EdgeInsets.only(bottom: 0.0),
         child: Column(
           children: [
             Text(
@@ -90,7 +90,7 @@ class StatsBarchartPainter extends CustomPainter {
     canvas.drawLine(center, centerParallel, paint);
     paint = paint..color = GlobalColors.primary;
     canvas.drawRect(homeBarPos & Size(homeBarWidth, 12), paint);
-    paint = paint..color = GlobalColors.accent;
+    paint = paint..color = GlobalColors.secondary;
     canvas.drawRect(awayBarPos & Size(awayBarWidth, 12), paint);
   }
 

@@ -489,7 +489,6 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
     final statsList = _statsMap.entries
         .map((e) => BarchartList(title: e.key, values: e.value))
         .toList();
-    print(statsList);
     return Scaffold(
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,

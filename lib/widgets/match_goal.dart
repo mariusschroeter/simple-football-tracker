@@ -13,7 +13,6 @@ class MatchGoal extends StatelessWidget {
         return Container(
           height: 25,
           width: 60,
-          color: Colors.green,
         );
       },
       onAccept: (_) => onShot(isHomeShot),

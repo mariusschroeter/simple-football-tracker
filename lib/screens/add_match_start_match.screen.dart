@@ -710,7 +710,8 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             Padding(
-                              padding: EdgeInsets.only(top: 8.0, right: 50.0),
+                              padding: EdgeInsets.only(
+                                  top: 8.0, right: 50.0, bottom: 8.0),
                               child: Row(
                                 children: [
                                   Column(

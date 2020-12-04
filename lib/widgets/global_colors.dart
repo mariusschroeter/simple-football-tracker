@@ -8,6 +8,9 @@ class GlobalColors {
   static final primary = HexColor('#BAFF73');
   static final secondary = HexColor('#FFAF59');
   static final accent = HexColor('#BAFF73');
+
+  static final field = HexColor('#AFFC62');
+  static final field2 = HexColor('#5B7D38');
 }
 
 Map<int, Color> materialColor = {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:football_provider_app/widgets/global_colors.dart';
 import 'package:football_provider_app/widgets/text_elements.dart';
 
 class FieldZone extends StatelessWidget {
@@ -36,25 +37,46 @@ class FieldZone extends StatelessWidget {
           height: isTotalZone ? 100 : 250,
           width: screenWidth / 3,
         ),
-        Positioned.fill(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              NormalTextSize(
-                color: Colors.white,
-                title: showPercentages
-                    ? '${homePercentage.toStringAsFixed(2)}%'
-                    : '',
-              ),
-              NormalTextSize(
-                color: Colors.black,
-                title: showPercentages
-                    ? '${awayPercentage.toStringAsFixed(2)}%'
-                    : '',
-              ),
-            ],
-          ),
-        )
+        showPercentages
+            ? Positioned.fill(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 90,
+                      decoration: BoxDecoration(
+                          color: GlobalColors.primary.withOpacity(0.1),
+                          border: Border.all(width: 0.1, color: Colors.white)),
+                      child: Text(
+                        '${homePercentage.toStringAsFixed(2)}%',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 2.0,
+                    ),
+                    Container(
+                      width: 90,
+                      decoration: BoxDecoration(
+                          color: GlobalColors.secondary.withOpacity(0.1),
+                          border: Border.all(width: 0.1, color: Colors.white)),
+                      child: Text(
+                        '${awayPercentage.toStringAsFixed(2)}%',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            : SizedBox(),
       ],
     );
   }

@@ -3,14 +3,16 @@ import 'package:football_provider_app/widgets/global_colors.dart';
 import 'package:intl/intl.dart';
 
 class Scoreboard extends StatelessWidget {
-  final bool isLive;
+  final String time;
+  final String extraTime;
   final String homeTeam;
   final String awayTeam;
   final int homeGoals;
   final int awayGoals;
 
   Scoreboard({
-    this.isLive = false,
+    this.time,
+    this.extraTime,
     this.homeTeam,
     this.awayTeam,
     this.homeGoals,
@@ -64,12 +66,12 @@ class Scoreboard extends StatelessWidget {
                 Column(
                   children: [
                     Text(
-                      '45:00',
+                      time,
                       style: TextStyle(fontSize: 30),
                       textAlign: TextAlign.center,
                     ),
                     Text(
-                      '45:00',
+                      extraTime,
                       style: TextStyle(fontSize: 16),
                       textAlign: TextAlign.center,
                     ),
@@ -96,7 +98,7 @@ class Scoreboard extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        homeGoals.toString(),
+                        awayGoals.toString(),
                         style: TextStyle(fontSize: 24),
                       ),
                     ],

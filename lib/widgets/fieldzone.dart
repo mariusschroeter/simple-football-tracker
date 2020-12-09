@@ -10,6 +10,7 @@ class FieldZone extends StatelessWidget {
     this.isTotalZone = false,
     this.showPercentages = false,
     this.showHeatMap = false,
+    this.innerFieldHeight,
   }) : super(key: key);
 
   final double homePercentage;
@@ -17,6 +18,7 @@ class FieldZone extends StatelessWidget {
   final bool isTotalZone;
   final bool showPercentages;
   final bool showHeatMap;
+  final double innerFieldHeight;
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +36,7 @@ class FieldZone extends StatelessWidget {
       children: [
         Container(
           color: color,
-          height: isTotalZone ? 100 : 250,
+          height: isTotalZone ? 100 : innerFieldHeight / 2,
           width: screenWidth / 3,
         ),
         showPercentages
@@ -88,17 +90,19 @@ class FieldZoneRow extends StatelessWidget {
     @required this.percentages,
     this.showPercentages = false,
     this.showHeatMap = false,
+    this.innerFieldHeight,
   });
 
   final int zoneCount;
   final List<List<double>> percentages;
   final bool showPercentages;
   final bool showHeatMap;
+  final double innerFieldHeight;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 250,
+      height: innerFieldHeight / 2,
       width: double.infinity,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
@@ -108,6 +112,7 @@ class FieldZoneRow extends StatelessWidget {
           awayPercentage: percentages[1][i],
           showPercentages: showPercentages,
           showHeatMap: showHeatMap,
+          innerFieldHeight: innerFieldHeight,
         ),
         itemCount: zoneCount,
       ),

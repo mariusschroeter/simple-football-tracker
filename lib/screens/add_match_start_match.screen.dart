@@ -10,6 +10,7 @@ import 'package:football_provider_app/widgets/match_goal.dart';
 import 'package:football_provider_app/widgets/scoreboard.dart';
 import 'package:football_provider_app/widgets/stats_barchart.dart';
 import 'package:football_provider_app/widgets/stats_list.dart';
+import 'package:football_provider_app/widgets/widget_size.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
@@ -40,14 +41,14 @@ class AddMatchStartMatchScreen extends StatefulWidget {
 }
 
 class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
-  final GlobalKey<ScaffoldState> _startMatchScaffold =
+  final GlobalKey<ScaffoldState> _startMatchScaffoldKey =
       GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _setScreenWidth();
+      _initScales();
       _buildZones();
       _buildMatch();
     });
@@ -60,10 +61,20 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
   }
 
   double _screenWidth;
+  double _screenHeight;
+  double _fieldHeight;
+  double _innerFieldHeight;
+  Size _scoreboardRowSize;
 
-  _setScreenWidth() {
+  _initScales() {
     setState(() {
       _screenWidth = MediaQuery.of(context).size.width;
+      _screenHeight = MediaQuery.of(context).size.height;
+      _fieldHeight = _screenHeight -
+          MediaQuery.of(context).padding.top -
+          MediaQuery.of(context).padding.bottom -
+          _scoreboardRowSize.height;
+      //_innerFieldHeight = _fieldHeight - 50;
     });
   }
 
@@ -108,7 +119,8 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
 
   _buildZones() {
     double fieldWidth = _screenWidth;
-    double fieldHeight = 450;
+    //innerFieldHeight
+    double fieldHeight = _innerFieldHeight;
     double zoneWidth = fieldWidth / widget.zonesPerLine;
     double zoneHeight = fieldHeight / widget.zoneLines;
     for (var i = 1; i < widget.zoneLines + 1; i++) {
@@ -207,7 +219,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
       home = !_homeTeamBallPossession;
     } else {
       double x = _screenWidth / 2 - 5;
-      double y = 450 / 2;
+      double y = _innerFieldHeight / 2;
       if (home) {
         y -= 20;
       } else {
@@ -378,14 +390,14 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
           _switchTeamBallPossession(isHome: false, isInit: true);
         } else if (isSaved) {
           _homeTeamShotsOnTarget++;
-          TapDownDetails details =
-              TapDownDetails(localPosition: Offset(_screenWidth / 2, 430));
+          TapDownDetails details = TapDownDetails(
+              localPosition: Offset(_screenWidth / 2, _innerFieldHeight));
           _onBallMovement(details);
           _switchTeamBallPossession();
         } else if (isPast) {
           _homeTeamShotsOffTarget++;
-          TapDownDetails details =
-              TapDownDetails(localPosition: Offset(_screenWidth / 2, 430));
+          TapDownDetails details = TapDownDetails(
+              localPosition: Offset(_screenWidth / 2, _innerFieldHeight));
           _onBallMovement(details);
           _switchTeamBallPossession();
         } else {
@@ -393,10 +405,11 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
           _homeTeamCornerKicks++;
           TapDownDetails details;
           if (_ballPosition.dx < (_screenWidth / 2)) {
-            details = TapDownDetails(localPosition: Offset(10, 440));
-          } else {
             details =
-                TapDownDetails(localPosition: Offset(_screenWidth - 20, 440));
+                TapDownDetails(localPosition: Offset(10, _innerFieldHeight));
+          } else {
+            details = TapDownDetails(
+                localPosition: Offset(_screenWidth - 20, _innerFieldHeight));
           }
           _onBallMovement(details);
         }
@@ -482,6 +495,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
   @override
   Widget build(BuildContext context) {
     double statusBarHeight = MediaQuery.of(context).padding.top;
+
     final String homeTeam = widget.homeTeam.length > 15
         ? widget.homeTeam.substring(0, 15)
         : widget.homeTeam;
@@ -497,7 +511,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
         .map((e) => BarchartList(title: e.key, values: e.value))
         .toList();
     return Scaffold(
-      key: _startMatchScaffold,
+      key: _startMatchScaffoldKey,
       drawer: AppDrawerInMatch(
           switchHeatMap: _switchHeatMap,
           switchPercentages: _switchPercentages,
@@ -529,49 +543,56 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
           children: [
             Padding(
               padding: EdgeInsets.only(top: statusBarHeight),
-              child: Row(
-                children: [
-                  IconButton(
-                    icon: _start == 0 && !_matchHalfTime
-                        ? Icon(Icons.play_arrow)
-                        : _start == 0 && _matchHalfTime
-                            ? Icon(Icons.play_arrow)
-                            : _matchPause
-                                ? Icon(Icons.repeat)
-                                : _isExtraTime && !_matchHalfTime
-                                    ? Icon(Icons.stop)
-                                    : _isExtraTime && _matchHalfTime
-                                        ? Icon(Icons.stop)
-                                        : Icon(Icons.pause),
-                    onPressed: _start == 0
-                        ? () => _startTimer(0)
-                        : _matchPause
-                            ? unpauseTimer
-                            : _isExtraTime
-                                ? () => _endTimer()
-                                : _pauseTimer,
-                  ),
-                  Expanded(
-                    flex: 1,
-                    child: Scoreboard(
-                      time: time,
-                      extraTime: _extraTime != 0 ? extraTime : '',
-                      homeTeam: homeTeam,
-                      awayTeam: awayTeam,
-                      homeGoals: _homeTeamGoals,
-                      awayGoals: _awayTeamGoals,
+              child: WidgetSize(
+                onChange: (Size size) {
+                  setState(() {
+                    _scoreboardRowSize = size;
+                  });
+                },
+                child: Row(
+                  children: [
+                    IconButton(
+                      icon: _start == 0 && !_matchHalfTime
+                          ? Icon(Icons.play_arrow)
+                          : _start == 0 && _matchHalfTime
+                              ? Icon(Icons.play_arrow)
+                              : _matchPause
+                                  ? Icon(Icons.repeat)
+                                  : _isExtraTime && !_matchHalfTime
+                                      ? Icon(Icons.stop)
+                                      : _isExtraTime && _matchHalfTime
+                                          ? Icon(Icons.stop)
+                                          : Icon(Icons.pause),
+                      onPressed: _start == 0
+                          ? () => _startTimer(0)
+                          : _matchPause
+                              ? unpauseTimer
+                              : _isExtraTime
+                                  ? () => _endTimer()
+                                  : _pauseTimer,
                     ),
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.settings),
-                    onPressed: () {
-                      _startMatchScaffold.currentState.openDrawer();
-                      // setState(() {
-                      //   _showSettings = !_showSettings;
-                      // });
-                    },
-                  ),
-                ],
+                    Expanded(
+                      flex: 1,
+                      child: Scoreboard(
+                        time: time,
+                        extraTime: _extraTime != 0 ? extraTime : '',
+                        homeTeam: homeTeam,
+                        awayTeam: awayTeam,
+                        homeGoals: _homeTeamGoals,
+                        awayGoals: _awayTeamGoals,
+                      ),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.settings),
+                      onPressed: () {
+                        _startMatchScaffoldKey.currentState.openDrawer();
+                        // setState(() {
+                        //   _showSettings = !_showSettings;
+                        // });
+                      },
+                    ),
+                  ],
+                ),
               ),
             ),
             Container(
@@ -579,7 +600,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                   ? Column(
                       children: [
                         Container(
-                          height: 500,
+                          height: _fieldHeight,
                           width: double.infinity,
                           decoration: BoxDecoration(
                             image: DecorationImage(
@@ -600,7 +621,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                                 onDoubleTap: () => _switchTeamBallPossession(),
                                 child: Container(
                                   color: Colors.transparent,
-                                  height: 450,
+                                  height: _innerFieldHeight,
                                   width: double.infinity,
                                   child: Stack(
                                     children: [
@@ -612,8 +633,11 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                                                   NeverScrollableScrollPhysics(),
                                               itemBuilder: (ctx, i) =>
                                                   Container(
-                                                height: 450 / widget.zoneLines,
+                                                height: _innerFieldHeight /
+                                                    widget.zoneLines,
                                                 child: FieldZoneRow(
+                                                  innerFieldHeight:
+                                                      _innerFieldHeight,
                                                   zoneCount: 3,
                                                   percentages:
                                                       _getZonePercentages(i + 1)
@@ -648,7 +672,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                                                     : Colors.grey
                                                         .withOpacity(0.5),
                                                 width: double.infinity,
-                                                height: 225,
+                                                height: _innerFieldHeight / 2,
                                                 child: Center(
                                                   child: Container(
                                                     decoration: BoxDecoration(
@@ -684,7 +708,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                                                     : Colors.grey
                                                         .withOpacity(0.5),
                                                 width: double.infinity,
-                                                height: 225,
+                                                height: _innerFieldHeight / 2,
                                                 child: Center(
                                                   child: Container(
                                                     decoration: BoxDecoration(

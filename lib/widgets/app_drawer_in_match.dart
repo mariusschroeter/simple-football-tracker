@@ -74,6 +74,7 @@ class AppDrawerInMatch extends StatelessWidget {
             ),
             onTap: () {
               Navigator.of(context).pop();
+              Navigator.of(context).pop('Match has been ended!');
             },
           )
         ],

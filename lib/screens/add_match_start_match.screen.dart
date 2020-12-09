@@ -43,12 +43,14 @@ class AddMatchStartMatchScreen extends StatefulWidget {
 class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
   final GlobalKey<ScaffoldState> _startMatchScaffoldKey =
       GlobalKey<ScaffoldState>();
+  final _bottomNavKey = GlobalKey();
+  final _scoreboardRowKey = GlobalKey();
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _initScales();
+      _initField();
       _buildZones();
       _buildMatch();
     });
@@ -60,21 +62,22 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
     super.dispose();
   }
 
-  double _screenWidth;
-  double _screenHeight;
-  double _fieldHeight;
-  double _innerFieldHeight;
-  Size _scoreboardRowSize;
+  double _screenWidth = 0;
+  double _screenHeight = 0;
+  double _fieldHeight = 0;
+  double _innerFieldHeight = 0;
+  double _statusBarHeight = 0;
 
-  _initScales() {
+  _initField() {
     setState(() {
       _screenWidth = MediaQuery.of(context).size.width;
       _screenHeight = MediaQuery.of(context).size.height;
+      _statusBarHeight = MediaQuery.of(context).padding.top;
       _fieldHeight = _screenHeight -
-          MediaQuery.of(context).padding.top -
-          MediaQuery.of(context).padding.bottom -
-          _scoreboardRowSize.height;
-      //_innerFieldHeight = _fieldHeight - 50;
+          _statusBarHeight -
+          _bottomNavKey.currentContext.size.height -
+          _scoreboardRowKey.currentContext.size.height;
+      _innerFieldHeight = _fieldHeight - 50;
     });
   }
 
@@ -391,13 +394,13 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
         } else if (isSaved) {
           _homeTeamShotsOnTarget++;
           TapDownDetails details = TapDownDetails(
-              localPosition: Offset(_screenWidth / 2, _innerFieldHeight));
+              localPosition: Offset(_screenWidth / 2, _innerFieldHeight - 20));
           _onBallMovement(details);
           _switchTeamBallPossession();
         } else if (isPast) {
           _homeTeamShotsOffTarget++;
           TapDownDetails details = TapDownDetails(
-              localPosition: Offset(_screenWidth / 2, _innerFieldHeight));
+              localPosition: Offset(_screenWidth / 2, _innerFieldHeight - 20));
           _onBallMovement(details);
           _switchTeamBallPossession();
         } else {
@@ -405,11 +408,12 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
           _homeTeamCornerKicks++;
           TapDownDetails details;
           if (_ballPosition.dx < (_screenWidth / 2)) {
-            details =
-                TapDownDetails(localPosition: Offset(10, _innerFieldHeight));
+            details = TapDownDetails(
+                localPosition: Offset(10, _innerFieldHeight - 20));
           } else {
             details = TapDownDetails(
-                localPosition: Offset(_screenWidth - 20, _innerFieldHeight));
+                localPosition:
+                    Offset(_screenWidth - 20, _innerFieldHeight - 20));
           }
           _onBallMovement(details);
         }
@@ -494,8 +498,6 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    double statusBarHeight = MediaQuery.of(context).padding.top;
-
     final String homeTeam = widget.homeTeam.length > 15
         ? widget.homeTeam.substring(0, 15)
         : widget.homeTeam;
@@ -510,6 +512,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
     final statsList = _statsMap.entries
         .map((e) => BarchartList(title: e.key, values: e.value))
         .toList();
+
     return Scaffold(
       key: _startMatchScaffoldKey,
       drawer: AppDrawerInMatch(
@@ -518,6 +521,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
           heatmap: _showHeatMap,
           percentages: _showPercentages),
       bottomNavigationBar: BottomNavigationBar(
+        key: _bottomNavKey,
         type: BottomNavigationBarType.fixed,
         selectedItemColor: Colors.white,
         unselectedItemColor: Colors.white.withOpacity(.60),
@@ -542,57 +546,48 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
         child: Column(
           children: [
             Padding(
-              padding: EdgeInsets.only(top: statusBarHeight),
-              child: WidgetSize(
-                onChange: (Size size) {
-                  setState(() {
-                    _scoreboardRowSize = size;
-                  });
-                },
-                child: Row(
-                  children: [
-                    IconButton(
-                      icon: _start == 0 && !_matchHalfTime
-                          ? Icon(Icons.play_arrow)
-                          : _start == 0 && _matchHalfTime
-                              ? Icon(Icons.play_arrow)
-                              : _matchPause
-                                  ? Icon(Icons.repeat)
-                                  : _isExtraTime && !_matchHalfTime
-                                      ? Icon(Icons.stop)
-                                      : _isExtraTime && _matchHalfTime
-                                          ? Icon(Icons.stop)
-                                          : Icon(Icons.pause),
-                      onPressed: _start == 0
-                          ? () => _startTimer(0)
-                          : _matchPause
-                              ? unpauseTimer
-                              : _isExtraTime
-                                  ? () => _endTimer()
-                                  : _pauseTimer,
+              padding: EdgeInsets.only(top: _statusBarHeight),
+              child: Row(
+                key: _scoreboardRowKey,
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.settings),
+                    onPressed: () {
+                      _startMatchScaffoldKey.currentState.openDrawer();
+                    },
+                  ),
+                  Expanded(
+                    flex: 1,
+                    child: Scoreboard(
+                      time: time,
+                      extraTime: _extraTime != 0 ? extraTime : '',
+                      homeTeam: homeTeam,
+                      awayTeam: awayTeam,
+                      homeGoals: _homeTeamGoals,
+                      awayGoals: _awayTeamGoals,
                     ),
-                    Expanded(
-                      flex: 1,
-                      child: Scoreboard(
-                        time: time,
-                        extraTime: _extraTime != 0 ? extraTime : '',
-                        homeTeam: homeTeam,
-                        awayTeam: awayTeam,
-                        homeGoals: _homeTeamGoals,
-                        awayGoals: _awayTeamGoals,
-                      ),
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.settings),
-                      onPressed: () {
-                        _startMatchScaffoldKey.currentState.openDrawer();
-                        // setState(() {
-                        //   _showSettings = !_showSettings;
-                        // });
-                      },
-                    ),
-                  ],
-                ),
+                  ),
+                  IconButton(
+                    icon: _start == 0 && !_matchHalfTime
+                        ? Icon(Icons.play_arrow)
+                        : _start == 0 && _matchHalfTime
+                            ? Icon(Icons.play_arrow)
+                            : _matchPause
+                                ? Icon(Icons.repeat)
+                                : _isExtraTime && !_matchHalfTime
+                                    ? Icon(Icons.stop)
+                                    : _isExtraTime && _matchHalfTime
+                                        ? Icon(Icons.stop)
+                                        : Icon(Icons.pause),
+                    onPressed: _start == 0
+                        ? () => _startTimer(0)
+                        : _matchPause
+                            ? unpauseTimer
+                            : _isExtraTime
+                                ? () => _endTimer()
+                                : _pauseTimer,
+                  ),
+                ],
               ),
             ),
             Container(

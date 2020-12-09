@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:football_provider_app/widgets/global_colors.dart';
-import 'package:intl/intl.dart';
 
 class Scoreboard extends StatelessWidget {
   final String time;
@@ -26,7 +25,7 @@ class Scoreboard extends StatelessWidget {
         width: 0.5,
         color: Colors.white,
       ),
-      margin: const EdgeInsets.only(top: 8, right: 16, bottom: 8, left: 16),
+      margin: const EdgeInsets.only(top: 8, right: 8, bottom: 8, left: 8),
       child: Column(
         children: [
           Padding(
@@ -34,34 +33,25 @@ class Scoreboard extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Padding(
-                  padding: const EdgeInsets.only(
-                    left: 20.0,
-                  ),
-                  child: Column(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                            color: GlobalColors.primary.withOpacity(0.1),
-                            border:
-                                Border.all(width: 0.1, color: Colors.white)),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: Text(
-                            homeTeam.toUpperCase(),
-                            style: TextStyle(fontSize: 22),
-                          ),
+                Column(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                          color: GlobalColors.primary.withOpacity(0.1),
+                          border: Border.all(width: 0.1, color: Colors.white)),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Text(
+                          homeTeam.toUpperCase(),
+                          style: TextStyle(fontSize: 22),
                         ),
                       ),
-                      Text(
-                        homeGoals.toString(),
-                        style: TextStyle(fontSize: 24),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  width: 20,
+                    ),
+                    Text(
+                      homeGoals.toString(),
+                      style: TextStyle(fontSize: 24),
+                    ),
+                  ],
                 ),
                 Column(
                   children: [
@@ -77,32 +67,25 @@ class Scoreboard extends StatelessWidget {
                     ),
                   ],
                 ),
-                SizedBox(
-                  width: 20,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(right: 20.0),
-                  child: Column(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                            color: GlobalColors.secondary.withOpacity(0.1),
-                            border:
-                                Border.all(width: 0.1, color: Colors.white)),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: Text(
-                            awayTeam.toUpperCase(),
-                            style: TextStyle(fontSize: 22),
-                          ),
+                Column(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                          color: GlobalColors.secondary.withOpacity(0.1),
+                          border: Border.all(width: 0.1, color: Colors.white)),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Text(
+                          awayTeam.toUpperCase(),
+                          style: TextStyle(fontSize: 22),
                         ),
                       ),
-                      Text(
-                        awayGoals.toString(),
-                        style: TextStyle(fontSize: 24),
-                      ),
-                    ],
-                  ),
+                    ),
+                    Text(
+                      awayGoals.toString(),
+                      style: TextStyle(fontSize: 24),
+                    ),
+                  ],
                 ),
               ],
             ),

@@ -96,7 +96,7 @@ class _AddMatchPostMatchScreenState extends State<AddMatchPostMatchScreen> {
           }
         },
         tooltip: 'Start Match',
-        child: Icon(Icons.arrow_right),
+        child: Icon(Icons.arrow_right_alt),
       ),
     );
   }

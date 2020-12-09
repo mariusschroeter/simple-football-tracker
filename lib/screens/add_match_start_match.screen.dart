@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:football_provider_app/providers/matches.dart';
+import 'package:football_provider_app/widgets/app_drawer.dart';
+import 'package:football_provider_app/widgets/app_drawer_in_match.dart';
 import 'package:football_provider_app/widgets/global_colors.dart';
 import 'package:football_provider_app/widgets/match_ball.dart';
 import 'package:football_provider_app/widgets/match_goal.dart';
@@ -38,6 +40,9 @@ class AddMatchStartMatchScreen extends StatefulWidget {
 }
 
 class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
+  final GlobalKey<ScaffoldState> _startMatchScaffold =
+      GlobalKey<ScaffoldState>();
+
   @override
   void initState() {
     super.initState();
@@ -239,17 +244,17 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
             _pauseTimer();
             showAlertDialog(context);
           } else {
-            _start = _start + 1;
+            _start++;
 
-            if (_isExtraTime) _extraTime = _extraTime + 1;
+            if (_isExtraTime) _extraTime++;
 
             //Wer ist am Ball?
             if (_homeTeamBallPossession) {
-              _homePossession = _homePossession + 1;
-              _activeZone.homePercentage = _activeZone.homePercentage + 1;
+              _homePossession++;
+              _activeZone.homePercentage++;
             } else {
-              _awayPossession = _awayPossession + 1;
-              _activeZone.awayPercentage = _activeZone.awayPercentage + 1;
+              _awayPossession++;
+              _activeZone.awayPercentage++;
             }
 
             //stats updaten
@@ -368,7 +373,8 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
     if (isHomeShot) {
       setState(() {
         if (isGoal) {
-          _homeTeamGoals = _homeTeamGoals + 1;
+          _homeTeamGoals++;
+          _homeTeamShotsOnTarget++;
           _switchTeamBallPossession(isHome: false, isInit: true);
         } else if (isSaved) {
           _homeTeamShotsOnTarget++;
@@ -398,7 +404,8 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
     } else {
       setState(() {
         if (isGoal) {
-          _awayTeamGoals = _awayTeamGoals + 1;
+          _awayTeamGoals++;
+          _awayTeamShotsOnTarget++;
           _switchTeamBallPossession(isHome: true, isInit: true);
         } else if (isSaved) {
           _awayTeamShotsOnTarget++;
@@ -437,10 +444,10 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
             _getPercentage(isHome: true, isTotal: true),
             _getPercentage(isHome: false, isTotal: true),
           ],
-          'First Half': [
-            _getPercentage(isHome: true, isTotal: false),
-            _getPercentage(isHome: false, isTotal: false),
-          ]
+          // 'First Half': [
+          //   _getPercentage(isHome: true, isTotal: false),
+          //   _getPercentage(isHome: false, isTotal: false),
+          // ]
         },
         'Shots': {
           'On Target': [_homeTeamShotsOnTarget, _awayTeamShotsOnTarget],
@@ -456,7 +463,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
   Map<String, Map<String, List<num>>> _statsMap = {
     'Possession': {
       'Total': [0, 0],
-      'First Half': [0, 0],
+      // 'First Half': [0, 0],
       // 'Second Half': [0,0],
     },
     'Shots': {
@@ -490,6 +497,12 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
         .map((e) => BarchartList(title: e.key, values: e.value))
         .toList();
     return Scaffold(
+      key: _startMatchScaffold,
+      drawer: AppDrawerInMatch(
+          switchHeatMap: _switchHeatMap,
+          switchPercentages: _switchPercentages,
+          heatmap: _showHeatMap,
+          percentages: _showPercentages),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         selectedItemColor: Colors.white,
@@ -516,13 +529,49 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
           children: [
             Padding(
               padding: EdgeInsets.only(top: statusBarHeight),
-              child: Scoreboard(
-                time: time,
-                extraTime: _extraTime != 0 ? extraTime : '',
-                homeTeam: homeTeam,
-                awayTeam: awayTeam,
-                homeGoals: _homeTeamGoals,
-                awayGoals: _awayTeamGoals,
+              child: Row(
+                children: [
+                  IconButton(
+                    icon: _start == 0 && !_matchHalfTime
+                        ? Icon(Icons.play_arrow)
+                        : _start == 0 && _matchHalfTime
+                            ? Icon(Icons.play_arrow)
+                            : _matchPause
+                                ? Icon(Icons.repeat)
+                                : _isExtraTime && !_matchHalfTime
+                                    ? Icon(Icons.stop)
+                                    : _isExtraTime && _matchHalfTime
+                                        ? Icon(Icons.stop)
+                                        : Icon(Icons.pause),
+                    onPressed: _start == 0
+                        ? () => _startTimer(0)
+                        : _matchPause
+                            ? unpauseTimer
+                            : _isExtraTime
+                                ? () => _endTimer()
+                                : _pauseTimer,
+                  ),
+                  Expanded(
+                    flex: 1,
+                    child: Scoreboard(
+                      time: time,
+                      extraTime: _extraTime != 0 ? extraTime : '',
+                      homeTeam: homeTeam,
+                      awayTeam: awayTeam,
+                      homeGoals: _homeTeamGoals,
+                      awayGoals: _awayTeamGoals,
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.settings),
+                    onPressed: () {
+                      _startMatchScaffold.currentState.openDrawer();
+                      // setState(() {
+                      //   _showSettings = !_showSettings;
+                      // });
+                    },
+                  ),
+                ],
               ),
             ),
             Container(
@@ -706,6 +755,9 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                                     ),
                                     StatsList(
                                       stats: statsList[i].values,
+                                      isHalfTime:
+                                          // i == 0 ? _matchHalfTime : true,
+                                          true,
                                     ),
                                   ],
                                 ),
@@ -721,76 +773,6 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
           ],
         ),
       ),
-      floatingActionButton: _currentIndex == 0
-          ? Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Visibility(
-                  visible: _showSettings,
-                  child: Column(
-                    children: [
-                      FloatingActionButton(
-                        heroTag: 'heatmap',
-                        child: Icon(Icons.invert_colors),
-                        onPressed: () {
-                          _switchHeatMap();
-                        },
-                      ),
-                      SizedBox(
-                        height: 8,
-                      ),
-                      FloatingActionButton(
-                        heroTag: 'percentages',
-                        child: Text(
-                          "%",
-                          style: TextStyle(fontSize: 24),
-                        ),
-                        onPressed: () {
-                          _switchPercentages();
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: 8,
-                ),
-                FloatingActionButton(
-                  heroTag: 'settings',
-                  child: Icon(Icons.settings),
-                  onPressed: () {
-                    setState(() {
-                      _showSettings = !_showSettings;
-                    });
-                  },
-                ),
-                SizedBox(
-                  height: 8,
-                ),
-                FloatingActionButton(
-                  heroTag: 'matchMain',
-                  child: _start == 0 && !_matchHalfTime
-                      ? Icon(Icons.play_arrow)
-                      : _start == 0 && _matchHalfTime
-                          ? Icon(Icons.play_arrow)
-                          : _matchPause
-                              ? Icon(Icons.repeat)
-                              : _isExtraTime && !_matchHalfTime
-                                  ? Icon(Icons.stop)
-                                  : _isExtraTime && _matchHalfTime
-                                      ? Icon(Icons.stop)
-                                      : Icon(Icons.pause),
-                  onPressed: _start == 0
-                      ? () => _startTimer(0)
-                      : _matchPause
-                          ? unpauseTimer
-                          : _isExtraTime
-                              ? () => _endTimer()
-                              : _pauseTimer,
-                ),
-              ],
-            )
-          : SizedBox(),
     );
   }
 

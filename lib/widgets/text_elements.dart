@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:football_provider_app/widgets/global_colors.dart';
 
 class NormalTextSize extends StatelessWidget {
   final String title;

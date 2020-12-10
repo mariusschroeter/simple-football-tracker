@@ -7,7 +7,9 @@ class Match {
   final DateTime dateTime;
   //Du bekommst diesen Wert wenn das Objekt erstellt wird!
   final String homeTeam;
+  final String homeTeamAbb;
   final String awayTeam;
+  final String awayTeamAbb;
   List<ZonePercentages> firstHalfZones;
   List<ZonePercentages> secondHalfZones;
   List<int> score = [1, 0];
@@ -17,7 +19,9 @@ class Match {
     this.id,
     this.dateTime,
     @required this.homeTeam,
+    @required this.homeTeamAbb,
     @required this.awayTeam,
+    @required this.awayTeamAbb,
     this.firstHalfZones,
     this.secondHalfZones,
     this.score,

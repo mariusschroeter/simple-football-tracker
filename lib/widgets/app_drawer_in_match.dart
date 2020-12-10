@@ -5,12 +5,16 @@ import 'package:football_provider_app/widgets/svg.dart';
 class AppDrawerInMatch extends StatelessWidget {
   final Function switchHeatMap;
   final Function switchPercentages;
+  final Function switchZones;
+  final bool zones;
   final bool heatmap;
   final bool percentages;
 
   AppDrawerInMatch(
       {this.switchHeatMap,
       this.switchPercentages,
+      this.switchZones,
+      this.zones,
       this.heatmap,
       this.percentages});
 
@@ -28,17 +32,25 @@ class AppDrawerInMatch extends StatelessWidget {
             activeColor: GlobalColors.primary,
             title: Row(
               children: [
-                Icon(Icons.invert_colors),
+                Padding(
+                  padding: const EdgeInsets.all(2.0),
+                  child: Svg(
+                    name: 'icon_zone',
+                    height: 20.0,
+                    width: 20.0,
+                    color: Colors.white,
+                  ),
+                ),
                 Expanded(
                     flex: 1,
                     child: Padding(
                       padding: const EdgeInsets.only(left: 30.0),
-                      child: Text('Show Heatmap'),
+                      child: Text('Show Zones'),
                     )),
               ],
             ),
-            value: heatmap,
-            onChanged: (_) => switchHeatMap(),
+            value: zones,
+            onChanged: (_) => switchZones(!zones),
           ),
           Divider(),
           SwitchListTile(
@@ -63,7 +75,24 @@ class AppDrawerInMatch extends StatelessWidget {
               ],
             ),
             value: percentages,
-            onChanged: (_) => switchPercentages(),
+            onChanged: (_) => switchPercentages(!percentages),
+          ),
+          Divider(),
+          SwitchListTile(
+            activeColor: GlobalColors.primary,
+            title: Row(
+              children: [
+                Icon(Icons.invert_colors),
+                Expanded(
+                    flex: 1,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 30.0),
+                      child: Text('Show Heatmap'),
+                    )),
+              ],
+            ),
+            value: heatmap,
+            onChanged: (_) => switchHeatMap(!heatmap),
           ),
           Divider(),
           ListTile(

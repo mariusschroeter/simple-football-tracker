@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:football_provider_app/screens/onboarding_screen.dart';
 import 'package:football_provider_app/widgets/global_colors.dart';
 import 'package:provider/provider.dart';
 
-import './screens/matches_screen.dart';
 import './screens/settings_screen.dart';
 import './screens/match_detail_screen.dart';
 import 'screens/add_match_post_match_screen.dart';
@@ -26,7 +26,6 @@ class MyApp extends StatelessWidget {
           brightness: Brightness.dark,
           primaryColor: GlobalColors.primary,
           accentColor: GlobalColors.accent,
-
           // Define the default font family.
           fontFamily: 'Georgia',
 
@@ -36,7 +35,7 @@ class MyApp extends StatelessWidget {
             headline1: TextStyle(fontSize: 72.0, fontWeight: FontWeight.bold),
           ),
         ),
-        home: MatchesScreen(),
+        home: OnboardingScreen(),
         routes: {
           MatchDetailScreen.routeName: (ctx) => MatchDetailScreen(),
           SettingsScreen.routeName: (ctx) => SettingsScreen(),

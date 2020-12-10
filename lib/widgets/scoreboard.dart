@@ -20,8 +20,6 @@ class Scoreboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final homeTeamFormatted = homeTeam.substring(0, 3).toUpperCase();
-    final awayTeamFormatted = awayTeam.substring(0, 3).toUpperCase();
     return Card(
       shape: Border.all(
         width: 0.5,
@@ -39,12 +37,12 @@ class Scoreboard extends StatelessWidget {
                   children: [
                     Container(
                       decoration: BoxDecoration(
-                          color: GlobalColors.primary.withOpacity(0.1),
+                          color: GlobalColors.primary.withOpacity(0.4),
                           border: Border.all(width: 0.1, color: Colors.white)),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8.0),
                         child: Text(
-                          homeTeamFormatted,
+                          homeTeam.toUpperCase(),
                           style: TextStyle(fontSize: 22),
                         ),
                       ),
@@ -73,12 +71,12 @@ class Scoreboard extends StatelessWidget {
                   children: [
                     Container(
                       decoration: BoxDecoration(
-                          color: GlobalColors.secondary.withOpacity(0.1),
+                          color: GlobalColors.secondary.withOpacity(0.4),
                           border: Border.all(width: 0.1, color: Colors.white)),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8.0),
                         child: Text(
-                          awayTeamFormatted,
+                          awayTeam.toUpperCase(),
                           style: TextStyle(fontSize: 22),
                         ),
                       ),

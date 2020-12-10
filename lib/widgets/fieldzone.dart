@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:football_provider_app/widgets/global_colors.dart';
-import 'package:football_provider_app/widgets/text_elements.dart';
 
 class FieldZone extends StatelessWidget {
   const FieldZone({
@@ -35,9 +34,11 @@ class FieldZone extends StatelessWidget {
     return Stack(
       children: [
         Container(
-          color: color,
           height: isTotalZone ? 100 : innerFieldHeight / 2,
           width: screenWidth / 3,
+          decoration: BoxDecoration(
+              color: color,
+              border: Border.all(color: Colors.white.withOpacity(0.5))),
         ),
         showPercentages
             ? Positioned.fill(
@@ -47,7 +48,7 @@ class FieldZone extends StatelessWidget {
                     Container(
                       width: 90,
                       decoration: BoxDecoration(
-                          color: GlobalColors.primary.withOpacity(0.1),
+                          color: GlobalColors.primary.withOpacity(0.4),
                           border: Border.all(width: 0.1, color: Colors.white)),
                       child: Text(
                         '${homePercentage.toStringAsFixed(2)}%',
@@ -64,7 +65,7 @@ class FieldZone extends StatelessWidget {
                     Container(
                       width: 90,
                       decoration: BoxDecoration(
-                          color: GlobalColors.secondary.withOpacity(0.1),
+                          color: GlobalColors.secondary.withOpacity(0.4),
                           border: Border.all(width: 0.1, color: Colors.white)),
                       child: Text(
                         '${awayPercentage.toStringAsFixed(2)}%',

@@ -12,7 +12,9 @@ class AddMatchPostMatchScreen extends StatefulWidget {
 class _AddMatchPostMatchScreenState extends State<AddMatchPostMatchScreen> {
   final _formKey = GlobalKey<FormState>();
   final _homeTeam = TextEditingController();
+  final _homeTeamAbb = TextEditingController();
   final _awayTeam = TextEditingController();
+  final _awayTeamAbb = TextEditingController();
 
   _checkInputs(String teamName) {
     if (teamName.isEmpty) return 'Please enter some text';
@@ -31,22 +33,88 @@ class _AddMatchPostMatchScreenState extends State<AddMatchPostMatchScreen> {
         child: Column(children: <Widget>[
           Padding(
             padding: const EdgeInsets.all(16.0),
-            child: TextFormField(
-              controller: _homeTeam,
-              decoration: InputDecoration(hintText: 'Home Team'),
-              validator: (value) {
-                return _checkInputs(value);
-              },
+            child: Row(
+              children: [
+                Flexible(
+                  flex: 2,
+                  child: TextFormField(
+                    controller: _homeTeam,
+                    decoration: InputDecoration(hintText: 'Home Team'),
+                    validator: (value) {
+                      return _checkInputs(value);
+                    },
+                    onChanged: (_) {
+                      if (_homeTeam.text.length > 0 &&
+                          _homeTeam.text.length < 4) {
+                        setState(() {
+                          _homeTeamAbb.text = _homeTeam.text
+                              .substring(0, _homeTeam.text.length)
+                              .trim();
+                        });
+                      }
+                    },
+                  ),
+                ),
+                SizedBox(
+                  width: 16.0,
+                ),
+                Flexible(
+                  flex: 1,
+                  child: TextFormField(
+                    controller: _homeTeamAbb,
+                    decoration:
+                        InputDecoration(hintText: 'Abb.', counterText: ''),
+                    validator: (value) {
+                      return _checkInputs(value);
+                    },
+                    maxLength: 3,
+                  ),
+                ),
+              ],
             ),
           ),
           Padding(
             padding: const EdgeInsets.all(16.0),
-            child: TextFormField(
-              controller: _awayTeam,
-              decoration: InputDecoration(hintText: 'Away Team'),
-              validator: (value) {
-                return _checkInputs(value);
-              },
+            child: Row(
+              children: [
+                Flexible(
+                  flex: 2,
+                  child: TextFormField(
+                    controller: _awayTeam,
+                    decoration: InputDecoration(
+                      hintText: 'Away Team',
+                    ),
+                    validator: (value) {
+                      return _checkInputs(value);
+                    },
+                    onChanged: (_) {
+                      if (_awayTeam.text.length > 0 &&
+                          _awayTeam.text.length < 4) {
+                        setState(() {
+                          _awayTeamAbb.text = _awayTeam.text
+                              .substring(0, _awayTeam.text.length)
+                              .trim();
+                        });
+                      }
+                    },
+                  ),
+                ),
+                SizedBox(
+                  width: 16.0,
+                ),
+                Flexible(
+                  flex: 1,
+                  child: TextFormField(
+                    controller: _awayTeamAbb,
+                    decoration:
+                        InputDecoration(hintText: 'Abb.', counterText: ''),
+                    validator: (value) {
+                      return _checkInputs(value);
+                    },
+                    maxLength: 3,
+                  ),
+                ),
+              ],
             ),
           ),
           Padding(
@@ -90,7 +158,11 @@ class _AddMatchPostMatchScreenState extends State<AddMatchPostMatchScreen> {
             var matchResponse = await Navigator.push(context,
                 MaterialPageRoute(builder: (context) {
               return AddMatchStartMatchScreen(
-                  homeTeam: _homeTeam.text, awayTeam: _awayTeam.text);
+                homeTeam: _homeTeam.text,
+                awayTeam: _awayTeam.text,
+                homeTeamAbb: _homeTeamAbb.text,
+                awayTeamAbb: _awayTeamAbb.text,
+              );
             }));
             Navigator.pop(context, matchResponse);
           }

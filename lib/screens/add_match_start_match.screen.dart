@@ -2,15 +2,12 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:football_provider_app/providers/matches.dart';
-import 'package:football_provider_app/widgets/app_drawer.dart';
 import 'package:football_provider_app/widgets/app_drawer_in_match.dart';
 import 'package:football_provider_app/widgets/global_colors.dart';
 import 'package:football_provider_app/widgets/match_ball.dart';
 import 'package:football_provider_app/widgets/match_goal.dart';
 import 'package:football_provider_app/widgets/scoreboard.dart';
-import 'package:football_provider_app/widgets/stats_barchart.dart';
 import 'package:football_provider_app/widgets/stats_list.dart';
-import 'package:football_provider_app/widgets/widget_size.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
@@ -24,13 +21,17 @@ class AddMatchStartMatchScreen extends StatefulWidget {
 
   AddMatchStartMatchScreen({
     this.homeTeam,
+    this.homeTeamAbb,
     this.awayTeam,
+    this.awayTeamAbb,
     this.zoneLines = 2,
     this.zonesPerLine = 3,
   });
 
   final String homeTeam;
+  final String homeTeamAbb;
   final String awayTeam;
+  final String awayTeamAbb;
 
   final int zoneLines;
   final int zonesPerLine;
@@ -58,7 +59,9 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
 
   @override
   void dispose() {
-    _timer.cancel();
+    if (_timer != null) {
+      _timer.cancel();
+    }
     super.dispose();
   }
 
@@ -77,12 +80,9 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
           _statusBarHeight -
           _bottomNavKey.currentContext.size.height -
           _scoreboardRowKey.currentContext.size.height;
-      _innerFieldHeight = _fieldHeight - 50;
+      _innerFieldHeight = _fieldHeight - 46;
     });
   }
-
-  //other
-  bool _showSettings = false;
 
   //Match Stats
   Match _match;
@@ -92,7 +92,9 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
       id: Uuid().v4(),
       dateTime: DateTime.now(),
       homeTeam: widget.homeTeam,
+      homeTeamAbb: widget.homeTeamAbb,
       awayTeam: widget.awayTeam,
+      awayTeamAbb: widget.awayTeamAbb,
       firstHalfZones: [],
       secondHalfZones: [],
     );
@@ -119,6 +121,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
   Zone _activeZone;
   bool _showPercentages = false;
   bool _showHeatMap = false;
+  bool _showZones = false;
 
   _buildZones() {
     double fieldWidth = _screenWidth;
@@ -193,19 +196,33 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
     return (((possession + totalPossession) / (_start + totalTime)) * 100);
   }
 
-  _switchPercentages() {
-    bool percentages = !_showPercentages;
-    if (_isPossessionQuestion) percentages = false;
+  _switchPercentages(bool showPercentages) {
+    bool show = !_showPercentages;
+    if (showPercentages != null) {
+      show = showPercentages;
+    }
     setState(() {
-      _showPercentages = percentages;
+      _showPercentages = show;
     });
   }
 
-  _switchHeatMap() {
-    bool heatMap = !_showHeatMap;
-    if (_isPossessionQuestion) heatMap = false;
+  _switchHeatMap(bool showHeatMap) {
+    bool show = !_showHeatMap;
+    if (showHeatMap != null) {
+      show = showHeatMap;
+    }
     setState(() {
-      _showHeatMap = heatMap;
+      _showHeatMap = show;
+    });
+  }
+
+  _switchZones(bool showZones) {
+    bool show = !_showZones;
+    if (showZones != null) {
+      show = showZones;
+    }
+    setState(() {
+      _showZones = show;
     });
   }
 
@@ -279,6 +296,9 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
             _isPossessionQuestion = false;
             _matchStart = true;
             _matchPause = false;
+
+            //show Zones
+            _switchZones(true);
           }
         },
       ),
@@ -331,8 +351,8 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
       });
       _isPossessionQuestion = true;
     });
-    _switchHeatMap();
-    _switchPercentages();
+    _switchHeatMap(false);
+    _switchPercentages(false);
     _switchTeamBallPossession(isHome: true, isInit: true);
   }
 
@@ -496,6 +516,40 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
   //switch between tabs
   int _currentIndex = 0;
 
+  //show Instructions
+  showOverlay(BuildContext context) async {
+    OverlayState overlayState = Overlay.of(context);
+    OverlayEntry overlayEntry = OverlayEntry(
+        builder: (context) => Container(
+              color: Theme.of(context).scaffoldBackgroundColor,
+            ));
+    // Positioned(
+    //       top: 40.0,
+    //       right: 10.0,
+    //       child: CircleAvatar(
+    //         radius: 10.0,
+    //         backgroundColor: Colors.red,
+    //         child: Text("1"),
+    //       ),
+    //     ));
+
+    // OverlayEntry overlayEntry = OverlayEntry(
+    //     builder: (context) => Positioned(
+    //           top: MediaQuery.of(context).size.height / 2.0,
+    //           width: MediaQuery.of(context).size.width / 2.0,
+    //           child: CircleAvatar(
+    //             radius: 50.0,
+    //             backgroundColor: Colors.red,
+    //             child: Text("1"),
+    //           ),
+    //         ));
+    overlayState.insert(overlayEntry);
+
+    await Future.delayed(Duration(seconds: 2));
+
+    overlayEntry.remove();
+  }
+
   @override
   Widget build(BuildContext context) {
     final String homeTeam = widget.homeTeam.length > 15
@@ -516,8 +570,10 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
     return Scaffold(
       key: _startMatchScaffoldKey,
       drawer: AppDrawerInMatch(
+          switchZones: _switchZones,
           switchHeatMap: _switchHeatMap,
           switchPercentages: _switchPercentages,
+          zones: _showZones,
           heatmap: _showHeatMap,
           percentages: _showPercentages),
       bottomNavigationBar: BottomNavigationBar(
@@ -553,6 +609,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                   IconButton(
                     icon: Icon(Icons.settings),
                     onPressed: () {
+                      //showOverlay(context);
                       _startMatchScaffoldKey.currentState.openDrawer();
                     },
                   ),
@@ -561,8 +618,8 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                     child: Scoreboard(
                       time: time,
                       extraTime: _extraTime != 0 ? extraTime : '',
-                      homeTeam: homeTeam,
-                      awayTeam: awayTeam,
+                      homeTeam: widget.homeTeamAbb,
+                      awayTeam: widget.awayTeamAbb,
                       homeGoals: _homeTeamGoals,
                       awayGoals: _awayTeamGoals,
                     ),
@@ -621,7 +678,9 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                                   child: Stack(
                                     children: [
                                       //Zone start ---
-                                      _showPercentages || _showHeatMap
+                                      _showPercentages ||
+                                              _showHeatMap ||
+                                              _showZones
                                           ? ListView.builder(
                                               padding: EdgeInsets.all(0),
                                               physics:
@@ -675,15 +734,16 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                                                             .primary
                                                             .withOpacity(
                                                                 _homeTeamBallPossession
-                                                                    ? 0.3
-                                                                    : 0.1),
+                                                                    ? 0.4
+                                                                    : 0.2),
                                                         border: Border.all(
                                                             width: 0.1,
                                                             color:
                                                                 Colors.white)),
                                                     child: NormalTextSize(
                                                       size: 30,
-                                                      title: 'Home',
+                                                      title:
+                                                          '${widget.homeTeamAbb.toUpperCase()}',
                                                       color: Colors.white,
                                                       padding: const EdgeInsets
                                                               .symmetric(
@@ -719,7 +779,8 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                                                                 Colors.white)),
                                                     child: NormalTextSize(
                                                       size: 30,
-                                                      title: 'Away',
+                                                      title:
+                                                          '${widget.awayTeamAbb.toUpperCase()}',
                                                       color: Colors.white,
                                                       padding: const EdgeInsets
                                                               .symmetric(
@@ -811,19 +872,12 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
         _endTimer();
       },
     );
-    Widget goalButton = FlatButton(
-      child: Text("Goal!"),
-      color: GlobalColors.secondary,
+
+    Widget pastGoal = FlatButton(
+      child: Text("Past the target"),
       onPressed: () {
         Navigator.of(context, rootNavigator: true).pop();
-        _onShot(isGoal: true, isHomeShot: isHomeShot);
-      },
-    );
-    Widget saved = FlatButton(
-      child: Text("Saved"),
-      onPressed: () {
-        Navigator.of(context, rootNavigator: true).pop();
-        _onShot(isGoal: false, isHomeShot: isHomeShot, isSaved: true);
+        _onShot(isGoal: false, isHomeShot: isHomeShot, isPast: true);
       },
     );
     Widget savedAndCorner = FlatButton(
@@ -833,11 +887,22 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
         _onShot(isGoal: false, isHomeShot: isHomeShot);
       },
     );
-    Widget pastGoal = FlatButton(
-      child: Text("Past the goal"),
+    Widget saved = FlatButton(
+      child: Text("Saved"),
       onPressed: () {
         Navigator.of(context, rootNavigator: true).pop();
-        _onShot(isGoal: false, isHomeShot: isHomeShot, isPast: true);
+        _onShot(isGoal: false, isHomeShot: isHomeShot, isSaved: true);
+      },
+    );
+    Widget goalButton = FlatButton(
+      child: Text(
+        "Goal!",
+        style: TextStyle(color: Colors.white),
+      ),
+      color: GlobalColors.primary.withOpacity(0.4),
+      onPressed: () {
+        Navigator.of(context, rootNavigator: true).pop();
+        _onShot(isGoal: true, isHomeShot: isHomeShot);
       },
     );
 

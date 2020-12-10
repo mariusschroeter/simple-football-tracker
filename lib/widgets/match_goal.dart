@@ -11,7 +11,7 @@ class MatchGoal extends StatelessWidget {
     return DragTarget(
       builder: (context, candidates, rejects) {
         return Container(
-          height: 25,
+          height: 23,
           width: 60,
         );
       },

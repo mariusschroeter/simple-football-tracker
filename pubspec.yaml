@@ -58,6 +58,9 @@ flutter:
    - lib/resources/images/icon_percentage.svg
    - lib/resources/images/icon_zone.svg
    - lib/resources/gifs/start_match.gif
+   - lib/resources/gifs/track_possession.gif
+   - lib/resources/gifs/track_shots.gif
+   - lib/resources/gifs/switch_possession.gif
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

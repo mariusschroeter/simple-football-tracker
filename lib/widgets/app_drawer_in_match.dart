@@ -6,17 +6,20 @@ class AppDrawerInMatch extends StatelessWidget {
   final Function switchHeatMap;
   final Function switchPercentages;
   final Function switchZones;
+  final Function showInstructions;
   final bool zones;
   final bool heatmap;
   final bool percentages;
 
-  AppDrawerInMatch(
-      {this.switchHeatMap,
-      this.switchPercentages,
-      this.switchZones,
-      this.zones,
-      this.heatmap,
-      this.percentages});
+  AppDrawerInMatch({
+    this.switchHeatMap,
+    this.switchPercentages,
+    this.switchZones,
+    this.showInstructions,
+    this.zones,
+    this.heatmap,
+    this.percentages,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -94,6 +97,16 @@ class AppDrawerInMatch extends StatelessWidget {
             value: heatmap,
             onChanged: (_) => switchHeatMap(!heatmap),
           ),
+          Divider(),
+          ListTile(
+              leading: Icon(Icons.info_outline),
+              title: Text(
+                'Show Instructions',
+              ),
+              onTap: () => {
+                    Navigator.of(context).pop(),
+                    showInstructions(context),
+                  }),
           Divider(),
           ListTile(
             leading: Icon(Icons.close),

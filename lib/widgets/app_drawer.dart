@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:football_provider_app/widgets/global_colors.dart';
 
 import '../screens/settings_screen.dart';
 
@@ -14,7 +15,7 @@ class AppDrawer extends StatelessWidget {
           ),
           Divider(),
           ListTile(
-            leading: const Icon(Icons.account_circle),
+            leading: const Icon(Icons.sports_soccer),
             title: const Text('Matches'),
             onTap: () {
               Navigator.of(context).pushReplacementNamed('/');
@@ -28,7 +29,17 @@ class AppDrawer extends StatelessWidget {
               Navigator.of(context)
                   .pushReplacementNamed(SettingsScreen.routeName);
             },
-          )
+          ),
+          Divider(),
+          ListTile(
+            leading: const Icon(Icons.logout),
+            title:
+                Text('Logout', style: TextStyle(color: GlobalColors.secondary)),
+            onTap: () {
+              Navigator.of(context)
+                  .pushReplacementNamed(SettingsScreen.routeName);
+            },
+          ),
         ],
       ),
     );

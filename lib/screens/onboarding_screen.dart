@@ -28,7 +28,11 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final bodyStyle = TextStyle(fontSize: 19.0, color: Colors.white);
+    final bodyStyle = TextStyle(
+      fontSize: 19.0,
+      color: Colors.white,
+      height: 1.25,
+    );
     final pageDecoration = PageDecoration(
       titleTextStyle: TextStyle(
           fontSize: 28.0, fontWeight: FontWeight.w700, color: Colors.white),
@@ -68,7 +72,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
         ),
       ],
       onDone: () => _onIntroEnd(context),
-      //onSkip: () => _onIntroEnd(context), // You can override onSkip callback
+      onSkip: () => _onIntroEnd(context),
       showSkipButton: true,
       skipFlex: 0,
       nextFlex: 0,

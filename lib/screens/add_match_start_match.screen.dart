@@ -53,6 +53,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      _showInstructionsOverlay(context);
       _initField();
       _buildZones();
       _buildMatch();
@@ -519,7 +520,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
   int _currentIndex = 0;
 
   //show Instructions
-  showOverlay(BuildContext context) async {
+  _showInstructionsOverlay(BuildContext context) async {
     OverlayState overlayState = Overlay.of(context);
     OverlayEntry overlayEntry;
     overlayEntry = OverlayEntry(
@@ -543,12 +544,14 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
     return Scaffold(
       key: _startMatchScaffoldKey,
       drawer: AppDrawerInMatch(
-          switchZones: _switchZones,
-          switchHeatMap: _switchHeatMap,
-          switchPercentages: _switchPercentages,
-          zones: _showZones,
-          heatmap: _showHeatMap,
-          percentages: _showPercentages),
+        switchZones: _switchZones,
+        switchHeatMap: _switchHeatMap,
+        switchPercentages: _switchPercentages,
+        zones: _showZones,
+        heatmap: _showHeatMap,
+        percentages: _showPercentages,
+        showInstructions: _showInstructionsOverlay,
+      ),
       bottomNavigationBar: BottomNavigationBar(
         key: _bottomNavKey,
         type: BottomNavigationBarType.fixed,
@@ -582,8 +585,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                   IconButton(
                     icon: Icon(Icons.settings),
                     onPressed: () {
-                      showOverlay(context);
-                      //_startMatchScaffoldKey.currentState.openDrawer();
+                      _startMatchScaffoldKey.currentState.openDrawer();
                     },
                   ),
                   Expanded(
@@ -891,7 +893,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
             : "Is it Halftime yet?";
 
     final actions = goalCheck
-        ? [goalButton, saved, savedAndCorner, pastGoal]
+        ? [pastGoal, saved, savedAndCorner, goalButton]
         : [itsNotHalftimeButton, itsHalftimeButton];
 
     // show the dialog

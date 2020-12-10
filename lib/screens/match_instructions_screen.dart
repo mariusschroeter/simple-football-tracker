@@ -35,8 +35,8 @@ class _MatchInstructionsScreenState extends State<MatchInstructionsScreen>
     super.dispose();
   }
 
-  Widget _buildImage(String assetName) {
-    gifController.repeat(min: 0, max: 75, period: Duration(seconds: 5));
+  Widget _buildImage(String assetName, double maxFrame) {
+    gifController.repeat(min: 0, max: maxFrame, period: Duration(seconds: 5));
     final statusBarHeight = MediaQuery.of(context).padding.top;
     return Padding(
       padding: EdgeInsets.only(top: statusBarHeight + 8),
@@ -45,7 +45,7 @@ class _MatchInstructionsScreenState extends State<MatchInstructionsScreen>
         controller: gifController,
         fit: BoxFit.cover,
         image: AssetImage(
-          'lib/resources/gifs/start_match.gif',
+          'lib/resources/gifs/$assetName.gif',
         ),
       ),
     );
@@ -53,14 +53,20 @@ class _MatchInstructionsScreenState extends State<MatchInstructionsScreen>
 
   @override
   Widget build(BuildContext context) {
-    final bodyStyle = TextStyle(fontSize: 19.0, color: Colors.white);
+    final bodyStyle = TextStyle(
+      fontSize: 19.0,
+      color: Colors.white,
+      height: 1.25,
+    );
     final pageDecoration = PageDecoration(
       titleTextStyle: TextStyle(
           fontSize: 28.0, fontWeight: FontWeight.w700, color: Colors.white),
       bodyTextStyle: bodyStyle,
-      descriptionPadding: EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 16.0),
       pageColor: Theme.of(context).scaffoldBackgroundColor,
       imagePadding: EdgeInsets.zero,
+      imageFlex: 1,
+      titlePadding: EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 16.0),
+      descriptionPadding: EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 16.0),
     );
 
     return IntroductionScreen(
@@ -69,28 +75,35 @@ class _MatchInstructionsScreenState extends State<MatchInstructionsScreen>
         PageViewModel(
           title: "Start the game",
           body: "Choose which team has the ball and start the game",
-          image: Center(child: _buildImage('img1')),
+          image: Center(child: _buildImage('start_match', 75)),
           decoration: pageDecoration,
           footer: null,
         ),
         PageViewModel(
           title: "Track current ball position",
           body: "Tap on the corresponding zone to track possession",
-          image: Center(child: _buildImage('img1')),
+          image: Center(child: _buildImage('track_possession', 53)),
           decoration: pageDecoration,
           footer: null,
         ),
         PageViewModel(
           title: "Switch ball possession",
+          body: "Double tap to switch the team currently in possession",
+          image: Center(child: _buildImage('switch_possession', 53)),
+          decoration: pageDecoration,
+          footer: null,
+        ),
+        PageViewModel(
+          title: "Track shots",
           body:
-              "Double tap on the ball to switch the team currently in possession",
-          image: Center(child: _buildImage('img1')),
+              "Hold and drag the ball to the corresponding goal and release to determine the shots outcome",
+          image: Center(child: _buildImage('track_shots', 53)),
           decoration: pageDecoration,
           footer: null,
         ),
       ],
       onDone: () => _onIntroEnd(context),
-      onSkip: () => _onIntroEnd(context), // You can override onSkip callback
+      onSkip: () => _onIntroEnd(context),
       showSkipButton: true,
       skipFlex: 0,
       nextFlex: 0,

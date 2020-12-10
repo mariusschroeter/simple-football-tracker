@@ -100,7 +100,9 @@ class MatchesProvider with ChangeNotifier {
         loadedMatches.add(Match(
           id: matchId,
           homeTeam: matchData['homeTeam'],
+          homeTeamAbb: matchData['homeTeamAbb'],
           awayTeam: matchData['awayTeam'],
+          awayTeamAbb: matchData['awayTeamAbb'],
           isWon: matchData['isWon'],
           dateTime: DateTime.now(),
           score: [0, 0],

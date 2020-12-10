@@ -3,12 +3,12 @@ import 'package:football_provider_app/screens/matches_screen.dart';
 import 'package:football_provider_app/widgets/global_colors.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 
-class OnboardingScreen extends StatefulWidget {
+class OnBoardingScreen extends StatefulWidget {
   @override
-  _OnboardingScreenState createState() => _OnboardingScreenState();
+  _OnBoardingScreenState createState() => _OnBoardingScreenState();
 }
 
-class _OnboardingScreenState extends State<OnboardingScreen> {
+class _OnBoardingScreenState extends State<OnBoardingScreen> {
   final introKey = GlobalKey<IntroductionScreenState>();
 
   void _onIntroEnd(context) {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:football_provider_app/screens/onboarding_screen.dart';
+import 'package:football_provider_app/screens/onBoarding_screen.dart';
 import 'package:football_provider_app/widgets/global_colors.dart';
 import 'package:provider/provider.dart';
 
@@ -35,7 +35,7 @@ class MyApp extends StatelessWidget {
             headline1: TextStyle(fontSize: 72.0, fontWeight: FontWeight.bold),
           ),
         ),
-        home: OnboardingScreen(),
+        home: OnBoardingScreen(),
         routes: {
           MatchDetailScreen.routeName: (ctx) => MatchDetailScreen(),
           SettingsScreen.routeName: (ctx) => SettingsScreen(),

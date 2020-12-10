@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
+import 'package:flutter_gifimage/flutter_gifimage.dart';
 
+import 'package:football_provider_app/screens/match_instructions_screen.dart';
 import 'package:football_provider_app/providers/matches.dart';
 import 'package:football_provider_app/widgets/app_drawer_in_match.dart';
 import 'package:football_provider_app/widgets/global_colors.dart';
@@ -519,36 +521,12 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
   //show Instructions
   showOverlay(BuildContext context) async {
     OverlayState overlayState = Overlay.of(context);
-    OverlayEntry overlayEntry = OverlayEntry(
-        builder: (context) => Container(
-              child: Image.asset('lib/resources/gifs/start_match.gif'),
-              color: Theme.of(context).scaffoldBackgroundColor,
-            ));
-    // Positioned(
-    //       top: 40.0,
-    //       right: 10.0,
-    //       child: CircleAvatar(
-    //         radius: 10.0,
-    //         backgroundColor: Colors.red,
-    //         child: Text("1"),
-    //       ),
-    //     ));
-
-    // OverlayEntry overlayEntry = OverlayEntry(
-    //     builder: (context) => Positioned(
-    //           top: MediaQuery.of(context).size.height / 2.0,
-    //           width: MediaQuery.of(context).size.width / 2.0,
-    //           child: CircleAvatar(
-    //             radius: 50.0,
-    //             backgroundColor: Colors.red,
-    //             child: Text("1"),
-    //           ),
-    //         ));
+    OverlayEntry overlayEntry;
+    overlayEntry = OverlayEntry(
+        builder: (context) => MatchInstructionsScreen(onClose: () {
+              overlayEntry.remove();
+            }));
     overlayState.insert(overlayEntry);
-
-    await Future.delayed(Duration(seconds: 5));
-
-    overlayEntry.remove();
   }
 
   @override

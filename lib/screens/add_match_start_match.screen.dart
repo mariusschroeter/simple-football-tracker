@@ -1,6 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
+
 import 'package:football_provider_app/providers/matches.dart';
 import 'package:football_provider_app/widgets/app_drawer_in_match.dart';
 import 'package:football_provider_app/widgets/global_colors.dart';
@@ -8,9 +11,6 @@ import 'package:football_provider_app/widgets/match_ball.dart';
 import 'package:football_provider_app/widgets/match_goal.dart';
 import 'package:football_provider_app/widgets/scoreboard.dart';
 import 'package:football_provider_app/widgets/stats_list.dart';
-import 'package:provider/provider.dart';
-import 'package:uuid/uuid.dart';
-
 import 'package:football_provider_app/models/zone.dart';
 import 'package:football_provider_app/providers/match.dart';
 import 'package:football_provider_app/widgets/fieldzone.dart';
@@ -521,6 +521,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
     OverlayState overlayState = Overlay.of(context);
     OverlayEntry overlayEntry = OverlayEntry(
         builder: (context) => Container(
+              child: Image.asset('lib/resources/gifs/start_match.gif'),
               color: Theme.of(context).scaffoldBackgroundColor,
             ));
     // Positioned(
@@ -545,19 +546,13 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
     //         ));
     overlayState.insert(overlayEntry);
 
-    await Future.delayed(Duration(seconds: 2));
+    await Future.delayed(Duration(seconds: 5));
 
     overlayEntry.remove();
   }
 
   @override
   Widget build(BuildContext context) {
-    final String homeTeam = widget.homeTeam.length > 15
-        ? widget.homeTeam.substring(0, 15)
-        : widget.homeTeam;
-    final String awayTeam = widget.awayTeam.length > 15
-        ? widget.awayTeam.substring(0, 15)
-        : widget.awayTeam;
     final time =
         _isExtraTime ? '45:00' : _printDuration(Duration(seconds: _start));
     final extraTime =
@@ -609,8 +604,8 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                   IconButton(
                     icon: Icon(Icons.settings),
                     onPressed: () {
-                      //showOverlay(context);
-                      _startMatchScaffoldKey.currentState.openDrawer();
+                      showOverlay(context);
+                      //_startMatchScaffoldKey.currentState.openDrawer();
                     },
                   ),
                   Expanded(

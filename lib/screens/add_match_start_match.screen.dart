@@ -525,6 +525,26 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
     }
   };
 
+  // Color _goalColor = Colors.transparent;
+
+  // _onWillAcceptShot(bool isHomeShot) {
+  //   Color goalColor = Colors.transparent;
+  //   if (isHomeShot)
+  //     goalColor = GlobalColors.primary;
+  //   else
+  //     goalColor = GlobalColors.secondary;
+
+  //   _setGoalColor(goalColor);
+
+  //   return true;
+  // }
+
+  // _setGoalColor(Color goalColor) {
+  //   setState(() {
+  //     _goalColor = goalColor;
+  //   });
+  // }
+
   //switch between tabs
   int _currentIndex = 0;
 
@@ -591,11 +611,14 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
               child: Row(
                 key: _scoreboardRowKey,
                 children: [
-                  IconButton(
-                    icon: Icon(Icons.settings),
-                    onPressed: () {
-                      _startMatchScaffoldKey.currentState.openDrawer();
-                    },
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8.0),
+                    child: IconButton(
+                      icon: Icon(Icons.settings),
+                      onPressed: () {
+                        _startMatchScaffoldKey.currentState.openDrawer();
+                      },
+                    ),
                   ),
                   Expanded(
                     flex: 1,
@@ -608,32 +631,43 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                       awayGoals: _awayTeamGoals,
                     ),
                   ),
-                  IconButton(
-                    icon: _start == 0 && !_matchHalfTime
-                        ? Icon(Icons.play_arrow)
-                        : _start == 0 && _matchHalfTime
-                            ? Icon(Icons.play_arrow)
-                            : _matchPause
-                                ? Icon(Icons.repeat)
-                                : _isExtraTime && !_matchHalfTime
-                                    ? Icon(Icons.stop)
-                                    : _isExtraTime && _matchHalfTime
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8.0),
+                    child: Container(
+                      color: GlobalColors.secondary,
+                      child: IconButton(
+                        icon: _start == 0 && !_matchHalfTime
+                            ? Icon(
+                                Icons.play_arrow,
+                              )
+                            : _start == 0 && _matchHalfTime
+                                ? Icon(
+                                    Icons.play_arrow,
+                                  )
+                                : _matchPause
+                                    ? Icon(Icons.repeat)
+                                    : _isExtraTime && !_matchHalfTime
                                         ? Icon(Icons.stop)
-                                        : Icon(Icons.pause),
-                    onPressed: _start == 0
-                        ? () => _startTimer(0)
-                        : _matchPause
-                            ? unpauseTimer
-                            : _isExtraTime
-                                ? () => _endTimer()
-                                : _pauseTimer,
+                                        : _isExtraTime && _matchHalfTime
+                                            ? Icon(Icons.stop)
+                                            : Icon(Icons.pause),
+                        onPressed: _start == 0
+                            ? () => _startTimer(0)
+                            : _matchPause
+                                ? unpauseTimer
+                                : _isExtraTime
+                                    ? () => _endTimer()
+                                    : _pauseTimer,
+                      ),
+                    ),
                   ),
                 ],
               ),
             ),
             Container(
+              height: _fieldHeight,
               child: _currentIndex == 0
-                  ? Column(
+                  ? Stack(
                       children: [
                         Container(
                           height: _fieldHeight,
@@ -650,6 +684,9 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                               MatchGoal(
                                 onShot: _checkShot,
                                 isHomeShot: false,
+                                // onWillAcceptShot: _onWillAcceptShot,
+                                // setGoalColor: _setGoalColor,
+                                // color: _goalColor,
                               ),
                               GestureDetector(
                                 onTapDown: (TapDownDetails details) =>
@@ -784,8 +821,37 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                               MatchGoal(
                                 onShot: _checkShot,
                                 isHomeShot: true,
+                                // onWillAcceptShot: _onWillAcceptShot,
+                                // setGoalColor: _setGoalColor,
+                                // color: _goalColor,
                               ),
                             ],
+                          ),
+                        ),
+                        Positioned(
+                          top: 0,
+                          left: 8.0,
+                          child: Container(
+                            height: 23.0,
+                            color: GlobalColors.primary.withOpacity(0.4),
+                            child: NormalTextSize(
+                              padding: EdgeInsets.symmetric(horizontal: 8.0),
+                              title: widget.homeTeamAbb.toUpperCase(),
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          bottom: 0,
+                          right: 8,
+                          child: Container(
+                            height: 23.0,
+                            color: GlobalColors.secondary.withOpacity(0.4),
+                            child: NormalTextSize(
+                              padding: EdgeInsets.symmetric(horizontal: 8.0),
+                              title: widget.awayTeamAbb.toUpperCase(),
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                       ],

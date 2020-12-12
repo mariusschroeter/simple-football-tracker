@@ -10,12 +10,12 @@ class Scoreboard extends StatelessWidget {
   final int awayGoals;
 
   Scoreboard({
-    this.time,
-    this.extraTime,
-    this.homeTeam,
-    this.awayTeam,
-    this.homeGoals,
-    this.awayGoals,
+    @required this.time,
+    this.extraTime = '',
+    @required this.homeTeam,
+    @required this.awayTeam,
+    @required this.homeGoals,
+    @required this.awayGoals,
   });
 
   @override

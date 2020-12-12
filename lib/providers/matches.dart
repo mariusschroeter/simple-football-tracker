@@ -65,7 +65,9 @@ class MatchesProvider with ChangeNotifier {
       await http.post(url,
           body: json.encode({
             'homeTeam': match.homeTeam,
+            'homeTeamAbb': match.homeTeamAbb,
             'awayTeam': match.awayTeam,
+            'awayTeamAbb': match.awayTeamAbb,
             'firstHalfPercentages': firstHalf,
             'secondHalfPercentages': secondHalf,
             'dateTime': match.dateTime.millisecondsSinceEpoch,
@@ -106,7 +108,9 @@ class MatchesProvider with ChangeNotifier {
         loadedMatches.add(Match(
           id: matchId,
           homeTeam: matchData['homeTeam'],
+          homeTeamAbb: matchData['homeTeamAbb'],
           awayTeam: matchData['awayTeam'],
+          awayTeamAbb: matchData['awayTeamAbb'],
           score: score,
           dateTime: DateTime.fromMillisecondsSinceEpoch(matchData['dateTime']),
           firstHalfZones: firstHalfZones,

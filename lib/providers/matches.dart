@@ -48,30 +48,38 @@ class MatchesProvider with ChangeNotifier {
   Future<void> addMatch(Match match) async {
     const url = 'https://football-tracker-3e8cc.firebaseio.com/matches.json';
     try {
-      Map<String, List<double>> firstHalf = Map<String, List<double>>();
-      for (var i = 0; i < match.firstHalfZones.length; i++) {
-        var zone = match.firstHalfZones[i];
-        firstHalf.addAll({
+      Map<String, List<double>> totalZones = Map<String, List<double>>();
+      for (var i = 0; i < match.totalZones.length; i++) {
+        var zone = match.totalZones[i];
+        totalZones.addAll({
           'zone${i + 1}': [zone.homePercentage, zone.awayPercentage]
         });
       }
-      Map<String, List<double>> secondHalf = Map<String, List<double>>();
-      for (var i = 0; i < match.secondHalfZones.length; i++) {
-        var zone = match.secondHalfZones[i];
-        secondHalf.addAll({
-          'zone${i + 1}': [zone.homePercentage, zone.awayPercentage]
-        });
-      }
+      // Map<String, List<double>> firstHalf = Map<String, List<double>>();
+      // for (var i = 0; i < match.firstHalfZones.length; i++) {
+      //   var zone = match.firstHalfZones[i];
+      //   firstHalf.addAll({
+      //     'zone${i + 1}': [zone.homePercentage, zone.awayPercentage]
+      //   });
+      // }
+      // Map<String, List<double>> secondHalf = Map<String, List<double>>();
+      // for (var i = 0; i < match.secondHalfZones.length; i++) {
+      //   var zone = match.secondHalfZones[i];
+      //   secondHalf.addAll({
+      //     'zone${i + 1}': [zone.homePercentage, zone.awayPercentage]
+      //   });
+      // }
       await http.post(url,
           body: json.encode({
             'homeTeam': match.homeTeam,
             'homeTeamAbb': match.homeTeamAbb,
             'awayTeam': match.awayTeam,
             'awayTeamAbb': match.awayTeamAbb,
-            'firstHalfPercentages': firstHalf,
-            'secondHalfPercentages': secondHalf,
+            'totalZones': totalZones,
             'dateTime': match.dateTime.millisecondsSinceEpoch,
             'score': match.score,
+            // 'firstHalfPercentages': firstHalf,
+            // 'secondHalfPercentages': secondHalf,
             // 'isWon': true,
           }));
       notifyListeners();
@@ -88,22 +96,30 @@ class MatchesProvider with ChangeNotifier {
       if (extractedData == null) return;
       final List<Match> loadedMatches = [];
       extractedData.forEach((matchId, matchData) {
-        final Map<String, dynamic> firstHalf =
-            matchData['firstHalfPercentages'] as Map<String, dynamic>;
-        final List<ZonePercentages> firstHalfZones = [];
-        firstHalf.entries.forEach((element) {
-          firstHalfZones.add(ZonePercentages(
+        final Map<String, dynamic> totalPercentages =
+            matchData['totalZones'] as Map<String, dynamic>;
+        final List<ZonePercentages> totalZones = [];
+        totalPercentages.entries.forEach((element) {
+          totalZones.add(ZonePercentages(
               homePercentage: element.value[0],
               awayPercentage: element.value[1]));
         });
-        final Map<String, dynamic> secondHalf =
-            matchData['secondHalfPercentages'] as Map<String, dynamic>;
-        final List<ZonePercentages> secondHalfZones = [];
-        secondHalf.entries.forEach((element) {
-          secondHalfZones.add(ZonePercentages(
-              homePercentage: element.value[0],
-              awayPercentage: element.value[1]));
-        });
+        // final Map<String, dynamic> firstHalf =
+        //     matchData['firstHalfPercentages'] as Map<String, dynamic>;
+        // final List<ZonePercentages> firstHalfZones = [];
+        // firstHalf.entries.forEach((element) {
+        //   firstHalfZones.add(ZonePercentages(
+        //       homePercentage: element.value[0],
+        //       awayPercentage: element.value[1]));
+        // });
+        // final Map<String, dynamic> secondHalf =
+        //     matchData['secondHalfPercentages'] as Map<String, dynamic>;
+        // final List<ZonePercentages> secondHalfZones = [];
+        // secondHalf.entries.forEach((element) {
+        //   secondHalfZones.add(ZonePercentages(
+        //       homePercentage: element.value[0],
+        //       awayPercentage: element.value[1]));
+        // });
         final List<int> score = matchData["score"].cast<int>();
         loadedMatches.add(Match(
           id: matchId,
@@ -113,8 +129,9 @@ class MatchesProvider with ChangeNotifier {
           awayTeamAbb: matchData['awayTeamAbb'],
           score: score,
           dateTime: DateTime.fromMillisecondsSinceEpoch(matchData['dateTime']),
-          firstHalfZones: firstHalfZones,
-          secondHalfZones: secondHalfZones,
+          totalZones: totalZones,
+          // firstHalfZones: [],
+          // secondHalfZones: [],
         ));
       });
       _items = loadedMatches;

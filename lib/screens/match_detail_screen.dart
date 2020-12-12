@@ -29,7 +29,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> {
 
   double _screenWidth = 0;
   double _screenHeight = 0;
-  double _fieldHeight = 0;
+  double _fieldHeight = 500;
 
   _initField() {
     setState(() {
@@ -112,7 +112,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> {
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
                       child: NormalTextSize(
-                        title: loadedMatch.homeTeamAbb,
+                        title: loadedMatch.homeTeamAbb.toUpperCase(),
                         color: Colors.white,
                       ),
                     ),
@@ -133,7 +133,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> {
                               showPercentages: true,
                               zoneCount: 3,
                               percentages: getZonePercentages(
-                                loadedMatch.firstHalfZones,
+                                loadedMatch.totalZones,
                                 i + 1,
                               ).percentages,
                               innerFieldHeight: innerFieldHeight,
@@ -156,7 +156,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> {
                         color: GlobalColors.secondary.withOpacity(0.4),
                         child: NormalTextSize(
                           padding: EdgeInsets.symmetric(horizontal: 8.0),
-                          title: loadedMatch.awayTeamAbb,
+                          title: loadedMatch.awayTeamAbb.toUpperCase(),
                           color: Colors.white,
                         ),
                       ),

@@ -11,6 +11,7 @@ class Match {
   final String awayTeamAbb;
   List<ZonePercentages> firstHalfZones;
   List<ZonePercentages> secondHalfZones;
+  List<ZonePercentages> totalZones;
   List<int> score;
 
   Match({
@@ -20,8 +21,9 @@ class Match {
     this.homeTeamAbb,
     @required this.awayTeam,
     this.awayTeamAbb,
-    @required this.firstHalfZones,
-    @required this.secondHalfZones,
+    @required this.totalZones,
+    this.firstHalfZones,
+    this.secondHalfZones,
     @required this.score,
   });
 

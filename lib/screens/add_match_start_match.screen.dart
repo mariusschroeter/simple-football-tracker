@@ -99,6 +99,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
       awayTeamAbb: widget.awayTeamAbb,
       firstHalfZones: [],
       secondHalfZones: [],
+      totalZones: [],
       score: [],
       // matchOutcome: MatchOutcome.DRAW,
     );
@@ -316,21 +317,23 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
     });
   }
 
-  _endTimer() {
-    _timer.cancel();
+  _zonePercentagesListForMatch() {
     List<ZonePercentages> zonePercentages = [];
     zonePercentages = zones
-        .map(
-          (e) => new ZonePercentages(
-            homePercentage: e.homePercentage != 0.0
-                ? ((e.homePercentage / _homePossession) * 100)
-                : 0.0,
-            awayPercentage: e.awayPercentage != 0.0
-                ? ((e.awayPercentage / _awayPossession) * 100)
-                : 0.0,
-          ),
-        )
+        .map((e) => ZonePercentages(
+              homePercentage: e.homePercentage != 0.0
+                  ? ((e.homePercentage / _homePossession) * 100)
+                  : 0.0,
+              awayPercentage: e.awayPercentage != 0.0
+                  ? ((e.awayPercentage / _awayPossession) * 100)
+                  : 0.0,
+            ))
         .toList();
+    return zonePercentages;
+  }
+
+  _endTimer() {
+    _timer.cancel();
     setState(() {
       _matchStart = false;
       _matchPause = false;
@@ -343,10 +346,11 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
       _totalAwayPossession = _awayPossession;
       _awayPossession = 0;
       if (!_matchHalfTime) {
-        _match.firstHalfZones = zonePercentages;
+        _match.firstHalfZones = _zonePercentagesListForMatch();
         _matchHalfTime = true;
       } else {
-        _match.secondHalfZones = zonePercentages;
+        _match.secondHalfZones = _zonePercentagesListForMatch();
+        _setMatchTotalZones();
         _setMatchOutcome();
         _endMatch();
       }
@@ -367,6 +371,32 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
     });
   }
 
+  _checkNull(value) {
+    if (value != double.infinity) return value;
+    return 0.0;
+  }
+
+  _setMatchTotalZones() {
+    List<ZonePercentages> zonePercentages = [];
+
+    for (var i = 0; i < _match.firstHalfZones.length; i++) {
+      double homePercentage = _checkNull(
+          (_match.firstHalfZones[i].homePercentage +
+              _match.secondHalfZones[i].homePercentage));
+      double awayPercentage = _checkNull(
+          (_match.firstHalfZones[i].awayPercentage +
+              _match.secondHalfZones[i].awayPercentage));
+      zonePercentages.add(ZonePercentages(
+        homePercentage: homePercentage,
+        awayPercentage: awayPercentage,
+      ));
+    }
+
+    setState(() {
+      _match.totalZones = zonePercentages;
+    });
+  }
+
   _endMatch() {
     Provider.of<MatchesProvider>(context, listen: false)
         .addMatch(_match)
@@ -374,7 +404,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
             Navigator.of(context).pop('Match added! Pull to refresh.'))
         .catchError((error) {
       print(error);
-      //Navigator.of(context).pop('An error occurred!');
+      // Navigator.of(context).pop('An error occurred!');
     });
   }
 

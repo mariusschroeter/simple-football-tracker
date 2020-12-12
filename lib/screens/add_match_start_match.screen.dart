@@ -525,25 +525,17 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
     }
   };
 
-  // Color _goalColor = Colors.transparent;
+  double _onShotHomeOpacity = 0.4;
+  double _onShotAwayOpacity = 0.4;
 
-  // _onWillAcceptShot(bool isHomeShot) {
-  //   Color goalColor = Colors.transparent;
-  //   if (isHomeShot)
-  //     goalColor = GlobalColors.primary;
-  //   else
-  //     goalColor = GlobalColors.secondary;
-
-  //   _setGoalColor(goalColor);
-
-  //   return true;
-  // }
-
-  // _setGoalColor(Color goalColor) {
-  //   setState(() {
-  //     _goalColor = goalColor;
-  //   });
-  // }
+  _setColorOnShot(double onShotOpacity, bool isHome) {
+    setState(() {
+      if (isHome)
+        _onShotHomeOpacity = 0.8;
+      else
+        _onShotAwayOpacity = 0.8;
+    });
+  }
 
   //switch between tabs
   int _currentIndex = 0;
@@ -629,6 +621,8 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                       awayTeam: widget.awayTeamAbb,
                       homeGoals: _homeTeamGoals,
                       awayGoals: _awayTeamGoals,
+                      opacityOfHomeTeam: _onShotHomeOpacity,
+                      opacityOfAwayTeam: _onShotAwayOpacity,
                     ),
                   ),
                   Padding(
@@ -685,8 +679,8 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                                 onShot: _checkShot,
                                 isHomeShot: false,
                                 // onWillAcceptShot: _onWillAcceptShot,
-                                // setGoalColor: _setGoalColor,
-                                // color: _goalColor,
+                                setColorOnShot: _setColorOnShot,
+                                // color: _onShotOpacity
                               ),
                               GestureDetector(
                                 onTapDown: (TapDownDetails details) =>
@@ -822,7 +816,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                                 onShot: _checkShot,
                                 isHomeShot: true,
                                 // onWillAcceptShot: _onWillAcceptShot,
-                                // setGoalColor: _setGoalColor,
+                                setColorOnShot: _setColorOnShot,
                                 // color: _goalColor,
                               ),
                             ],

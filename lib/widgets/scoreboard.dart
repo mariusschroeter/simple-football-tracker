@@ -8,6 +8,8 @@ class Scoreboard extends StatelessWidget {
   final String awayTeam;
   final int homeGoals;
   final int awayGoals;
+  final double opacityOfHomeTeam;
+  final double opacityOfAwayTeam;
 
   Scoreboard({
     @required this.time,
@@ -16,6 +18,8 @@ class Scoreboard extends StatelessWidget {
     @required this.awayTeam,
     @required this.homeGoals,
     @required this.awayGoals,
+    this.opacityOfHomeTeam = 0.4,
+    this.opacityOfAwayTeam = 0.4,
   });
 
   @override
@@ -37,7 +41,8 @@ class Scoreboard extends StatelessWidget {
                   children: [
                     Container(
                       decoration: BoxDecoration(
-                          color: GlobalColors.primary.withOpacity(0.4),
+                          color: GlobalColors.primary
+                              .withOpacity(opacityOfHomeTeam),
                           border: Border.all(width: 0.1, color: Colors.white)),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -71,7 +76,8 @@ class Scoreboard extends StatelessWidget {
                   children: [
                     Container(
                       decoration: BoxDecoration(
-                          color: GlobalColors.secondary.withOpacity(0.4),
+                          color: GlobalColors.secondary
+                              .withOpacity(opacityOfAwayTeam),
                           border: Border.all(width: 0.1, color: Colors.white)),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8.0),

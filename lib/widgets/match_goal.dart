@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:football_provider_app/widgets/global_colors.dart';
 
 class MatchGoal extends StatelessWidget {
   final Function onShot;
   // final Function onWillAcceptShot;
-  // final Function setGoalColor;
+  final Function setColorOnShot;
   final bool isHomeShot;
   // final Color color;
 
   MatchGoal({
     this.onShot,
     this.isHomeShot,
-    // this.onWillAcceptShot,
-    // this.color,
-    // this.setGoalColor,
+    this.setColorOnShot,
   });
 
   @override
@@ -26,8 +25,8 @@ class MatchGoal extends StatelessWidget {
         );
       },
       onAccept: (_) => onShot(isHomeShot),
-      // onWillAccept: (_) => onWillAcceptShot(!isHomeShot),
-      // onLeave: (_) => setGoalColor(Colors.transparent),
+      onWillAccept: (_) => setColorOnShot(0.8, isHomeShot),
+      onLeave: (_) => setColorOnShot(0.4, isHomeShot),
     );
   }
 }

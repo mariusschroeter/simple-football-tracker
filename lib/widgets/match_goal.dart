@@ -16,7 +16,7 @@ class MatchGoal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DragTarget<Color>(
+    return DragTarget<double>(
       builder: (context, candidates, rejects) {
         return Container(
           // color: color,
@@ -25,7 +25,7 @@ class MatchGoal extends StatelessWidget {
         );
       },
       onAccept: (_) => onShot(isHomeShot),
-      onWillAccept: (_) => setColorOnShot(0.8, isHomeShot),
+      onWillAccept: (_) => setColorOnShot(1.0, isHomeShot),
       onLeave: (_) => setColorOnShot(0.4, isHomeShot),
     );
   }

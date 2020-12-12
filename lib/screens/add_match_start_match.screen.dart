@@ -531,10 +531,12 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
   _setColorOnShot(double onShotOpacity, bool isHome) {
     setState(() {
       if (isHome)
-        _onShotHomeOpacity = 0.8;
+        _onShotHomeOpacity = onShotOpacity;
       else
-        _onShotAwayOpacity = 0.8;
+        _onShotAwayOpacity = onShotOpacity;
     });
+
+    return true;
   }
 
   //switch between tabs
@@ -827,7 +829,8 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                           left: 8.0,
                           child: Container(
                             height: 23.0,
-                            color: GlobalColors.primary.withOpacity(0.4),
+                            color: GlobalColors.primary
+                                .withOpacity(_onShotHomeOpacity),
                             child: NormalTextSize(
                               padding: EdgeInsets.symmetric(horizontal: 8.0),
                               title: widget.homeTeamAbb.toUpperCase(),
@@ -840,7 +843,8 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                           right: 8,
                           child: Container(
                             height: 23.0,
-                            color: GlobalColors.secondary.withOpacity(0.4),
+                            color: GlobalColors.secondary
+                                .withOpacity(_onShotAwayOpacity),
                             child: NormalTextSize(
                               padding: EdgeInsets.symmetric(horizontal: 8.0),
                               title: widget.awayTeamAbb.toUpperCase(),

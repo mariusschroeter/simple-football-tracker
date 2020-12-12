@@ -11,8 +11,8 @@ class MatchBall extends StatelessWidget {
     return Positioned(
       top: ballPosition.dy,
       left: ballPosition.dx,
-      child: Draggable<Color>(
-        data: Colors.white,
+      child: Draggable<double>(
+        data: 0.4,
         child: Container(
           height: 35,
           width: 35,

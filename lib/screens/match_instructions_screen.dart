@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gifimage/flutter_gifimage.dart';
-import 'package:football_provider_app/screens/matches_screen.dart';
 import 'package:football_provider_app/widgets/global_colors.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 
 class MatchInstructionsScreen extends StatefulWidget {
-  Function onClose;
+  final Function onClose;
 
   MatchInstructionsScreen({this.onClose});
 

@@ -115,12 +115,43 @@ class AppDrawerInMatch extends StatelessWidget {
               style: TextStyle(color: GlobalColors.secondary),
             ),
             onTap: () {
-              Navigator.of(context).pop();
-              Navigator.of(context).pop('Match has been ended!');
+              showAlertDialog(context, 'Are you sure?',
+                  'Do you want to end the match without saving?');
             },
           )
         ],
       ),
+    );
+  }
+
+  showAlertDialog(BuildContext context, String title, String subtitle) {
+    Widget notQuit = FlatButton(
+      child: Text("No"),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
+    Widget quit = FlatButton(
+      child: Text("Yes"),
+      onPressed: () {
+        Navigator.of(context).pop();
+        Navigator.of(context).pop();
+        Navigator.of(context).pop('Match has been ended!');
+      },
+    );
+
+    final actions = [notQuit, quit];
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(subtitle),
+          actions: actions,
+        );
+      },
     );
   }
 }

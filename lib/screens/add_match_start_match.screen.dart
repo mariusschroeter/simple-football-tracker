@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
-import 'package:flutter_gifimage/flutter_gifimage.dart';
 
 import 'package:football_provider_app/screens/match_instructions_screen.dart';
 import 'package:football_provider_app/providers/matches.dart';
@@ -100,6 +99,8 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
       awayTeamAbb: widget.awayTeamAbb,
       firstHalfZones: [],
       secondHalfZones: [],
+      score: [],
+      // matchOutcome: MatchOutcome.DRAW,
     );
   }
 
@@ -346,6 +347,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
         _matchHalfTime = true;
       } else {
         _match.secondHalfZones = zonePercentages;
+        _setMatchOutcome();
         _endMatch();
       }
       zones.forEach((element) {
@@ -359,13 +361,20 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
     _switchTeamBallPossession(isHome: true, isInit: true);
   }
 
+  _setMatchOutcome() {
+    setState(() {
+      _match.score = [_homeTeamGoals, _awayTeamGoals];
+    });
+  }
+
   _endMatch() {
     Provider.of<MatchesProvider>(context, listen: false)
         .addMatch(_match)
         .then((value) =>
             Navigator.of(context).pop('Match added! Pull to refresh.'))
         .catchError((error) {
-      Navigator.of(context).pop('An error occurred!');
+      print(error);
+      //Navigator.of(context).pop('An error occurred!');
     });
   }
 

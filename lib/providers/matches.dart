@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:football_provider_app/models/http_exception.dart';
 import 'package:football_provider_app/models/zone.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 import './match.dart';
 
@@ -29,9 +30,11 @@ class MatchesProvider with ChangeNotifier {
     return [..._items].reversed.toList();
   }
 
-  List<Match> get wonItems {
-    return _items.where((match) => match.isWon).toList();
-  }
+  // List<Match> get wonItems {
+  //   return _items
+  //       .where((match) => match.matchOutcome == MatchOutcome.WON)
+  //       .toList();
+  // }
 
   Match findById(String id) {
     return _items.firstWhere((match) => match.id == id);
@@ -63,9 +66,11 @@ class MatchesProvider with ChangeNotifier {
           body: json.encode({
             'homeTeam': match.homeTeam,
             'awayTeam': match.awayTeam,
-            'isWon': true,
             'firstHalfPercentages': firstHalf,
             'secondHalfPercentages': secondHalf,
+            'dateTime': match.dateTime.millisecondsSinceEpoch,
+            'score': match.score,
+            // 'isWon': true,
           }));
       notifyListeners();
     } catch (error) {
@@ -81,7 +86,7 @@ class MatchesProvider with ChangeNotifier {
       if (extractedData == null) return;
       final List<Match> loadedMatches = [];
       extractedData.forEach((matchId, matchData) {
-        Map<String, dynamic> firstHalf =
+        final Map<String, dynamic> firstHalf =
             matchData['firstHalfPercentages'] as Map<String, dynamic>;
         final List<ZonePercentages> firstHalfZones = [];
         firstHalf.entries.forEach((element) {
@@ -89,7 +94,7 @@ class MatchesProvider with ChangeNotifier {
               homePercentage: element.value[0],
               awayPercentage: element.value[1]));
         });
-        Map<String, dynamic> secondHalf =
+        final Map<String, dynamic> secondHalf =
             matchData['secondHalfPercentages'] as Map<String, dynamic>;
         final List<ZonePercentages> secondHalfZones = [];
         secondHalf.entries.forEach((element) {
@@ -97,15 +102,13 @@ class MatchesProvider with ChangeNotifier {
               homePercentage: element.value[0],
               awayPercentage: element.value[1]));
         });
+        final List<int> score = matchData["score"].cast<int>();
         loadedMatches.add(Match(
           id: matchId,
           homeTeam: matchData['homeTeam'],
-          homeTeamAbb: matchData['homeTeamAbb'],
           awayTeam: matchData['awayTeam'],
-          awayTeamAbb: matchData['awayTeamAbb'],
-          isWon: matchData['isWon'],
-          dateTime: DateTime.now(),
-          score: [0, 0],
+          score: score,
+          dateTime: DateTime.fromMillisecondsSinceEpoch(matchData['dateTime']),
           firstHalfZones: firstHalfZones,
           secondHalfZones: secondHalfZones,
         ));

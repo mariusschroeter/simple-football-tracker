@@ -13,7 +13,7 @@ class MatchesList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final matchesData = Provider.of<MatchesProvider>(context);
-    final matches = showWon ? matchesData.wonItems : matchesData.items;
+    final matches = showWon ? matchesData.items : matchesData.items;
     return ListView.builder(
       itemBuilder: (ctx, i) => Dismissible(
         key: ValueKey(matches[i].id),
@@ -81,7 +81,8 @@ class MatchesList extends StatelessWidget {
                 title: Text(matches[i].homeTeam + ' vs ' + matches[i].awayTeam),
                 subtitle:
                     Text(DateFormat('dd.MM.yyyy').format(matches[i].dateTime)),
-                trailing: Text('0 : 0'),
+                trailing:
+                    Text('${matches[i].score[0]} : ${matches[i].score[1]}'),
               ),
             ),
           ),

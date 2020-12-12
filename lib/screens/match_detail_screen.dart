@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:football_provider_app/models/zone.dart';
 import 'package:football_provider_app/widgets/fieldzone.dart';
 import 'package:football_provider_app/widgets/text_elements.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/matches.dart';
@@ -28,8 +29,6 @@ class MatchDetailScreen extends StatelessWidget {
     return stats;
   }
 
-  //Hier kommen dann die ganzen Statistiken rein
-  //Einfach ein Graph der auch die Highlights enthält(Wann ist ein Tor gefallen)
   @override
   Widget build(BuildContext context) {
     final matchId = ModalRoute.of(context).settings.arguments as String;
@@ -37,7 +36,7 @@ class MatchDetailScreen extends StatelessWidget {
         Provider.of<MatchesProvider>(context, listen: false).findById(matchId);
     return Scaffold(
       appBar: AppBar(
-        title: Text(loadedMatch.homeTeam),
+        title: Text(DateFormat('dd.MM.yyyy').format(loadedMatch.dateTime)),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -82,6 +81,7 @@ class MatchDetailScreen extends StatelessWidget {
                                   loadedMatch.firstHalfZones,
                                   i + 1,
                                 ).percentages,
+                                innerFieldHeight: 450,
                               ),
                             ),
                             itemCount: 2,
@@ -144,6 +144,7 @@ class MatchDetailScreen extends StatelessWidget {
                                   loadedMatch.secondHalfZones,
                                   i + 1,
                                 ).percentages,
+                                innerFieldHeight: 450,
                               ),
                             ),
                             itemCount: 2,

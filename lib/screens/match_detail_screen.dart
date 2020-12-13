@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:football_provider_app/models/zone.dart';
+import 'package:football_provider_app/screens/add_match_start_match.screen.dart';
 import 'package:football_provider_app/widgets/fieldzone.dart';
 import 'package:football_provider_app/widgets/global_colors.dart';
 import 'package:football_provider_app/widgets/scoreboard.dart';
+import 'package:football_provider_app/widgets/stats_list.dart';
 import 'package:football_provider_app/widgets/text_elements.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -18,6 +20,7 @@ class MatchDetailScreen extends StatefulWidget {
 
 class _MatchDetailScreenState extends State<MatchDetailScreen> {
   final _scoreboardRowKey = GlobalKey();
+  final _bottomNavKey = GlobalKey();
 
   @override
   void initState() {
@@ -30,15 +33,19 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> {
   double _screenWidth = 0;
   double _screenHeight = 0;
   double _fieldHeight = 500;
+  double _innerFieldHeight = 450;
+  double _statusBarHeight = 0;
 
   _initField() {
     setState(() {
       _screenWidth = MediaQuery.of(context).size.width;
       _screenHeight = MediaQuery.of(context).size.height;
-      final _statusBarHeight = MediaQuery.of(context).padding.top;
+      _statusBarHeight = MediaQuery.of(context).padding.top;
       _fieldHeight = _screenHeight -
           _statusBarHeight -
-          _scoreboardRowKey.currentContext.size.height;
+          _scoreboardRowKey.currentContext.size.height -
+          _bottomNavKey.currentContext.size.height;
+      _innerFieldHeight = _fieldHeight - 46;
     });
   }
 
@@ -61,242 +68,185 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> {
     return stats;
   }
 
+  int _currentIndex = 0;
+
   @override
   Widget build(BuildContext context) {
     final matchId = ModalRoute.of(context).settings.arguments as String;
     final loadedMatch =
         Provider.of<MatchesProvider>(context, listen: false).findById(matchId);
 
-    final appBar = AppBar(
-      title: Text(DateFormat('dd.MM.yyyy').format(loadedMatch.dateTime)),
-    );
-
-    final fieldHeight = _fieldHeight - appBar.preferredSize.height;
-    final innerFieldHeight = fieldHeight - 46;
+    final statsList = loadedMatch.stats.entries
+        .map((e) => BarchartList(title: e.key, values: e.value))
+        .toList();
     return Scaffold(
-        appBar: appBar,
-        body: SingleChildScrollView(
-            child: Column(children: [
-          Row(
-            key: _scoreboardRowKey,
-            children: [
-              Expanded(
-                flex: 1,
-                child: Scoreboard(
-                  time: '90:00',
-                  homeTeam: loadedMatch.homeTeamAbb,
-                  awayTeam: loadedMatch.awayTeamAbb,
-                  homeGoals: loadedMatch.score[0],
-                  awayGoals: loadedMatch.score[1],
-                ),
-              ),
-            ],
-          ),
-          Container(
-            height: fieldHeight,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage("lib/resources/images/football_field.jpg"),
-                fit: BoxFit.fill,
-              ),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      body: SingleChildScrollView(
+          child: Column(
+        children: [
+          Padding(
+            padding: EdgeInsets.only(top: _statusBarHeight),
+            child: Row(
+              key: _scoreboardRowKey,
               children: [
-                Padding(
-                  padding: EdgeInsets.only(left: 8.0),
-                  child: Container(
-                    color: GlobalColors.primary.withOpacity(0.4),
-                    height: 23.0,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                IconButton(
+                  icon: Icon(Icons.arrow_back),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                Expanded(
+                  flex: 1,
+                  child: Scoreboard(
+                    time: '90:00',
+                    homeTeam: loadedMatch.homeTeamAbb,
+                    awayTeam: loadedMatch.awayTeamAbb,
+                    homeGoals: loadedMatch.score[0],
+                    awayGoals: loadedMatch.score[1],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          _currentIndex == 0
+              ? Stack(children: [
+                  Container(
+                    height: _fieldHeight,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage(
+                            "lib/resources/images/football_field.jpg"),
+                        fit: BoxFit.fill,
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          flex: 1,
+                          child: Container(
+                            height: _innerFieldHeight,
+                            width: double.infinity,
+                            child: Stack(
+                              children: [
+                                ListView.builder(
+                                  physics: NeverScrollableScrollPhysics(),
+                                  itemBuilder: (ctx, i) => Container(
+                                    height: _innerFieldHeight / 2,
+                                    child: FieldZoneRow(
+                                      showPercentages: true,
+                                      zoneCount: 3,
+                                      percentages: getZonePercentages(
+                                        loadedMatch.totalZones,
+                                        i + 1,
+                                      ).percentages,
+                                      innerFieldHeight: _innerFieldHeight,
+                                    ),
+                                  ),
+                                  itemCount: 2,
+                                ),
+                                //Zone end ---
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Positioned(
+                    top: 0,
+                    left: 8.0,
+                    child: Container(
+                      color: GlobalColors.primary.withOpacity(0.4),
+                      height: 23.0,
                       child: NormalTextSize(
+                        padding: EdgeInsets.symmetric(horizontal: 8.0),
                         title: loadedMatch.homeTeamAbb.toUpperCase(),
                         color: Colors.white,
                       ),
                     ),
                   ),
-                ),
-                Expanded(
-                  flex: 1,
-                  child: Container(
-                    height: innerFieldHeight,
-                    width: double.infinity,
-                    child: Stack(
-                      children: [
-                        ListView.builder(
-                          physics: NeverScrollableScrollPhysics(),
-                          itemBuilder: (ctx, i) => Container(
-                            height: innerFieldHeight / 2,
-                            child: FieldZoneRow(
-                              showPercentages: true,
-                              zoneCount: 3,
-                              percentages: getZonePercentages(
-                                loadedMatch.totalZones,
-                                i + 1,
-                              ).percentages,
-                              innerFieldHeight: innerFieldHeight,
-                            ),
-                          ),
-                          itemCount: 2,
-                        ),
-                        //Zone end ---
-                      ],
-                    ),
-                  ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.only(right: 8.0),
-                      child: Container(
-                        height: 23.0,
-                        color: GlobalColors.secondary.withOpacity(0.4),
-                        child: NormalTextSize(
-                          padding: EdgeInsets.symmetric(horizontal: 8.0),
-                          title: loadedMatch.awayTeamAbb.toUpperCase(),
-                          color: Colors.white,
-                        ),
+                  Positioned(
+                    bottom: 0,
+                    right: 8,
+                    child: Container(
+                      color: GlobalColors.secondary.withOpacity(0.4),
+                      height: 23.0,
+                      child: NormalTextSize(
+                        padding: EdgeInsets.symmetric(horizontal: 8.0),
+                        title: loadedMatch.awayTeamAbb.toUpperCase(),
+                        color: Colors.white,
                       ),
                     ),
+                  ),
+                ])
+              : Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Flexible(
+                      child: MediaQuery.removePadding(
+                        context: context,
+                        removeTop: true,
+                        child: ListView.builder(
+                          physics: NeverScrollableScrollPhysics(),
+                          itemBuilder: (ctx, i) => Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16.0, vertical: 10.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.only(bottom: 2.0),
+                                  child: Text(
+                                    i == 0
+                                        ? '${statsList[i].title} (%)'
+                                        : '${statsList[i].title}',
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                                StatsList(
+                                  stats: statsList[i].values,
+                                  isHalfTime:
+                                      // i == 0 ? _matchHalfTime : true,
+                                      true,
+                                ),
+                              ],
+                            ),
+                          ),
+                          itemCount: statsList.length,
+                          shrinkWrap: true,
+                        ),
+                      ),
+                    )
                   ],
                 ),
-              ],
-            ),
-            // child: Column(
-            //   children: [
-            //     Center(
-            //         child: Text('1st Half',
-            //             style: Theme.of(context).textTheme.headline1)),
-            //     Container(
-            //       height: 500,
-            //       width: double.infinity,
-            //       decoration: BoxDecoration(
-            //         image: DecorationImage(
-            //           image: AssetImage("lib/resources/images/football_field.jpg"),
-            //           fit: BoxFit.fill,
-            //         ),
-            //       ),
-            //       child: Column(
-            //         crossAxisAlignment: CrossAxisAlignment.start,
-            //         children: [
-            //           Padding(
-            //             padding: EdgeInsets.only(left: 8.0),
-            //             child: NormalTextSize(
-            //               title: loadedMatch.homeTeam,
-            //               color: Colors.white,
-            //             ),
-            //           ),
-            //           Expanded(
-            //             flex: 1,
-            //             child: Container(
-            //               height: 450,
-            //               width: double.infinity,
-            //               child: Stack(
-            //                 children: [
-            //                   ListView.builder(
-            //                     physics: NeverScrollableScrollPhysics(),
-            //                     itemBuilder: (ctx, i) => Container(
-            //                       height: 450 / 2,
-            //                       child: FieldZoneRow(
-            //                         showPercentages: true,
-            //                         zoneCount: 3,
-            //                         percentages: getZonePercentages(
-            //                           loadedMatch.firstHalfZones,
-            //                           i + 1,
-            //                         ).percentages,
-            //                         innerFieldHeight: 450,
-            //                       ),
-            //                     ),
-            //                     itemCount: 2,
-            //                   ),
-            //                   //Zone end ---
-            //                 ],
-            //               ),
-            //             ),
-            //           ),
-            //           Row(
-            //             mainAxisAlignment: MainAxisAlignment.end,
-            //             children: [
-            //               Padding(
-            //                 padding: EdgeInsets.only(right: 8.0),
-            //                 child: NormalTextSize(
-            //                   title: loadedMatch.awayTeam,
-            //                 ),
-            //               ),
-            //             ],
-            //           ),
-            //         ],
-            //       ),
-            //     ),
-            //     Center(
-            //         child: Text('2nd Half',
-            //             style: Theme.of(context).textTheme.headline1)),
-            //     Container(
-            //       height: 500,
-            //       width: double.infinity,
-            //       decoration: BoxDecoration(
-            //         image: DecorationImage(
-            //           image: AssetImage("lib/resources/images/football_field.jpg"),
-            //           fit: BoxFit.fill,
-            //         ),
-            //       ),
-            //       child: Column(
-            //         crossAxisAlignment: CrossAxisAlignment.start,
-            //         children: [
-            //           Padding(
-            //               padding: EdgeInsets.only(left: 8.0),
-            //               child: NormalTextSize(
-            //                 title: loadedMatch.homeTeam,
-            //                 color: Colors.white,
-            //               )),
-            //           Expanded(
-            //             flex: 1,
-            //             child: Container(
-            //               height: 450,
-            //               width: double.infinity,
-            //               child: Stack(
-            //                 children: [
-            //                   ListView.builder(
-            //                     physics: NeverScrollableScrollPhysics(),
-            //                     itemBuilder: (ctx, i) => Container(
-            //                       height: 450 / 2,
-            //                       child: FieldZoneRow(
-            //                         showPercentages: true,
-            //                         zoneCount: 3,
-            //                         percentages: getZonePercentages(
-            //                           loadedMatch.secondHalfZones,
-            //                           i + 1,
-            //                         ).percentages,
-            //                         innerFieldHeight: 450,
-            //                       ),
-            //                     ),
-            //                     itemCount: 2,
-            //                   ),
-            //                   //Zone end ---
-            //                 ],
-            //               ),
-            //             ),
-            //           ),
-            //           Row(
-            //             mainAxisAlignment: MainAxisAlignment.end,
-            //             children: [
-            //               Padding(
-            //                 padding: EdgeInsets.only(right: 8.0),
-            //                 child: NormalTextSize(
-            //                   title: loadedMatch.awayTeam,
-            //                 ),
-            //               ),
-            //             ],
-            //           ),
-            //         ],
-            //       ),
-            //     ),
-            //   ],
-            // ),
+        ],
+      )),
+      bottomNavigationBar: BottomNavigationBar(
+        key: _bottomNavKey,
+        type: BottomNavigationBarType.fixed,
+        selectedItemColor: Colors.white,
+        unselectedItemColor: Colors.white.withOpacity(.60),
+        selectedFontSize: 15,
+        unselectedFontSize: 14,
+        onTap: (value) {
+          setState(() => _currentIndex = value);
+        },
+        currentIndex: _currentIndex,
+        items: [
+          BottomNavigationBarItem(
+            label: 'Match',
+            icon: Icon(Icons.sports_soccer),
           ),
-        ])));
+          BottomNavigationBarItem(
+            label: 'Stats',
+            icon: Icon(Icons.data_usage),
+          ),
+        ],
+      ),
+    );
   }
 }

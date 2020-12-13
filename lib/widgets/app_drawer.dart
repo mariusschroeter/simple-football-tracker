@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:football_provider_app/screens/matches_screen.dart';
 import 'package:football_provider_app/widgets/global_colors.dart';
 
 import '../screens/settings_screen.dart';
@@ -18,7 +19,8 @@ class AppDrawer extends StatelessWidget {
             leading: const Icon(Icons.sports_soccer),
             title: const Text('Matches'),
             onTap: () {
-              Navigator.of(context).pushReplacementNamed('/');
+              Navigator.of(context)
+                  .pushReplacementNamed(MatchesScreen.routeName);
             },
           ),
           Divider(),

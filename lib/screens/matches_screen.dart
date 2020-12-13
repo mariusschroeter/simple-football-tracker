@@ -7,17 +7,19 @@ import '../widgets/app_drawer.dart';
 import '../widgets/add_match_button.dart';
 
 enum FilterOptions {
-  Won,
-  All,
+  NEWEST_FIRST,
+  OLDEST_FIRST,
 }
 
 class MatchesScreen extends StatefulWidget {
+  static const routeName = '/matches';
+
   @override
   _MatchesScreenState createState() => _MatchesScreenState();
 }
 
 class _MatchesScreenState extends State<MatchesScreen> {
-  var _showWonOnly = false;
+  var _showNewestFirst = true;
   var _isLoading = false;
 
   Future<void> _refreshMatches() async {
@@ -50,20 +52,22 @@ class _MatchesScreenState extends State<MatchesScreen> {
           PopupMenuButton(
             onSelected: (FilterOptions selectedValue) {
               setState(() {
-                if (selectedValue == FilterOptions.Won) {
-                  _showWonOnly = true;
+                if (selectedValue == FilterOptions.NEWEST_FIRST) {
+                  _showNewestFirst = true;
                 } else {
-                  _showWonOnly = false;
+                  _showNewestFirst = false;
                 }
               });
             },
             icon: Icon(Icons.more_vert),
             itemBuilder: (_) => [
               PopupMenuItem(
-                child: Text("Only Won"),
-                value: FilterOptions.Won,
+                child: Text("Newest First"),
+                value: FilterOptions.NEWEST_FIRST,
               ),
-              PopupMenuItem(child: Text("Show All"), value: FilterOptions.All)
+              PopupMenuItem(
+                  child: Text("Oldest First"),
+                  value: FilterOptions.OLDEST_FIRST)
             ],
           ),
         ],
@@ -82,7 +86,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
                     Expanded(
                         child: Padding(
                       padding: const EdgeInsets.only(top: 16.0),
-                      child: MatchesList(_showWonOnly),
+                      child: MatchesList(_showNewestFirst),
                     ))
                   ],
                 ),

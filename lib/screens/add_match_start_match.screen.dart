@@ -101,6 +101,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
       secondHalfZones: [],
       totalZones: [],
       score: [],
+      stats: {},
       // matchOutcome: MatchOutcome.DRAW,
     );
   }
@@ -347,6 +348,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
       } else {
         _match.secondHalfZones = zonePercentages;
         _setMatchTotalZones();
+        _setMatchStats();
         _setMatchOutcome();
         _endMatch();
       }
@@ -365,11 +367,6 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
     setState(() {
       _match.score = [_homeTeamGoals, _awayTeamGoals];
     });
-  }
-
-  _checkNull(value) {
-    if (value != 0.0) return value;
-    return 0.0;
   }
 
   _setMatchTotalZones() {
@@ -393,13 +390,21 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
     });
   }
 
+  _setMatchStats() {
+    setState(() {
+      _match.stats = _statsMap;
+    });
+  }
+
   _endMatch() {
     Provider.of<MatchesProvider>(context, listen: false)
         .addMatch(_match)
         .then((value) =>
-            Navigator.of(context).pop('Match added! Pull to refresh.'))
+            // Navigator.of(context).pop('Match added! Pull to refresh.'))
+            print('done'))
         .catchError((error) {
-      Navigator.of(context).pop('An error occurred!');
+      print(error);
+      // Navigator.of(context).pop('An error occurred!');
     });
   }
 
@@ -518,10 +523,6 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
             _getPercentage(isHome: true, isTotal: true),
             _getPercentage(isHome: false, isTotal: true),
           ],
-          // 'First Half': [
-          //   _getPercentage(isHome: true, isTotal: false),
-          //   _getPercentage(isHome: false, isTotal: false),
-          // ]
         },
         'Shots': {
           'On Target': [_homeTeamShotsOnTarget, _awayTeamShotsOnTarget],
@@ -537,8 +538,6 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
   Map<String, Map<String, List<num>>> _statsMap = {
     'Possession': {
       'Total': [0, 0],
-      // 'First Half': [0, 0],
-      // 'Second Half': [0,0],
     },
     'Shots': {
       'On Target': [0, 0],
@@ -546,7 +545,6 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
     },
     'Other': {
       'Corner kicks': [0, 0],
-      // 'Fouls': [0,0],
     }
   };
 
@@ -655,7 +653,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                   Padding(
                     padding: const EdgeInsets.only(right: 8.0),
                     child: Container(
-                      color: GlobalColors.secondary,
+                      color: GlobalColors.primary,
                       child: IconButton(
                         icon: _start == 0 && !_matchHalfTime
                             ? Icon(
@@ -679,6 +677,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                                 : _isExtraTime
                                     ? () => _endTimer()
                                     : _pauseTimer,
+                        color: Colors.black,
                       ),
                     ),
                   ),
@@ -847,34 +846,6 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                                 // color: _goalColor,
                               ),
                             ],
-                          ),
-                        ),
-                        Positioned(
-                          top: 0,
-                          left: 8.0,
-                          child: Container(
-                            height: 23.0,
-                            color: GlobalColors.primary
-                                .withOpacity(_onShotHomeOpacity),
-                            child: NormalTextSize(
-                              padding: EdgeInsets.symmetric(horizontal: 8.0),
-                              title: widget.homeTeamAbb.toUpperCase(),
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                        Positioned(
-                          bottom: 0,
-                          right: 8,
-                          child: Container(
-                            height: 23.0,
-                            color: GlobalColors.secondary
-                                .withOpacity(_onShotAwayOpacity),
-                            child: NormalTextSize(
-                              padding: EdgeInsets.symmetric(horizontal: 8.0),
-                              title: widget.awayTeamAbb.toUpperCase(),
-                              color: Colors.white,
-                            ),
                           ),
                         ),
                       ],

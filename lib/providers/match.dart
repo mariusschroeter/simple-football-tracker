@@ -13,6 +13,7 @@ class Match {
   List<ZonePercentages> secondHalfZones;
   List<ZonePercentages> totalZones;
   List<int> score;
+  Map<String, Map<String, List<num>>> stats;
 
   Match({
     this.id,
@@ -25,6 +26,7 @@ class Match {
     this.firstHalfZones,
     this.secondHalfZones,
     @required this.score,
+    @required this.stats,
   });
 
   // void toggleFavoriteStatus() {

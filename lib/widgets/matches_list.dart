@@ -6,14 +6,15 @@ import '../providers/matches.dart';
 import '../screens/match_detail_screen.dart';
 
 class MatchesList extends StatelessWidget {
-  final bool showWon;
+  final bool showNewestFirst;
 
-  MatchesList(this.showWon);
+  MatchesList(this.showNewestFirst);
 
   @override
   Widget build(BuildContext context) {
     final matchesData = Provider.of<MatchesProvider>(context);
-    final matches = showWon ? matchesData.items : matchesData.items;
+    final matches =
+        showNewestFirst ? matchesData.items : matchesData.oldestItemsFirst;
     return ListView.builder(
       itemBuilder: (ctx, i) => Dismissible(
         key: ValueKey(matches[i].id),

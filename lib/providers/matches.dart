@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:football_provider_app/models/http_exception.dart';
 import 'package:football_provider_app/models/zone.dart';
+import 'package:football_provider_app/screens/add_match_start_match.screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
@@ -28,6 +29,10 @@ class MatchesProvider with ChangeNotifier {
 
   List<Match> get items {
     return [..._items].reversed.toList();
+  }
+
+  List<Match> get oldestItemsFirst {
+    return [..._items];
   }
 
   // List<Match> get wonItems {
@@ -69,6 +74,7 @@ class MatchesProvider with ChangeNotifier {
       //     'zone${i + 1}': [zone.homePercentage, zone.awayPercentage]
       //   });
       // }
+
       await http.post(url,
           body: json.encode({
             'homeTeam': match.homeTeam,
@@ -78,6 +84,7 @@ class MatchesProvider with ChangeNotifier {
             'totalZones': totalZones,
             'dateTime': match.dateTime.millisecondsSinceEpoch,
             'score': match.score,
+            'stats': match.stats,
             // 'firstHalfPercentages': firstHalf,
             // 'secondHalfPercentages': secondHalf,
             // 'isWon': true,
@@ -120,7 +127,30 @@ class MatchesProvider with ChangeNotifier {
         //       homePercentage: element.value[0],
         //       awayPercentage: element.value[1]));
         // });
-        final List<int> score = matchData["score"].cast<int>();
+
+        Map<String, Map<String, List<num>>> statsMap = {};
+        Map<String, Map<String, List<num>>> statsMapOrdered = {};
+
+        //
+        final Map<String, dynamic> stats =
+            matchData['stats'] as Map<String, dynamic>;
+
+        stats.forEach((key, value) {
+          final valuee = Map<String, dynamic>.from(value);
+          valuee.entries.forEach((element) {
+            final valueee = List<num>.from(element.value);
+            valuee.addAll({element.key: valueee});
+          });
+          final castedValuee = Map<String, List<num>>.from(valuee);
+          statsMap.addAll({key: castedValuee});
+        });
+
+        statsMapOrdered['Possession'] = statsMap['Possession'];
+        statsMapOrdered['Shots'] = statsMap['Shots'];
+        statsMapOrdered['Other'] = statsMap['Other'];
+
+        final List<int> score = matchData['score'].cast<int>();
+
         loadedMatches.add(Match(
           id: matchId,
           homeTeam: matchData['homeTeam'],
@@ -130,6 +160,7 @@ class MatchesProvider with ChangeNotifier {
           score: score,
           dateTime: DateTime.fromMillisecondsSinceEpoch(matchData['dateTime']),
           totalZones: totalZones,
+          stats: statsMapOrdered,
           // firstHalfZones: [],
           // secondHalfZones: [],
         ));

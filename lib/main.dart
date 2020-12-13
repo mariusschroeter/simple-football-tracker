@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:football_provider_app/screens/matches_screen.dart';
 import 'package:football_provider_app/screens/onBoarding_screen.dart';
 import 'package:football_provider_app/widgets/global_colors.dart';
 import 'package:provider/provider.dart';
@@ -37,6 +38,7 @@ class MyApp extends StatelessWidget {
         ),
         home: OnBoardingScreen(),
         routes: {
+          MatchesScreen.routeName: (ctx) => MatchesScreen(),
           MatchDetailScreen.routeName: (ctx) => MatchDetailScreen(),
           SettingsScreen.routeName: (ctx) => SettingsScreen(),
           AddMatchPostMatchScreen.routeName: (ctx) => AddMatchPostMatchScreen(),

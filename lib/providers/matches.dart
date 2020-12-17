@@ -3,29 +3,17 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:football_provider_app/models/http_exception.dart';
 import 'package:football_provider_app/models/zone.dart';
-import 'package:football_provider_app/screens/add_match_start_match.screen.dart';
 import 'package:http/http.dart' as http;
-import 'package:intl/intl.dart';
 
 import './match.dart';
 
 class MatchesProvider with ChangeNotifier {
-  List<Match> _items = [
-    // Match(
-    //   id: "0",
-    //   dateTime: DateTime.now(),
-    //   homeTeam: "Fühlingen",
-    //   awayTeam: "Schwarz-Weiss-Köln",
-    //   isWon: true,
-    // ),
-    // Match(
-    //   id: "1",
-    //   dateTime: DateTime.now(),
-    //   homeTeam: "Fühlingen",
-    //   awayTeam: "Ditib-Chorweiler",
-    //   isWon: false,
-    // ),
-  ];
+  List<Match> _items = [];
+
+  final String authToken;
+  final String userId;
+
+  MatchesProvider(this.authToken, this.userId, this._items);
 
   List<Match> get items {
     return [..._items].reversed.toList();
@@ -34,12 +22,6 @@ class MatchesProvider with ChangeNotifier {
   List<Match> get oldestItemsFirst {
     return [..._items];
   }
-
-  // List<Match> get wonItems {
-  //   return _items
-  //       .where((match) => match.matchOutcome == MatchOutcome.WON)
-  //       .toList();
-  // }
 
   Match findById(String id) {
     return _items.firstWhere((match) => match.id == id);
@@ -51,7 +33,8 @@ class MatchesProvider with ChangeNotifier {
   }
 
   Future<void> addMatch(Match match) async {
-    const url = 'https://football-tracker-3e8cc.firebaseio.com/matches.json';
+    final url =
+        'https://football-tracker-3e8cc.firebaseio.com/matches.json?auth=$authToken';
     try {
       Map<String, List<double>> totalZones = Map<String, List<double>>();
       for (var i = 0; i < match.totalZones.length; i++) {
@@ -88,6 +71,7 @@ class MatchesProvider with ChangeNotifier {
             // 'firstHalfPercentages': firstHalf,
             // 'secondHalfPercentages': secondHalf,
             // 'isWon': true,
+            'userId': userId,
           }));
       notifyListeners();
     } catch (error) {
@@ -96,7 +80,8 @@ class MatchesProvider with ChangeNotifier {
   }
 
   Future<void> fetchAndSetMatches() async {
-    const url = 'https://football-tracker-3e8cc.firebaseio.com/matches.json';
+    final url =
+        'https://football-tracker-3e8cc.firebaseio.com/matches.json?auth=$authToken&orderBy="userId"&equalTo="$userId"';
     try {
       final response = await http.get(url);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
@@ -174,7 +159,7 @@ class MatchesProvider with ChangeNotifier {
 
   void deleteMatch(String matchId) async {
     final url =
-        'https://football-tracker-3e8cc.firebaseio.com/matches/$matchId.json';
+        'https://football-tracker-3e8cc.firebaseio.com/matches/$matchId.json?auth=$authToken';
     var existingIndex = _items.indexWhere((element) => element.id == matchId);
     var matchToBeDeleted = _items[existingIndex];
     if (matchToBeDeleted != null) {

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:football_provider_app/providers/auth.dart';
 import 'package:football_provider_app/screens/matches_screen.dart';
 import 'package:football_provider_app/widgets/global_colors.dart';
+import 'package:provider/provider.dart';
 
 import '../screens/settings_screen.dart';
 
@@ -38,8 +40,9 @@ class AppDrawer extends StatelessWidget {
             title:
                 Text('Logout', style: TextStyle(color: GlobalColors.secondary)),
             onTap: () {
-              Navigator.of(context)
-                  .pushReplacementNamed(SettingsScreen.routeName);
+              Navigator.of(context).pop();
+              Navigator.of(context).pushReplacementNamed('/');
+              Provider.of<AuthProvider>(context, listen: false).logout();
             },
           ),
         ],

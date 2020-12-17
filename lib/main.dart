@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:football_provider_app/providers/auth.dart';
+import 'package:football_provider_app/screens/auth_screen.dart';
 import 'package:football_provider_app/screens/matches_screen.dart';
 import 'package:football_provider_app/screens/onBoarding_screen.dart';
+import 'package:football_provider_app/screens/splash_screen.dart';
 import 'package:football_provider_app/widgets/global_colors.dart';
 import 'package:provider/provider.dart';
 
@@ -18,32 +21,49 @@ class MyApp extends StatelessWidget {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: GlobalColors.primary,
     ));
-    return ChangeNotifierProvider(
-      create: (ctx) => MatchesProvider(),
-      child: MaterialApp(
-        title: 'MyMatches',
-        theme: ThemeData(
-          // Define the default brightness and colors.
-          brightness: Brightness.dark,
-          primaryColor: GlobalColors.primary,
-          accentColor: GlobalColors.accent,
-          // Define the default font family.
-          fontFamily: 'Georgia',
-
-          // Define the default TextTheme. Use this to specify the default
-          // text styling for headlines, titles, bodies of text, and more.
-          textTheme: TextTheme(
-            headline1: TextStyle(fontSize: 72.0, fontWeight: FontWeight.bold),
+    return MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (ctx) => AuthProvider()),
+          ChangeNotifierProxyProvider<AuthProvider, MatchesProvider>(
+            create: null,
+            update: (ctx, auth, previousMatches) => MatchesProvider(
+              auth.token,
+              auth.userId,
+              previousMatches == null ? [] : previousMatches.items,
+            ),
           ),
-        ),
-        home: OnBoardingScreen(),
-        routes: {
-          MatchesScreen.routeName: (ctx) => MatchesScreen(),
-          MatchDetailScreen.routeName: (ctx) => MatchDetailScreen(),
-          SettingsScreen.routeName: (ctx) => SettingsScreen(),
-          AddMatchPostMatchScreen.routeName: (ctx) => AddMatchPostMatchScreen(),
-        },
-      ),
-    );
+        ],
+        child: Consumer<AuthProvider>(
+          builder: (ctx, auth, _) => MaterialApp(
+            title: 'MyMatches',
+            theme: ThemeData(
+              brightness: Brightness.dark,
+              primaryColor: GlobalColors.primary,
+              accentColor: GlobalColors.accent,
+              fontFamily: 'Roboto',
+              textTheme: TextTheme(
+                headline1:
+                    TextStyle(fontSize: 72.0, fontWeight: FontWeight.bold),
+              ),
+            ),
+            home: auth.isAuth
+                ? MatchesScreen()
+                : FutureBuilder(
+                    future: auth.tryAutoLogin(),
+                    builder: (ctx, authResultSnapshot) =>
+                        authResultSnapshot.connectionState ==
+                                ConnectionState.waiting
+                            ? SplashScreen()
+                            : AuthScreen(),
+                  ),
+            routes: {
+              MatchesScreen.routeName: (ctx) => MatchesScreen(),
+              MatchDetailScreen.routeName: (ctx) => MatchDetailScreen(),
+              SettingsScreen.routeName: (ctx) => SettingsScreen(),
+              AddMatchPostMatchScreen.routeName: (ctx) =>
+                  AddMatchPostMatchScreen(),
+            },
+          ),
+        ));
   }
 }

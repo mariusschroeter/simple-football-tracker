@@ -46,21 +46,52 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
       key: introKey,
       pages: [
         PageViewModel(
-          title: "Track football games",
-          body: "Simple manual tracking of possession and shots.",
-          image: _buildImage('img1'),
-          decoration: pageDecoration,
-        ),
-        PageViewModel(
-          title: "Automated statistics",
-          body: "View and analyse your tracked game data",
+          titleWidget: SizedBox(
+            height: 0,
+          ),
+          bodyWidget: Container(
+            child: Column(
+              children: [
+                TextField(),
+                TextField(),
+              ],
+            ),
+          ),
           image: _buildImage('img2'),
           footer: RaisedButton(
             onPressed: () {
               introKey.currentState?.animateScroll(0);
             },
             child: const Text(
-              'FooButton',
+              'Login',
+              style: TextStyle(color: Colors.white),
+            ),
+            color: GlobalColors.secondary,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+          ),
+          decoration: pageDecoration,
+        ),
+        PageViewModel(
+          titleWidget: SizedBox(
+            height: 0,
+          ),
+          bodyWidget: Container(
+            child: Column(
+              children: [
+                TextField(),
+                TextField(),
+              ],
+            ),
+          ),
+          image: _buildImage('img2'),
+          footer: RaisedButton(
+            onPressed: () {
+              introKey.currentState?.animateScroll(0);
+            },
+            child: const Text(
+              'Login',
               style: TextStyle(color: Colors.white),
             ),
             color: GlobalColors.secondary,
@@ -76,9 +107,9 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
       showSkipButton: true,
       skipFlex: 0,
       nextFlex: 0,
-      skip: const Text('Skip'),
-      next: const Icon(Icons.arrow_forward),
-      done: const Text('Done', style: TextStyle(fontWeight: FontWeight.w600)),
+      skip: const Text('Login'),
+      next: const Text('Register'),
+      done: const Text(''),
       dotsDecorator: DotsDecorator(
         activeColor: GlobalColors.primary,
         size: Size(10.0, 10.0),

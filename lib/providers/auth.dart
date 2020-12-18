@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:football_provider_app/models/http_exception.dart';
+import 'package:football_provider_app/providers/settings.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -11,6 +12,8 @@ class AuthProvider with ChangeNotifier {
   DateTime _expiryDate;
   String _userId;
   Timer _authTimer;
+
+  List<String> _defaultTeams = [];
 
   bool get isAuth {
     return token != null;
@@ -27,6 +30,10 @@ class AuthProvider with ChangeNotifier {
 
   String get userId {
     return _userId;
+  }
+
+  List<String> get defaultTeams {
+    return _defaultTeams;
   }
 
   Future<void> authenticate(
@@ -48,9 +55,9 @@ class AuthProvider with ChangeNotifier {
       _userId = responseData['localId'];
       _expiryDate = DateTime.now()
           .add(Duration(seconds: int.parse(responseData['expiresIn'])));
+      setSettings();
       _autoLogout();
       notifyListeners();
-
       final prefs = await SharedPreferences.getInstance();
       final userData = json.encode(
         {
@@ -80,6 +87,7 @@ class AuthProvider with ChangeNotifier {
     }
     final extractedUserData =
         json.decode(prefs.getString('userData')) as Map<String, Object>;
+
     final expiryDate = DateTime.parse(extractedUserData['expiryDate']);
 
     if (expiryDate.isBefore(DateTime.now())) {
@@ -88,6 +96,7 @@ class AuthProvider with ChangeNotifier {
     _token = extractedUserData['token'];
     _userId = extractedUserData['userId'];
     _expiryDate = expiryDate;
+    setSettings();
     notifyListeners();
     _autoLogout();
     return true;
@@ -103,14 +112,20 @@ class AuthProvider with ChangeNotifier {
     }
     notifyListeners();
     final prefs = await SharedPreferences.getInstance();
-    prefs.clear();
+    prefs.remove('userData');
   }
 
   void _autoLogout() {
     if (_authTimer != null) {
       _authTimer.cancel();
     }
-    final timeToExpiry = _expiryDate.difference(DateTime.now()).inDays + 8;
+    final timeToExpiry = _expiryDate.difference(DateTime.now()).inDays + 30;
     _authTimer = Timer(Duration(days: timeToExpiry), logout);
+  }
+
+  void setSettings() async {
+    final prefs = await SharedPreferences.getInstance();
+    final extractedSettings = prefs.getStringList('appSettings');
+    _defaultTeams = extractedSettings;
   }
 }

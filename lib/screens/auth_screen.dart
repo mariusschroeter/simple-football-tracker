@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:football_provider_app/models/http_exception.dart';
 import 'package:football_provider_app/providers/auth.dart';
-import 'package:football_provider_app/screens/matches_screen.dart';
-import 'package:football_provider_app/widgets/global_colors.dart';
 import 'package:football_provider_app/widgets/svg.dart';
 import 'package:provider/provider.dart';
 
@@ -15,7 +13,7 @@ class AuthScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final deviceSize = MediaQuery.of(context).size;
     return Scaffold(
-      // resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true,
       body: Stack(
         children: <Widget>[
           SingleChildScrollView(
@@ -166,7 +164,9 @@ class _AuthCardState extends State<AuthCard> {
             child: Column(
               children: <Widget>[
                 TextFormField(
-                  decoration: InputDecoration(labelText: 'E-Mail'),
+                  decoration: InputDecoration(
+                    labelText: 'E-Mail',
+                  ),
                   keyboardType: TextInputType.emailAddress,
                   validator: (value) {
                     if (value.isEmpty || !value.contains('@')) {
@@ -177,11 +177,13 @@ class _AuthCardState extends State<AuthCard> {
                   onSaved: (value) {
                     _authData['email'] = value;
                   },
+                  cursorColor: Theme.of(context).primaryColor,
                 ),
                 TextFormField(
                   decoration: InputDecoration(labelText: 'Password'),
                   obscureText: true,
                   controller: _passwordController,
+                  // ignore: missing_return
                   validator: (value) {
                     if (value.isEmpty || value.length < 5) {
                       return 'Password is too short!';
@@ -197,6 +199,7 @@ class _AuthCardState extends State<AuthCard> {
                     decoration: InputDecoration(labelText: 'Confirm Password'),
                     obscureText: true,
                     validator: _authMode == AuthMode.Signup
+                        // ignore: missing_return
                         ? (value) {
                             if (value != _passwordController.text) {
                               return 'Passwords do not match!';

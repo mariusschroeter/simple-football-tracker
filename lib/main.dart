@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:football_provider_app/providers/settings.dart';
 import 'package:football_provider_app/providers/auth.dart';
 import 'package:football_provider_app/screens/auth_screen.dart';
 import 'package:football_provider_app/screens/matches_screen.dart';
@@ -32,6 +33,11 @@ class MyApp extends StatelessWidget {
               previousMatches == null ? [] : previousMatches.items,
             ),
           ),
+          ChangeNotifierProxyProvider<AuthProvider, Settings>(
+              create: null,
+              update: (ctx, auth, prevSettings) => Settings(
+                    auth.defaultTeams,
+                  )),
         ],
         child: Consumer<AuthProvider>(
           builder: (ctx, auth, _) => MaterialApp(

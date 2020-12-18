@@ -68,6 +68,9 @@ class MatchesList extends StatelessWidget {
                 arguments: matches[i].id);
           },
           child: Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.0),
+            ),
             margin: EdgeInsets.symmetric(horizontal: 15, vertical: 4),
             child: Padding(
               padding: const EdgeInsets.all(8.0),

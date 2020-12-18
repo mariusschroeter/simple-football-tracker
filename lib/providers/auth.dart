@@ -110,7 +110,7 @@ class AuthProvider with ChangeNotifier {
     if (_authTimer != null) {
       _authTimer.cancel();
     }
-    final timeToExpiry = _expiryDate.difference(DateTime.now()).inSeconds;
-    _authTimer = Timer(Duration(seconds: timeToExpiry), logout);
+    final timeToExpiry = _expiryDate.difference(DateTime.now()).inDays + 8;
+    _authTimer = Timer(Duration(days: timeToExpiry), logout);
   }
 }

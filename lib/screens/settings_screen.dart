@@ -35,6 +35,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
           child: Text(initials),
         ),
         label: Text(element),
+        onDeleted: () => {
+          Provider.of<Settings>(context, listen: false).deleteTeam(element),
+          _updateDefaultTeams(),
+        },
+        deleteIcon: Icon(Icons.close),
+        elevation: 4.0,
       ));
       setState(() {
         _teamChips = currTeams;

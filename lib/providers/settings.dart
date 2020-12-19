@@ -13,7 +13,7 @@ class Settings with ChangeNotifier {
   Settings(this._defaultTeams);
 
   addTeam(String team) {
-    _defaultTeams.add(team);
+    _defaultTeams.add(team.trim());
     notifyListeners();
     updatePrefs();
   }

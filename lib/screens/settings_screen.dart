@@ -27,24 +27,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
     List<String> defaultTeams =
         Provider.of<Settings>(context, listen: false).defaultTeams;
     List<Widget> currTeams = [];
-    defaultTeams.forEach((element) {
-      final initials = element.split(" ").map((e) => e[0]).join().toUpperCase();
-      currTeams.add(Chip(
-        avatar: CircleAvatar(
-          backgroundColor: GlobalColors.primary,
-          child: Text(initials),
-        ),
-        label: Text(element),
-        onDeleted: () => {
-          Provider.of<Settings>(context, listen: false).deleteTeam(element),
-          _updateDefaultTeams(),
-        },
-        deleteIcon: Icon(Icons.close),
-        elevation: 4.0,
-      ));
-      setState(() {
-        _teamChips = currTeams;
+    if (defaultTeams.length > 0) {
+      defaultTeams.forEach((element) {
+        final initials =
+            element.split(" ").map((e) => e[0]).join().toUpperCase();
+        currTeams.add(Chip(
+          avatar: CircleAvatar(
+            backgroundColor: GlobalColors.primary,
+            child: Text(initials),
+          ),
+          label: Text(element),
+          onDeleted: () => {
+            Provider.of<Settings>(context, listen: false).deleteTeam(element),
+            _updateDefaultTeams(),
+          },
+          deleteIcon: Icon(Icons.close),
+          elevation: 4.0,
+        ));
       });
+    }
+    setState(() {
+      _teamChips = currTeams;
     });
   }
 
@@ -57,7 +60,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print(_team.text);
     return Scaffold(
       appBar: AppBar(
         title: Text('Settings'),
@@ -77,14 +79,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Wrap(
-                    spacing: 8.0, // gap between adjacent chips
-                    runSpacing: 4.0, // gap between lines
-                    children: _teamChips ?? [],
-                  ),
-                  SizedBox(
-                    height: 12,
-                  ),
                   Form(
                     key: _formKey,
                     child: Column(
@@ -96,7 +90,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               child: TextFormField(
                                 controller: _team,
                                 decoration: InputDecoration(
-                                    hintText: 'Add Default Teams'),
+                                    labelText: 'Add Default Teams'),
                                 validator: (value) {
                                   return _checkInputs(value);
                                 },
@@ -125,6 +119,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ),
                       ],
                     ),
+                  ),
+                  SizedBox(
+                    height: 12,
+                  ),
+                  Wrap(
+                    spacing: 8.0, // gap between adjacent chips
+                    runSpacing: 4.0, // gap between lines
+                    children: _teamChips ?? [],
                   ),
                 ],
               ),

@@ -1,12 +1,10 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:football_provider_app/screens/settings_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Settings with ChangeNotifier {
   List<String> defaultTeams = [];
-  int defaultHaltTimeLength = 0;
+  int defaultHaltTimeLength = 45;
 
   initSettings() async {
     final prefs = await SharedPreferences.getInstance();
@@ -21,8 +19,15 @@ class Settings with ChangeNotifier {
     updatePrefs();
   }
 
+  updateHalfTimeLength(int length) {
+    defaultHaltTimeLength = length;
+    notifyListeners();
+    updatePrefs();
+  }
+
   void updatePrefs() async {
     final prefs = await SharedPreferences.getInstance();
     prefs.setStringList('settingsDefaultTeams', defaultTeams);
+    prefs.setInt('settingsDefaultHaltTimeLength', defaultHaltTimeLength);
   }
 }

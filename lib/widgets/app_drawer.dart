@@ -6,7 +6,24 @@ import 'package:provider/provider.dart';
 
 import '../screens/settings_screen.dart';
 
-class AppDrawer extends StatelessWidget {
+class AppDrawer extends StatefulWidget {
+  final FocusNode node;
+
+  AppDrawer({this.node});
+
+  @override
+  _AppDrawerState createState() => _AppDrawerState();
+}
+
+class _AppDrawerState extends State<AppDrawer> {
+  @override
+  void initState() {
+    super.initState();
+    if (widget.node != null) {
+      widget.node.unfocus();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Drawer(

@@ -14,11 +14,13 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+  final FocusNode node = FocusNode();
+
   final _formKey = GlobalKey<FormState>();
   final _team = TextEditingController();
 
   int _halfTimeValue = 45;
-  final _halfTimeLength = TextEditingController();
+  final _halfTimeLength = TextEditingController(text: '45');
 
   List<TeamChip> _teamChips = [];
 
@@ -41,6 +43,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _halfTimeValue = defaultLength;
       _halfTimeLength.text = defaultLength.toString();
     });
+  }
+
+  _updateHalfTimeValue(int value) {
+    setState(() {
+      _halfTimeValue = value;
+      _halfTimeLength.text = value.toString();
+    });
+  }
+
+  _checkHalfTimeValue(String value) {
+    _checkInputs(value);
+    if (int.tryParse(value) == null) {
+      return 'Please enter a number';
+    }
+    if (int.tryParse(value) > 45 || int.tryParse(value) < 1) {
+      return 'Please enter a number (1-45)';
+    }
+    return null;
   }
 
   void _updateDefaultTeams() {
@@ -77,24 +97,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return true;
   }
 
-  _updateHalfTimeValue(int value) {
-    setState(() {
-      _halfTimeValue = value;
-      _halfTimeLength.text = value.toString();
-    });
-  }
-
-  _checkHalfTimeValue(String value) {
-    _checkInputs(value);
-    if (int.tryParse(value) == null) {
-      return 'Please enter a number';
-    }
-    if (int.tryParse(value) > 45 || int.tryParse(value) < 1) {
-      return 'Please enter a number (1-45)';
-    }
-    return null;
-  }
-
   _addTeamChip() {
     final initials =
         _team.text.split(" ").map((e) => e[0]).join().toUpperCase();
@@ -125,16 +127,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 onPressed: () {
                   Provider.of<Settings>(context, listen: false)
                       .updateTeamChips(_teamChips);
+                  Provider.of<Settings>(context, listen: false)
+                      .updateHalfTimeLength(_halfTimeValue);
                   _updateDefaultTeams();
                   FocusScope.of(context).unfocus();
                   Scaffold.of(context).showSnackBar(SnackBar(
                     content: Text('Settings saved!'),
+                    duration: Duration(seconds: 2),
                   ));
                 }),
           )
         ],
       ),
-      drawer: AppDrawer(),
+      drawer: AppDrawer(
+        node: node,
+      ),
       resizeToAvoidBottomInset: false,
       body: SingleChildScrollView(
         child: Padding(
@@ -151,40 +158,41 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    // Row(
-                    //   children: [
-                    //     Flexible(
-                    //       flex: 2,
-                    //       child: TextFormField(
-                    //         controller: _halfTimeLength,
-                    //         decoration: InputDecoration(
-                    //           labelText: 'Half Time Length (minutes)',
-                    //           counterText: '',
-                    //         ),
-                    //         validator: (value) {
-                    //           return _checkHalfTimeValue(value);
-                    //         },
-                    //         autovalidateMode: AutovalidateMode.always,
-                    //         keyboardType: TextInputType.number,
-                    //         maxLength: 2,
-                    //         cursorColor: GlobalColors.primary,
-                    //       ),
-                    //     ),
-                    //     Flexible(
-                    //       flex: 1,
-                    //       child: NumberPicker.integer(
-                    //         initialValue: _halfTimeValue,
-                    //         minValue: 1,
-                    //         maxValue: 45,
-                    //         onChanged: (value) => {
-                    //           _updateHalfTimeValue(value),
-                    //         },
-                    //         infiniteLoop: true,
-                    //         itemExtent: 32.0,
-                    //       ),
-                    //     ),
-                    //   ],
-                    // ),
+                    Row(
+                      children: [
+                        Flexible(
+                          flex: 2,
+                          child: TextFormField(
+                            controller: _halfTimeLength,
+                            decoration: InputDecoration(
+                              labelText: 'Half Time Length (minutes)',
+                              counterText: '',
+                            ),
+                            validator: (value) {
+                              return _checkHalfTimeValue(value);
+                            },
+                            autovalidateMode: AutovalidateMode.always,
+                            keyboardType: TextInputType.number,
+                            maxLength: 2,
+                            cursorColor: GlobalColors.primary,
+                          ),
+                        ),
+                        Flexible(
+                          flex: 1,
+                          child: NumberPicker.integer(
+                            initialValue:
+                                int.tryParse(_halfTimeLength.text) ?? 45,
+                            minValue: 1,
+                            maxValue: 45,
+                            onChanged: (value) => {
+                              _updateHalfTimeValue(value),
+                            },
+                            infiniteLoop: true,
+                            itemExtent: 32.0,
+                          ),
+                        ),
+                      ],
+                    ),
                     Row(
                       children: [
                         Flexible(
@@ -196,8 +204,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             validator: (value) {
                               return _checkInputs(value);
                             },
-                            onChanged: (value) {
-                              _checkHalfTimeValue(value);
+                            onChanged: (_) {
                               setState(() {});
                             },
                           ),

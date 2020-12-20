@@ -60,6 +60,7 @@ flutter:
    - lib/resources/images/test.jpg
    - lib/resources/images/logo.jpg
    - lib/resources/images/logo.svg
+   - lib/resources/images/logo_trans.svg
    - lib/resources/images/logo_alt.svg
    - lib/resources/images/icon_percentage.svg
    - lib/resources/images/icon_zone.svg

@@ -375,14 +375,19 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
 
   _setMatchTotalZones() {
     List<ZonePercentages> zonePercentages = [];
-
     for (var i = 0; i < _match.firstHalfZones.length; i++) {
-      double homePercentage = (_match.firstHalfZones[i].homePercentage +
-              _match.secondHalfZones[i].homePercentage) /
-          2;
-      double awayPercentage = (_match.firstHalfZones[i].awayPercentage +
-              _match.secondHalfZones[i].awayPercentage) /
-          2;
+      final homeFirst = _match.firstHalfZones[i].homePercentage;
+      final homeSecond = _match.secondHalfZones[i].homePercentage;
+      final awayFirst = _match.firstHalfZones[i].awayPercentage;
+      final awaySecond = _match.secondHalfZones[i].awayPercentage;
+      double homePercentage = (homeFirst == 100.0 && homeSecond == 0.0) ||
+              (homeFirst == 0.0 && homeSecond == 100.0)
+          ? 100.0
+          : (homeFirst + homeSecond) / 2;
+      double awayPercentage = (awayFirst == 100.0 && awaySecond == 0.0) ||
+              (awayFirst == 0.0 && awaySecond == 100.0)
+          ? 100.0
+          : (awayFirst + awaySecond) / 2;
       zonePercentages.add(ZonePercentages(
         homePercentage: homePercentage,
         awayPercentage: awayPercentage,

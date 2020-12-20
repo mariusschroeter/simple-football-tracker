@@ -23,6 +23,20 @@ class _AddMatchPostMatchScreenState extends State<AddMatchPostMatchScreen> {
   int _halfTimeValue = 45;
   final _halfTimeLength = TextEditingController(text: '45');
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _initHalfTimeValue();
+  }
+
+  _initHalfTimeValue() {
+    final length = Provider.of<Settings>(context).defaultHaltTimeLength;
+    setState(() {
+      _halfTimeValue = length;
+      _halfTimeLength.text = length.toString();
+    });
+  }
+
   _checkInputs(String teamName) {
     if (teamName.isEmpty) return 'Please enter some text';
     return null;
@@ -311,6 +325,7 @@ class _AddMatchPostMatchScreenState extends State<AddMatchPostMatchScreen> {
                 awayTeam: _awayTeam.text,
                 homeTeamAbb: _homeTeamAbb.text,
                 awayTeamAbb: _awayTeamAbb.text,
+                halfTimeLength: _halfTimeValue,
               );
             }));
             Navigator.pop(context, matchResponse);

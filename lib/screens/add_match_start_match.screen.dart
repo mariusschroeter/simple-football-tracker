@@ -27,6 +27,7 @@ class AddMatchStartMatchScreen extends StatefulWidget {
     this.awayTeamAbb,
     this.zoneLines = 2,
     this.zonesPerLine = 3,
+    this.halfTimeLength = 45,
   });
 
   final String homeTeam;
@@ -36,6 +37,8 @@ class AddMatchStartMatchScreen extends StatefulWidget {
 
   final int zoneLines;
   final int zonesPerLine;
+
+  final int halfTimeLength;
 
   @override
   _AddMatchStartMatchScreenState createState() =>
@@ -274,11 +277,12 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
       _start = timerDuration;
     });
     const oneSec = const Duration(seconds: 1);
+    final halfTimeLengthInSeconds = widget.halfTimeLength * 60;
     _timer = Timer.periodic(
       oneSec,
       (Timer timer) => setState(
         () {
-          if (_start > 5 && !_isExtraTime) {
+          if (_start >= halfTimeLengthInSeconds && !_isExtraTime) {
             _pauseTimer();
             showAlertDialog(context);
           } else {

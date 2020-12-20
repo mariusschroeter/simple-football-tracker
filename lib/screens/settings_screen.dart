@@ -14,7 +14,8 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  final FocusNode node = FocusNode();
+  final FocusNode _focusNodeHalfTime = FocusNode();
+  final FocusNode _focusNodeDefaultTeams = FocusNode();
 
   final _formKey = GlobalKey<FormState>();
   final _team = TextEditingController();
@@ -140,8 +141,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ],
       ),
       drawer: AppDrawer(
-        node: node,
-      ),
+          nodesToUnfocus: [_focusNodeDefaultTeams, _focusNodeHalfTime]),
       resizeToAvoidBottomInset: false,
       body: SingleChildScrollView(
         child: Padding(
@@ -164,6 +164,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           flex: 2,
                           child: TextFormField(
                             controller: _halfTimeLength,
+                            focusNode: _focusNodeHalfTime,
                             decoration: InputDecoration(
                               labelText: 'Half Time Length (minutes)',
                               counterText: '',
@@ -196,9 +197,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     Row(
                       children: [
                         Flexible(
-                          flex: 1,
+                          flex: 2,
                           child: TextFormField(
                             controller: _team,
+                            focusNode: _focusNodeDefaultTeams,
                             decoration:
                                 InputDecoration(labelText: 'Add Default Teams'),
                             validator: (value) {
@@ -209,19 +211,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             },
                           ),
                         ),
-                        IconButton(
-                          icon: Icon(
-                            Icons.add,
-                            color: _team.text.isNotEmpty
-                                ? GlobalColors.primary
-                                : Theme.of(context).disabledColor,
+                        Flexible(
+                          flex: 1,
+                          child: IconButton(
+                            icon: Icon(
+                              Icons.add,
+                              color: _team.text.isNotEmpty
+                                  ? GlobalColors.primary
+                                  : Theme.of(context).disabledColor,
+                            ),
+                            onPressed: () {
+                              if (_formKey.currentState.validate()) {
+                                _addTeamChip();
+                                _team.clear();
+                              }
+                            },
                           ),
-                          onPressed: () {
-                            if (_formKey.currentState.validate()) {
-                              _addTeamChip();
-                              _team.clear();
-                            }
-                          },
                         )
                       ],
                     ),

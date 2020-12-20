@@ -7,9 +7,9 @@ import 'package:provider/provider.dart';
 import '../screens/settings_screen.dart';
 
 class AppDrawer extends StatefulWidget {
-  final FocusNode node;
+  final List<FocusNode> nodesToUnfocus;
 
-  AppDrawer({this.node});
+  AppDrawer({this.nodesToUnfocus});
 
   @override
   _AppDrawerState createState() => _AppDrawerState();
@@ -19,8 +19,10 @@ class _AppDrawerState extends State<AppDrawer> {
   @override
   void initState() {
     super.initState();
-    if (widget.node != null) {
-      widget.node.unfocus();
+    if (widget.nodesToUnfocus != null) {
+      widget.nodesToUnfocus.forEach((element) {
+        element.unfocus();
+      });
     }
   }
 

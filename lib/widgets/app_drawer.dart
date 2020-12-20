@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:football_provider_app/providers/auth.dart';
 import 'package:football_provider_app/screens/matches_screen.dart';
+import 'package:football_provider_app/widgets/app_bar_logo_and_title.dart';
 import 'package:football_provider_app/widgets/global_colors.dart';
+import 'package:football_provider_app/widgets/svg.dart';
 import 'package:provider/provider.dart';
 
 import '../screens/settings_screen.dart';
@@ -32,7 +34,9 @@ class _AppDrawerState extends State<AppDrawer> {
       child: Column(
         children: <Widget>[
           AppBar(
-            title: const Text('Hello Friend'),
+            title: AppBarLogoAndTitle(
+              title: 'Simple Football Tracker',
+            ),
             automaticallyImplyLeading: false,
           ),
           Divider(),

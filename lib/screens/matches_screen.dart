@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:football_provider_app/widgets/app_bar_logo_and_title.dart';
 import 'package:football_provider_app/widgets/svg.dart';
 import 'package:provider/provider.dart';
 
@@ -48,10 +49,8 @@ class _MatchesScreenState extends State<MatchesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Svg(
-          name: 'logo_trans',
-          height: 80,
-          width: 80,
+        title: AppBarLogoAndTitle(
+          title: 'Tracked Matches',
         ),
         actions: <Widget>[
           PopupMenuButton(

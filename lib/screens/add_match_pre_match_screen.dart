@@ -2,19 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:football_provider_app/providers/settings.dart';
 import 'package:football_provider_app/screens/add_match_start_match.screen.dart';
+import 'package:football_provider_app/widgets/app_bar_logo_and_title.dart';
 import 'package:football_provider_app/widgets/global_colors.dart';
+import 'package:football_provider_app/widgets/svg.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:provider/provider.dart';
 
-class AddMatchPostMatchScreen extends StatefulWidget {
+class AddMatchPreMatchScreen extends StatefulWidget {
   static const routeName = '/add-match';
 
   @override
-  _AddMatchPostMatchScreenState createState() =>
-      _AddMatchPostMatchScreenState();
+  _AddMatchPreMatchScreenState createState() => _AddMatchPreMatchScreenState();
 }
 
-class _AddMatchPostMatchScreenState extends State<AddMatchPostMatchScreen> {
+class _AddMatchPreMatchScreenState extends State<AddMatchPreMatchScreen> {
   final _formKey = GlobalKey<FormState>();
   final _homeTeam = TextEditingController();
   final _homeTeamAbb = TextEditingController();
@@ -68,7 +69,9 @@ class _AddMatchPostMatchScreenState extends State<AddMatchPostMatchScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Post Match Settings'),
+        title: AppBarLogoAndTitle(
+          title: 'Pre Match Settings',
+        ),
       ),
       resizeToAvoidBottomInset: true,
       body: SingleChildScrollView(

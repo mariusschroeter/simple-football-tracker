@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../screens/add_match_post_match_screen.dart';
+import '../screens/add_match_pre_match_screen.dart';
 
 class AddMatchButton extends StatelessWidget {
   @override
@@ -10,7 +10,7 @@ class AddMatchButton extends StatelessWidget {
         Scaffold.of(context).removeCurrentSnackBar();
         var matchResponse =
             await Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return AddMatchPostMatchScreen();
+          return AddMatchPreMatchScreen();
         }));
         if (matchResponse != null) {
           Scaffold.of(context).showSnackBar(SnackBar(

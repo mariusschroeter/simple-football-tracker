@@ -11,7 +11,7 @@ import 'package:provider/provider.dart';
 
 import './screens/settings_screen.dart';
 import './screens/match_detail_screen.dart';
-import 'screens/add_match_post_match_screen.dart';
+import 'screens/add_match_pre_match_screen.dart';
 import './providers/matches.dart';
 
 void main() => runApp(MyApp());
@@ -62,8 +62,8 @@ class MyApp extends StatelessWidget {
               MatchesScreen.routeName: (ctx) => MatchesScreen(),
               MatchDetailScreen.routeName: (ctx) => MatchDetailScreen(),
               SettingsScreen.routeName: (ctx) => SettingsScreen(),
-              AddMatchPostMatchScreen.routeName: (ctx) =>
-                  AddMatchPostMatchScreen(),
+              AddMatchPreMatchScreen.routeName: (ctx) =>
+                  AddMatchPreMatchScreen(),
             },
           ),
         ));

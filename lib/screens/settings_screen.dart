@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:football_provider_app/providers/settings.dart';
+import 'package:football_provider_app/widgets/app_bar_logo_and_title.dart';
 import 'package:football_provider_app/widgets/app_drawer.dart';
 import 'package:football_provider_app/widgets/global_colors.dart';
+import 'package:football_provider_app/widgets/svg.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -120,7 +122,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Settings'),
+        title: AppBarLogoAndTitle(
+          title: 'Match Settings',
+        ),
         actions: [
           Builder(
             builder: (context) => IconButton(

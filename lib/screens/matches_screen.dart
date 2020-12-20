@@ -47,6 +47,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final matchesLength = Provider.of<MatchesProvider>(context).items.length;
     return Scaffold(
       appBar: AppBar(
         title: AppBarLogoAndTitle(
@@ -85,13 +86,32 @@ class _MatchesScreenState extends State<MatchesScreen> {
           : RefreshIndicator(
               onRefresh: () => _refreshMatches(),
               child: Container(
-                child: Column(
+                child: Stack(
                   children: <Widget>[
-                    Expanded(
-                        child: Padding(
-                      padding: const EdgeInsets.only(top: 16.0),
-                      child: MatchesList(_showNewestFirst),
-                    ))
+                    Column(
+                      children: [
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 16.0),
+                            child: MatchesList(_showNewestFirst),
+                          ),
+                        ),
+                      ],
+                    ),
+                    matchesLength == 1
+                        ? Positioned(
+                            bottom: 100,
+                            child: AlertDialog(
+                              title: Text('Here you can track matches'),
+                              actions: [
+                                FlatButton(
+                                  child: Text('Ok'),
+                                  onPressed: () {},
+                                ),
+                              ],
+                            ),
+                          )
+                        : SizedBox(),
                   ],
                 ),
               ),

@@ -29,17 +29,20 @@ class _AddMatchPostMatchScreenState extends State<AddMatchPostMatchScreen> {
     _initHalfTimeValue();
   }
 
+  _checkInputs(String teamName) {
+    if (teamName.isEmpty) return 'Please enter some text';
+    if (_homeTeam.text == _awayTeam.text) return 'Two different team names';
+    if (_homeTeamAbb.text == _awayTeamAbb.text)
+      return 'Two different team abbreviations';
+    return null;
+  }
+
   _initHalfTimeValue() {
     final length = Provider.of<Settings>(context).defaultHaltTimeLength;
     setState(() {
       _halfTimeValue = length;
       _halfTimeLength.text = length.toString();
     });
-  }
-
-  _checkInputs(String teamName) {
-    if (teamName.isEmpty) return 'Please enter some text';
-    return null;
   }
 
   _checkHalfTimeValue(String value) {
@@ -284,30 +287,30 @@ class _AddMatchPostMatchScreenState extends State<AddMatchPostMatchScreen> {
                             ),
                           ],
                         )),
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: TextFormField(
-                        enabled: false,
-                        controller: null,
-                        decoration:
-                            InputDecoration(labelText: 'Field Width: 45m'),
-                        // validator: (value) {
-                        //   return _checkInputs(value);
-                        // },
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: TextFormField(
-                        enabled: false,
-                        controller: null,
-                        decoration:
-                            InputDecoration(labelText: 'Field Height: 90m'),
-                        // validator: (value) {
-                        //   return _checkInputs(value);
-                        // },
-                      ),
-                    ),
+                    // Padding(
+                    //   padding: const EdgeInsets.all(16.0),
+                    //   child: TextFormField(
+                    //     enabled: false,
+                    //     controller: null,
+                    //     decoration:
+                    //         InputDecoration(labelText: 'Field Width: 45m'),
+                    //     // validator: (value) {
+                    //     //   return _checkInputs(value);
+                    //     // },
+                    //   ),
+                    // ),
+                    // Padding(
+                    //   padding: const EdgeInsets.all(16.0),
+                    //   child: TextFormField(
+                    //     enabled: false,
+                    //     controller: null,
+                    //     decoration:
+                    //         InputDecoration(labelText: 'Field Height: 90m'),
+                    //     // validator: (value) {
+                    //     //   return _checkInputs(value);
+                    //     // },
+                    //   ),
+                    // ),
                   ]),
                 ),
               ],

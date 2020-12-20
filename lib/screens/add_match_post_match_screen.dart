@@ -74,11 +74,12 @@ class _AddMatchPostMatchScreenState extends State<AddMatchPostMatchScreen> {
                                 },
                               ),
                               suggestionsCallback: (pattern) {
-                                return Provider.of<Settings>(context,
+                                final defaultTeams = Provider.of<Settings>(
+                                        context,
                                         listen: false)
-                                    .defaultTeams
-                                    .where((element) =>
-                                        element.startsWith(pattern));
+                                    .defaultTeams;
+                                return defaultTeams.where(
+                                    (element) => element.startsWith(pattern));
                               },
                               itemBuilder: (context, suggestion) {
                                 return ListTile(

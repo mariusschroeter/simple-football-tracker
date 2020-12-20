@@ -125,7 +125,12 @@ class AuthProvider with ChangeNotifier {
 
   void setSettings() async {
     final prefs = await SharedPreferences.getInstance();
-    final extractedSettings = prefs.getStringList('appSettings');
-    _defaultTeams = extractedSettings;
+    if (!prefs.containsKey('settingsDefaultTeams')) {
+      prefs.setStringList('settingsDefaultTeams', []);
+      prefs.setInt(
+        'settingsDefaultHaltTimeLength',
+        2700,
+      );
+    }
   }
 }

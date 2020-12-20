@@ -19,7 +19,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   void didChangeDependencies() {
+    _initSettings();
     super.didChangeDependencies();
+  }
+
+  void _initSettings() async {
+    await Provider.of<Settings>(context, listen: false).initSettings();
     _updateDefaultTeams();
   }
 

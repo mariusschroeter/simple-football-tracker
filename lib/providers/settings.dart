@@ -4,33 +4,32 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Settings with ChangeNotifier {
-  List<String> _defaultTeams = [];
+  List<String> defaultTeams = [];
 
-  List<String> get defaultTeams {
-    return _defaultTeams;
+  initSettings() async {
+    final prefs = await SharedPreferences.getInstance();
+    defaultTeams = prefs.getStringList('settingsDefaultTeams');
   }
 
-  Settings(this._defaultTeams);
-
   addTeam(String team) {
-    _defaultTeams.add(team.trim());
+    defaultTeams.add(team.trim());
     notifyListeners();
     updatePrefs();
   }
 
   void deleteTeam(String team) {
-    _defaultTeams.remove(team);
+    defaultTeams.remove(team);
     notifyListeners();
     updatePrefs();
   }
 
   void updatePrefs() async {
     final prefs = await SharedPreferences.getInstance();
-    prefs.setStringList('appSettings', _defaultTeams);
+    prefs.setStringList('settingsDefaultTeams', defaultTeams);
   }
 
   bool checkTeamForExisting(String team) {
-    final isExisting = _defaultTeams.indexWhere((element) => element == team);
+    final isExisting = defaultTeams.indexWhere((element) => element == team);
     if (isExisting == -1) return false;
     return true;
   }

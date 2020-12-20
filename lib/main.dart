@@ -33,11 +33,7 @@ class MyApp extends StatelessWidget {
               previousMatches == null ? [] : previousMatches.items,
             ),
           ),
-          ChangeNotifierProxyProvider<AuthProvider, Settings>(
-              create: null,
-              update: (ctx, auth, prevSettings) => Settings(
-                    auth.defaultTeams,
-                  )),
+          ChangeNotifierProvider(create: (ctx) => Settings()),
         ],
         child: Consumer<AuthProvider>(
           builder: (ctx, auth, _) => MaterialApp(

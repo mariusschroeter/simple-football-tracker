@@ -27,6 +27,7 @@ class _AddMatchPostMatchScreenState extends State<AddMatchPostMatchScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     _initHalfTimeValue();
+    Provider.of<Settings>(context).initSettings();
   }
 
   _checkInputs(String teamName) {

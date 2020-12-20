@@ -1,24 +1,22 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:football_provider_app/screens/settings_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Settings with ChangeNotifier {
   List<String> defaultTeams = [];
+  int defaultHaltTimeLength = 0;
 
   initSettings() async {
     final prefs = await SharedPreferences.getInstance();
     defaultTeams = prefs.getStringList('settingsDefaultTeams');
+    defaultHaltTimeLength = prefs.getInt('settingsDefaultHaltTimeLength');
   }
 
-  addTeam(String team) {
-    defaultTeams.add(team.trim());
-    notifyListeners();
-    updatePrefs();
-  }
-
-  void deleteTeam(String team) {
-    defaultTeams.remove(team);
+  updateTeamChips(List<TeamChip> teamChips) {
+    List<String> teamName = teamChips.map((e) => e.name).toList();
+    defaultTeams = teamName;
     notifyListeners();
     updatePrefs();
   }
@@ -26,11 +24,5 @@ class Settings with ChangeNotifier {
   void updatePrefs() async {
     final prefs = await SharedPreferences.getInstance();
     prefs.setStringList('settingsDefaultTeams', defaultTeams);
-  }
-
-  bool checkTeamForExisting(String team) {
-    final isExisting = defaultTeams.indexWhere((element) => element == team);
-    if (isExisting == -1) return false;
-    return true;
   }
 }

@@ -3,6 +3,7 @@ import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:football_provider_app/providers/settings.dart';
 import 'package:football_provider_app/screens/add_match_start_match.screen.dart';
 import 'package:football_provider_app/widgets/global_colors.dart';
+import 'package:numberpicker/numberpicker.dart';
 import 'package:provider/provider.dart';
 
 class AddMatchPostMatchScreen extends StatefulWidget {
@@ -19,10 +20,30 @@ class _AddMatchPostMatchScreenState extends State<AddMatchPostMatchScreen> {
   final _homeTeamAbb = TextEditingController();
   final _awayTeam = TextEditingController();
   final _awayTeamAbb = TextEditingController();
+  int _halfTimeValue = 45;
+  final _halfTimeLength = TextEditingController(text: '45');
 
   _checkInputs(String teamName) {
     if (teamName.isEmpty) return 'Please enter some text';
     return null;
+  }
+
+  _checkHalfTimeValue(String value) {
+    _checkInputs(value);
+    if (int.tryParse(value) == null) {
+      return 'Please enter a number';
+    }
+    if (int.tryParse(value) > 45 || int.tryParse(value) < 1) {
+      return 'Please enter a number (1-45)';
+    }
+    return null;
+  }
+
+  _updateHalfTimeValue(int value) {
+    setState(() {
+      _halfTimeValue = value;
+      _halfTimeLength.text = value.toString();
+    });
   }
 
   @override
@@ -33,6 +54,7 @@ class _AddMatchPostMatchScreenState extends State<AddMatchPostMatchScreen> {
       ),
       resizeToAvoidBottomInset: true,
       body: SingleChildScrollView(
+        physics: NeverScrollableScrollPhysics(),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Card(
@@ -56,6 +78,7 @@ class _AddMatchPostMatchScreenState extends State<AddMatchPostMatchScreen> {
                                 controller: _homeTeam,
                                 decoration:
                                     InputDecoration(labelText: 'Home Team'),
+                                cursorColor: GlobalColors.primary,
                                 onChanged: (value) {
                                   final teamTextLength = _homeTeam.text.length;
                                   if (teamTextLength >= 0 &&
@@ -117,7 +140,9 @@ class _AddMatchPostMatchScreenState extends State<AddMatchPostMatchScreen> {
                             child: TextFormField(
                               controller: _homeTeamAbb,
                               decoration: InputDecoration(
-                                  labelText: 'Abb.', counterText: ''),
+                                labelText: 'Abb.',
+                                counterText: '',
+                              ),
                               validator: (value) {
                                 return _checkInputs(value);
                               },
@@ -139,6 +164,7 @@ class _AddMatchPostMatchScreenState extends State<AddMatchPostMatchScreen> {
                                 controller: _awayTeam,
                                 decoration:
                                     InputDecoration(labelText: 'Away Team'),
+                                cursorColor: GlobalColors.primary,
                                 onChanged: (value) {
                                   final teamTextLength = _awayTeam.text.length;
                                   if (teamTextLength >= 0 &&
@@ -211,17 +237,39 @@ class _AddMatchPostMatchScreenState extends State<AddMatchPostMatchScreen> {
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: TextFormField(
-                        enabled: false,
-                        controller: null,
-                        decoration:
-                            InputDecoration(labelText: 'Zones to track: 6'),
-                        // validator: (value) {
-                        //   return _checkInputs(value);
-                        // },
-                      ),
-                    ),
+                        padding: const EdgeInsets.all(16.0),
+                        child: Row(
+                          children: [
+                            Flexible(
+                              flex: 2,
+                              child: TextFormField(
+                                controller: _halfTimeLength,
+                                decoration: InputDecoration(
+                                  labelText: 'Half Time Length (minutes)',
+                                  counterText: '',
+                                ),
+                                validator: (value) {
+                                  return _checkHalfTimeValue(value);
+                                },
+                                keyboardType: TextInputType.number,
+                                maxLength: 2,
+                                cursorColor: GlobalColors.primary,
+                              ),
+                            ),
+                            Flexible(
+                              flex: 1,
+                              child: NumberPicker.integer(
+                                initialValue: _halfTimeValue,
+                                minValue: 1,
+                                maxValue: 45,
+                                onChanged: (value) =>
+                                    _updateHalfTimeValue(value),
+                                infiniteLoop: true,
+                                itemExtent: 32.0,
+                              ),
+                            ),
+                          ],
+                        )),
                     Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: TextFormField(

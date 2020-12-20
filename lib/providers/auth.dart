@@ -129,7 +129,7 @@ class AuthProvider with ChangeNotifier {
       prefs.setStringList('settingsDefaultTeams', []);
       prefs.setInt(
         'settingsDefaultHaltTimeLength',
-        2700,
+        45,
       );
     }
   }

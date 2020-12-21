@@ -130,7 +130,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
   Zone _activeZone;
   bool _showPercentages = false;
   bool _showHeatMap = false;
-  bool _showZones = false;
+  bool _showZones = true;
 
   _buildZones() {
     double fieldWidth = _screenWidth;
@@ -888,7 +888,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                                 physics: NeverScrollableScrollPhysics(),
                                 itemBuilder: (ctx, i) => Padding(
                                   padding: const EdgeInsets.symmetric(
-                                      horizontal: 16.0, vertical: 10.0),
+                                      horizontal: 16.0, vertical: 12.0),
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,

@@ -718,10 +718,16 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                                   // color: _onShotOpacity
                                 ),
                                 GestureDetector(
-                                  onTapDown: (TapDownDetails details) =>
-                                      _onBallMovement(details),
-                                  onDoubleTap: () =>
-                                      _switchTeamBallPossession(),
+                                  onTapDown: (TapDownDetails details) {
+                                    if (!_isPossessionQuestion) {
+                                      _onBallMovement(details);
+                                    }
+                                  },
+                                  onDoubleTap: () {
+                                    if (!_isPossessionQuestion) {
+                                      _switchTeamBallPossession();
+                                    }
+                                  },
                                   child: Container(
                                     color: Colors.transparent,
                                     height: _innerFieldHeight,

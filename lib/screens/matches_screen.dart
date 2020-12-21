@@ -98,20 +98,6 @@ class _MatchesScreenState extends State<MatchesScreen> {
                         ),
                       ],
                     ),
-                    matchesLength == 1
-                        ? Positioned(
-                            bottom: 100,
-                            child: AlertDialog(
-                              title: Text('Here you can track matches'),
-                              actions: [
-                                FlatButton(
-                                  child: Text('Ok'),
-                                  onPressed: () {},
-                                ),
-                              ],
-                            ),
-                          )
-                        : SizedBox(),
                   ],
                 ),
               ),

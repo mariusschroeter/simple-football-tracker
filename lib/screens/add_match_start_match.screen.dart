@@ -711,168 +711,177 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                                 fit: BoxFit.fill,
                               ),
                             ),
-                            child: Column(
-                              children: [
-                                MatchGoal(
-                                  onShot: _checkShot,
-                                  isHomeShot: false,
-                                  // onWillAcceptShot: _onWillAcceptShot,
-                                  setColorOnShot: _setColorOnShot,
-                                  // color: _onShotOpacity
-                                ),
-                                GestureDetector(
-                                  onTapDown: (TapDownDetails details) {
-                                    if (!_isPossessionQuestion &&
-                                        !_matchPause) {
-                                      _onBallMovement(details);
-                                    }
-                                  },
-                                  onDoubleTap: () {
-                                    if (!_isPossessionQuestion &&
-                                        !_matchPause) {
-                                      _switchTeamBallPossession();
-                                    }
-                                  },
-                                  child: Container(
-                                    color: Colors.transparent,
-                                    height: _innerFieldHeight,
-                                    width: double.infinity,
-                                    child: Stack(
-                                      children: [
-                                        //Zone start ---
-                                        _showPercentages ||
-                                                _showHeatMap ||
-                                                _showZones
-                                            ? ListView.builder(
-                                                padding: EdgeInsets.all(0),
-                                                physics:
-                                                    NeverScrollableScrollPhysics(),
-                                                itemBuilder: (ctx, i) =>
-                                                    Container(
-                                                  height: _innerFieldHeight /
-                                                      widget.zoneLines,
-                                                  child: FieldZoneRow(
-                                                    innerFieldHeight:
-                                                        _innerFieldHeight,
-                                                    zoneCount: 3,
-                                                    percentages:
-                                                        _getZonePercentages(
-                                                                i + 1)
-                                                            .percentages,
-                                                    showPercentages:
-                                                        _showPercentages,
-                                                    showHeatMap: _showHeatMap,
+                            child: CustomPaint(
+                              painter: DirectionIndicatorPainter.withTimer(),
+                              child: Column(
+                                children: [
+                                  MatchGoal(
+                                    onShot: _checkShot,
+                                    isHomeShot: false,
+                                    // onWillAcceptShot: _onWillAcceptShot,
+                                    setColorOnShot: _setColorOnShot,
+                                    // color: _onShotOpacity
+                                  ),
+                                  GestureDetector(
+                                    onTapDown: (TapDownDetails details) {
+                                      if (!_isPossessionQuestion &&
+                                          !_matchPause) {
+                                        _onBallMovement(details);
+                                      }
+                                    },
+                                    onDoubleTap: () {
+                                      if (!_isPossessionQuestion &&
+                                          !_matchPause) {
+                                        _switchTeamBallPossession();
+                                      }
+                                    },
+                                    child: Container(
+                                      color: Colors.transparent,
+                                      height: _innerFieldHeight,
+                                      width: double.infinity,
+                                      child: Stack(
+                                        children: [
+                                          //Zone start ---
+                                          _showPercentages ||
+                                                  _showHeatMap ||
+                                                  _showZones
+                                              ? ListView.builder(
+                                                  padding: EdgeInsets.all(0),
+                                                  physics:
+                                                      NeverScrollableScrollPhysics(),
+                                                  itemBuilder: (ctx, i) =>
+                                                      Container(
+                                                    height: _innerFieldHeight /
+                                                        widget.zoneLines,
+                                                    child: FieldZoneRow(
+                                                      innerFieldHeight:
+                                                          _innerFieldHeight,
+                                                      zoneCount: 3,
+                                                      percentages:
+                                                          _getZonePercentages(
+                                                                  i + 1)
+                                                              .percentages,
+                                                      showPercentages:
+                                                          _showPercentages,
+                                                      showHeatMap: _showHeatMap,
+                                                    ),
                                                   ),
-                                                ),
-                                                itemCount: widget.zoneLines,
-                                              )
-                                            : SizedBox(),
-                                        //Zone end ---
+                                                  itemCount: widget.zoneLines,
+                                                )
+                                              : SizedBox(),
+                                          //Zone end ---
 
-                                        MatchBall(
-                                          ballPosition: _ballPosition,
-                                          color: _homeTeamBallPossession
-                                              ? GlobalColors.primary
-                                              : GlobalColors.secondary,
-                                        ),
-                                        Visibility(
-                                          visible: _isPossessionQuestion,
-                                          child: Column(
-                                            children: [
-                                              InkWell(
-                                                onTap: () =>
-                                                    _switchTeamBallPossession(
-                                                        isHome: true),
-                                                child: Container(
-                                                  color: _homeTeamBallPossession
-                                                      ? Colors.transparent
-                                                      : Colors.grey
-                                                          .withOpacity(0.5),
-                                                  width: double.infinity,
-                                                  height: _innerFieldHeight / 2,
-                                                  child: Center(
-                                                    child: Container(
-                                                      decoration: BoxDecoration(
-                                                          color: GlobalColors
-                                                              .primary
-                                                              .withOpacity(
-                                                                  _homeTeamBallPossession
-                                                                      ? 0.4
-                                                                      : 0.2),
-                                                          border: Border.all(
-                                                              width: 0.1,
-                                                              color: Colors
-                                                                  .white)),
-                                                      child: NormalTextSize(
-                                                        size: 30,
-                                                        title:
-                                                            '${widget.homeTeamAbb.toUpperCase()}',
-                                                        color: Colors.white,
-                                                        padding:
-                                                            const EdgeInsets
-                                                                    .symmetric(
-                                                                horizontal:
-                                                                    8.0),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                              InkWell(
-                                                onTap: () =>
-                                                    _switchTeamBallPossession(
-                                                        isHome: false),
-                                                child: Container(
-                                                  color:
-                                                      !_homeTeamBallPossession
-                                                          ? Colors.transparent
-                                                          : Colors.grey
-                                                              .withOpacity(0.5),
-                                                  width: double.infinity,
-                                                  height: _innerFieldHeight / 2,
-                                                  child: Center(
-                                                    child: Container(
-                                                      decoration: BoxDecoration(
-                                                          color: GlobalColors
-                                                              .secondary
-                                                              .withOpacity(
-                                                                  !_homeTeamBallPossession
-                                                                      ? 0.3
-                                                                      : 0.1),
-                                                          border: Border.all(
-                                                              width: 0.1,
-                                                              color: Colors
-                                                                  .white)),
-                                                      child: NormalTextSize(
-                                                        size: 30,
-                                                        title:
-                                                            '${widget.awayTeamAbb.toUpperCase()}',
-                                                        color: Colors.white,
-                                                        padding:
-                                                            const EdgeInsets
-                                                                    .symmetric(
-                                                                horizontal:
-                                                                    8.0),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
+                                          MatchBall(
+                                            ballPosition: _ballPosition,
+                                            color: _homeTeamBallPossession
+                                                ? GlobalColors.primary
+                                                : GlobalColors.secondary,
                                           ),
-                                        ),
-                                      ],
+                                          Visibility(
+                                            visible: _isPossessionQuestion,
+                                            child: Column(
+                                              children: [
+                                                InkWell(
+                                                  onTap: () =>
+                                                      _switchTeamBallPossession(
+                                                          isHome: true),
+                                                  child: Container(
+                                                    color:
+                                                        _homeTeamBallPossession
+                                                            ? Colors.transparent
+                                                            : Colors
+                                                                .grey
+                                                                .withOpacity(
+                                                                    0.5),
+                                                    width: double.infinity,
+                                                    height:
+                                                        _innerFieldHeight / 2,
+                                                    child: Center(
+                                                      child: Container(
+                                                        decoration: BoxDecoration(
+                                                            color: GlobalColors
+                                                                .primary
+                                                                .withOpacity(
+                                                                    _homeTeamBallPossession
+                                                                        ? 0.4
+                                                                        : 0.2),
+                                                            border: Border.all(
+                                                                width: 0.1,
+                                                                color: Colors
+                                                                    .white)),
+                                                        child: NormalTextSize(
+                                                          size: 30,
+                                                          title:
+                                                              '${widget.homeTeamAbb.toUpperCase()}',
+                                                          color: Colors.white,
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .symmetric(
+                                                                  horizontal:
+                                                                      8.0),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                                InkWell(
+                                                  onTap: () =>
+                                                      _switchTeamBallPossession(
+                                                          isHome: false),
+                                                  child: Container(
+                                                    color:
+                                                        !_homeTeamBallPossession
+                                                            ? Colors.transparent
+                                                            : Colors.grey
+                                                                .withOpacity(
+                                                                    0.5),
+                                                    width: double.infinity,
+                                                    height:
+                                                        _innerFieldHeight / 2,
+                                                    child: Center(
+                                                      child: Container(
+                                                        decoration: BoxDecoration(
+                                                            color: GlobalColors
+                                                                .secondary
+                                                                .withOpacity(
+                                                                    !_homeTeamBallPossession
+                                                                        ? 0.3
+                                                                        : 0.1),
+                                                            border: Border.all(
+                                                                width: 0.1,
+                                                                color: Colors
+                                                                    .white)),
+                                                        child: NormalTextSize(
+                                                          size: 30,
+                                                          title:
+                                                              '${widget.awayTeamAbb.toUpperCase()}',
+                                                          color: Colors.white,
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .symmetric(
+                                                                  horizontal:
+                                                                      8.0),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
-                                ),
-                                MatchGoal(
-                                  onShot: _checkShot,
-                                  isHomeShot: true,
-                                  // onWillAcceptShot: _onWillAcceptShot,
-                                  setColorOnShot: _setColorOnShot,
-                                  // color: _goalColor,
-                                ),
-                              ],
+                                  MatchGoal(
+                                    onShot: _checkShot,
+                                    isHomeShot: true,
+                                    // onWillAcceptShot: _onWillAcceptShot,
+                                    setColorOnShot: _setColorOnShot,
+                                    // color: _goalColor,
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ],
@@ -1005,6 +1014,52 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
         );
       },
     );
+  }
+}
+
+class DirectionIndicatorPainter extends CustomPainter {
+  final Color strokeColor;
+  final PaintingStyle paintingStyle;
+  final double strokeWidth;
+  double opacity = 0.4;
+
+  DirectionIndicatorPainter(
+      {this.strokeColor = Colors.black,
+      this.strokeWidth = 10,
+      this.paintingStyle = PaintingStyle.stroke});
+
+  factory DirectionIndicatorPainter.withTimer() {
+    Timer.periodic(Duration(seconds: 10), (timer) {
+      return DirectionIndicatorPainter();
+    });
+  }
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    Paint paint = Paint()
+      ..color = GlobalColors.primary.withOpacity(opacity)
+      ..strokeWidth = strokeWidth
+      ..style = paintingStyle;
+
+    final homeStart = Offset(size.width / 2 - 70, size.height / 2 - 80);
+
+    canvas.drawPath(getTrianglePath(homeStart.dx, homeStart.dy), paint);
+    canvas.drawPath(getTrianglePath(homeStart.dx, homeStart.dy - 40), paint);
+    canvas.drawPath(getTrianglePath(homeStart.dx, homeStart.dy - 80), paint);
+  }
+
+  Path getTrianglePath(double x, double y) {
+    return Path()
+      ..moveTo(x, y)
+      ..lineTo(x + 70, y + 30)
+      ..lineTo(x + 70 * 2, y);
+  }
+
+  @override
+  bool shouldRepaint(DirectionIndicatorPainter oldDelegate) {
+    return oldDelegate.strokeColor != strokeColor ||
+        oldDelegate.paintingStyle != paintingStyle ||
+        oldDelegate.strokeWidth != strokeWidth;
   }
 }
 

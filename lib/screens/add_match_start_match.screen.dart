@@ -519,6 +519,8 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
         }
       });
     }
+    _setColorOnShot(0.4, true);
+    _setColorOnShot(0.4, false);
     _updateStatsMap();
   }
 
@@ -585,8 +587,9 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final time =
-        _isExtraTime ? '45:00' : _printDuration(Duration(seconds: _start));
+    final time = _isExtraTime
+        ? _printDuration(Duration(seconds: widget.halfTimeLength * 60))
+        : _printDuration(Duration(seconds: _start));
     final extraTime =
         _isExtraTime ? _printDuration(Duration(seconds: _extraTime)) : null;
 

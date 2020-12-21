@@ -719,12 +719,14 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                                 ),
                                 GestureDetector(
                                   onTapDown: (TapDownDetails details) {
-                                    if (!_isPossessionQuestion) {
+                                    if (!_isPossessionQuestion &&
+                                        !_matchPause) {
                                       _onBallMovement(details);
                                     }
                                   },
                                   onDoubleTap: () {
-                                    if (!_isPossessionQuestion) {
+                                    if (!_isPossessionQuestion &&
+                                        !_matchPause) {
                                       _switchTeamBallPossession();
                                     }
                                   },

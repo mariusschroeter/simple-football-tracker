@@ -521,8 +521,6 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
         }
       });
     }
-    _setColorOnShot(0.4, true);
-    _setColorOnShot(0.4, false);
     _updateStatsMap();
   }
 
@@ -717,12 +715,8 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                               painter: DirectionIndicatorPainter.withTimer(),
                               child: Column(
                                 children: [
-                                  MatchGoal(
-                                    onShot: _checkShot,
-                                    isHomeShot: false,
-                                    // onWillAcceptShot: _onWillAcceptShot,
-                                    setColorOnShot: _setColorOnShot,
-                                    // color: _onShotOpacity
+                                  SizedBox(
+                                    height: 23,
                                   ),
                                   GestureDetector(
                                     onTapDown: (TapDownDetails details) {
@@ -875,15 +869,28 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                                       ),
                                     ),
                                   ),
-                                  MatchGoal(
-                                    onShot: _checkShot,
-                                    isHomeShot: true,
-                                    // onWillAcceptShot: _onWillAcceptShot,
-                                    setColorOnShot: _setColorOnShot,
-                                    // color: _goalColor,
-                                  ),
                                 ],
                               ),
+                            ),
+                          ),
+                          Align(
+                            alignment: Alignment.topCenter,
+                            child: MatchGoal(
+                              onShot: _checkShot,
+                              isHomeShot: false,
+                              // onWillAcceptShot: _onWillAcceptShot,
+                              setColorOnShot: _setColorOnShot,
+                              // color: _onShotOpacity
+                            ),
+                          ),
+                          Align(
+                            alignment: Alignment.bottomCenter,
+                            child: MatchGoal(
+                              onShot: _checkShot,
+                              isHomeShot: true,
+                              // onWillAcceptShot: _onWillAcceptShot,
+                              setColorOnShot: _setColorOnShot,
+                              // color: _goalColor,
                             ),
                           ),
                         ],
@@ -942,6 +949,8 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
 
   showAlertDialog(BuildContext context,
       {bool goalCheck = false, bool isHomeShot}) {
+    _setColorOnShot(0.4, true);
+    _setColorOnShot(0.4, false);
     Widget itsNotHalftimeButton = FlatButton(
       child: Text("No"),
       onPressed: () {

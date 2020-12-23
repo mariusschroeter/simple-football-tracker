@@ -19,9 +19,8 @@ class MatchGoal extends StatelessWidget {
     return DragTarget<double>(
       builder: (context, candidates, rejects) {
         return Container(
-          // color: color,
-          height: 23,
-          width: 60,
+          height: 70,
+          width: 200,
         );
       },
       onAccept: (_) => onShot(isHomeShot),

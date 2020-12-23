@@ -20,15 +20,18 @@ class MatchBall extends StatelessWidget {
           child: Icon(
             Icons.sports_soccer,
             color: color,
+            size: 32,
           ),
         ),
         feedback: Icon(
           Icons.sports_soccer,
           color: color,
+          size: 32,
         ),
         childWhenDragging: Icon(
           Icons.sports_soccer,
           color: color.withOpacity(0.5),
+          size: 32,
         ),
       ),
     );

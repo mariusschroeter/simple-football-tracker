@@ -408,8 +408,10 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
   _endMatch() {
     Provider.of<MatchesProvider>(context, listen: false)
         .addMatch(_match)
-        .then((value) =>
-            Navigator.of(context).pop('Match added! Pull to refresh.'))
+        .then((value) => {
+              Navigator.of(context).pop('Match added!'),
+              Provider.of<MatchesProvider>(context).fetchAndSetMatches(),
+            })
         .catchError((error) {
       Navigator.of(context).pop('An error occurred!');
     });

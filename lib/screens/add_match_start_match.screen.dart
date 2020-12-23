@@ -874,6 +874,38 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
                             ),
                           ),
                           Align(
+                            alignment: Alignment.topLeft,
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 8.0),
+                              child: Container(
+                                color: GlobalColors.primary.withOpacity(0.4),
+                                height: 23.0,
+                                child: NormalTextSize(
+                                  padding:
+                                      EdgeInsets.symmetric(horizontal: 8.0),
+                                  title: widget.homeTeamAbb.toUpperCase(),
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ),
+                          Align(
+                            alignment: Alignment.bottomRight,
+                            child: Padding(
+                              padding: const EdgeInsets.only(right: 8.0),
+                              child: Container(
+                                color: GlobalColors.secondary.withOpacity(0.4),
+                                height: 23.0,
+                                child: NormalTextSize(
+                                  padding:
+                                      EdgeInsets.symmetric(horizontal: 8.0),
+                                  title: widget.awayTeamAbb.toUpperCase(),
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ),
+                          Align(
                             alignment: Alignment.topCenter,
                             child: MatchGoal(
                               onShot: _checkShot,

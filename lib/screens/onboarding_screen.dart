@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:football_provider_app/screens/matches_screen.dart';
-import 'package:football_provider_app/widgets/global_colors.dart';
+import 'package:simple_football_tracker/screens/matches_screen.dart';
+import 'package:simple_football_tracker/widgets/global_colors.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 
 class OnBoardingScreen extends StatefulWidget {

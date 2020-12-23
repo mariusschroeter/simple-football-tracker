@@ -1,4 +1,4 @@
-# football_provider_app
+# simple_football_tracker
 
 A new Flutter project.
 

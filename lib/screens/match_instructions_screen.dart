@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gifimage/flutter_gifimage.dart';
-import 'package:football_provider_app/widgets/global_colors.dart';
+import 'package:simple_football_tracker/widgets/global_colors.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 
 class MatchInstructionsScreen extends StatefulWidget {

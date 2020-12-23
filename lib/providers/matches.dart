@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:football_provider_app/models/http_exception.dart';
-import 'package:football_provider_app/models/zone.dart';
+import 'package:simple_football_tracker/models/http_exception.dart';
+import 'package:simple_football_tracker/models/zone.dart';
 import 'package:http/http.dart' as http;
 
 import './match.dart';

@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:football_provider_app/models/zone.dart';
-import 'package:football_provider_app/screens/add_match_start_match.screen.dart';
-import 'package:football_provider_app/widgets/fieldzone.dart';
-import 'package:football_provider_app/widgets/global_colors.dart';
-import 'package:football_provider_app/widgets/scoreboard.dart';
-import 'package:football_provider_app/widgets/stats_list.dart';
-import 'package:football_provider_app/widgets/text_elements.dart';
-import 'package:intl/intl.dart';
+import 'package:simple_football_tracker/models/zone.dart';
+import 'package:simple_football_tracker/screens/add_match_start_match.screen.dart';
+import 'package:simple_football_tracker/widgets/fieldzone.dart';
+import 'package:simple_football_tracker/widgets/global_colors.dart';
+import 'package:simple_football_tracker/widgets/scoreboard.dart';
+import 'package:simple_football_tracker/widgets/stats_list.dart';
+import 'package:simple_football_tracker/widgets/text_elements.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/matches.dart';
@@ -30,7 +29,6 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> {
     });
   }
 
-  double _screenWidth = 0;
   double _screenHeight = 0;
   double _fieldHeight = 500;
   double _innerFieldHeight = 450;
@@ -38,7 +36,6 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> {
 
   _initField() {
     setState(() {
-      _screenWidth = MediaQuery.of(context).size.width;
       _screenHeight = MediaQuery.of(context).size.height;
       _statusBarHeight = MediaQuery.of(context).padding.top;
       _fieldHeight = _screenHeight -

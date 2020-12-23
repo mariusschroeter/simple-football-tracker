@@ -1,5 +1,5 @@
-name: football_provider_app
-description: A new Flutter project.
+name: simple_football_tracker
+description: Track your football matches and review possession and shots.
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43

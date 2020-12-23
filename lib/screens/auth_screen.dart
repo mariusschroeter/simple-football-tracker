@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:football_provider_app/models/http_exception.dart';
-import 'package:football_provider_app/providers/auth.dart';
-import 'package:football_provider_app/widgets/svg.dart';
+import 'package:simple_football_tracker/models/http_exception.dart';
+import 'package:simple_football_tracker/providers/auth.dart';
+import 'package:simple_football_tracker/widgets/svg.dart';
 import 'package:provider/provider.dart';
 
 enum AuthMode { Signup, Login }

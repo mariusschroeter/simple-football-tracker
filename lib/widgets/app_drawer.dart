@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:football_provider_app/providers/auth.dart';
-import 'package:football_provider_app/screens/matches_screen.dart';
-import 'package:football_provider_app/widgets/app_bar_logo_and_title.dart';
-import 'package:football_provider_app/widgets/global_colors.dart';
-import 'package:football_provider_app/widgets/svg.dart';
+import 'package:simple_football_tracker/providers/auth.dart';
+import 'package:simple_football_tracker/screens/matches_screen.dart';
+import 'package:simple_football_tracker/widgets/app_bar_logo_and_title.dart';
+import 'package:simple_football_tracker/widgets/global_colors.dart';
 import 'package:provider/provider.dart';
 
 import '../screens/settings_screen.dart';

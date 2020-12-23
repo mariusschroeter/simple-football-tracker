@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:football_provider_app/widgets/app_bar_logo_and_title.dart';
-import 'package:football_provider_app/widgets/bottom_dialog.dart';
-import 'package:football_provider_app/widgets/svg.dart';
+import 'package:simple_football_tracker/widgets/app_bar_logo_and_title.dart';
+import 'package:simple_football_tracker/widgets/bottom_dialog.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/matches.dart';

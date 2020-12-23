@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:football_provider_app/widgets/global_colors.dart';
+import 'package:simple_football_tracker/widgets/global_colors.dart';
 
 class Scoreboard extends StatelessWidget {
   final String time;

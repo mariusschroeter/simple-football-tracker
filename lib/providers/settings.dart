@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:football_provider_app/screens/settings_screen.dart';
+import 'package:simple_football_tracker/screens/settings_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Settings with ChangeNotifier {

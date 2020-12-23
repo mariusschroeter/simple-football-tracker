@@ -4,18 +4,18 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
-import 'package:football_provider_app/screens/match_instructions_screen.dart';
-import 'package:football_provider_app/providers/matches.dart';
-import 'package:football_provider_app/widgets/app_drawer_in_match.dart';
-import 'package:football_provider_app/widgets/global_colors.dart';
-import 'package:football_provider_app/widgets/match_ball.dart';
-import 'package:football_provider_app/widgets/match_goal.dart';
-import 'package:football_provider_app/widgets/scoreboard.dart';
-import 'package:football_provider_app/widgets/stats_list.dart';
-import 'package:football_provider_app/models/zone.dart';
-import 'package:football_provider_app/providers/match.dart';
-import 'package:football_provider_app/widgets/fieldzone.dart';
-import 'package:football_provider_app/widgets/text_elements.dart';
+import 'package:simple_football_tracker/screens/match_instructions_screen.dart';
+import 'package:simple_football_tracker/providers/matches.dart';
+import 'package:simple_football_tracker/widgets/app_drawer_in_match.dart';
+import 'package:simple_football_tracker/widgets/global_colors.dart';
+import 'package:simple_football_tracker/widgets/match_ball.dart';
+import 'package:simple_football_tracker/widgets/match_goal.dart';
+import 'package:simple_football_tracker/widgets/scoreboard.dart';
+import 'package:simple_football_tracker/widgets/stats_list.dart';
+import 'package:simple_football_tracker/models/zone.dart';
+import 'package:simple_football_tracker/providers/match.dart';
+import 'package:simple_football_tracker/widgets/fieldzone.dart';
+import 'package:simple_football_tracker/widgets/text_elements.dart';
 
 class AddMatchStartMatchScreen extends StatefulWidget {
   static const routeName = '/start-match';
@@ -409,8 +409,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
     Provider.of<MatchesProvider>(context, listen: false)
         .addMatch(_match)
         .then((value) => {
-              Navigator.of(context).pop('Match added!'),
-              Provider.of<MatchesProvider>(context).fetchAndSetMatches(),
+              Navigator.of(context).pop('Match added! Pull to refresh!'),
             })
         .catchError((error) {
       Navigator.of(context).pop('An error occurred!');

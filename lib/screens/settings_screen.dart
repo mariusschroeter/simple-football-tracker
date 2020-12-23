@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:football_provider_app/providers/settings.dart';
-import 'package:football_provider_app/widgets/app_bar_logo_and_title.dart';
-import 'package:football_provider_app/widgets/app_drawer.dart';
-import 'package:football_provider_app/widgets/global_colors.dart';
-import 'package:football_provider_app/widgets/svg.dart';
+import 'package:simple_football_tracker/providers/settings.dart';
+import 'package:simple_football_tracker/widgets/app_bar_logo_and_title.dart';
+import 'package:simple_football_tracker/widgets/app_drawer.dart';
+import 'package:simple_football_tracker/widgets/global_colors.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsScreen extends StatefulWidget {
   static const routeName = '/settings';

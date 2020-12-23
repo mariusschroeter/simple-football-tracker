@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:football_provider_app/widgets/stats_barchart.dart';
+import 'package:simple_football_tracker/widgets/stats_barchart.dart';
 
 class StatsList extends StatelessWidget {
   final Map<String, List<num>> stats;

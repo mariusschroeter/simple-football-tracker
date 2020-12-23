@@ -1,4 +1,4 @@
-package com.example.football_provider_app
+package com.example.simple_football_tracker
 
 import androidx.annotation.NonNull;
 import io.flutter.embedding.android.FlutterActivity

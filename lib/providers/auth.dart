@@ -2,8 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:football_provider_app/models/http_exception.dart';
-import 'package:football_provider_app/providers/settings.dart';
+import 'package:simple_football_tracker/models/http_exception.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 

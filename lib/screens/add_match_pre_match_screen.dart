@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
-import 'package:football_provider_app/providers/settings.dart';
-import 'package:football_provider_app/screens/add_match_start_match.screen.dart';
-import 'package:football_provider_app/widgets/app_bar_logo_and_title.dart';
-import 'package:football_provider_app/widgets/global_colors.dart';
-import 'package:football_provider_app/widgets/svg.dart';
+import 'package:simple_football_tracker/providers/settings.dart';
+import 'package:simple_football_tracker/screens/add_match_start_match.screen.dart';
+import 'package:simple_football_tracker/widgets/app_bar_logo_and_title.dart';
+import 'package:simple_football_tracker/widgets/global_colors.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:provider/provider.dart';
 

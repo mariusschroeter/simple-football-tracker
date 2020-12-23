@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:football_provider_app/models/zone.dart';
+import 'package:simple_football_tracker/models/zone.dart';
 
 //Ist eigetnlich noch ein model weil keine daten geändert werden
 class Match {

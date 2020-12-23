@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:football_provider_app/providers/settings.dart';
-import 'package:football_provider_app/providers/auth.dart';
-import 'package:football_provider_app/screens/auth_screen.dart';
-import 'package:football_provider_app/screens/matches_screen.dart';
-import 'package:football_provider_app/screens/onBoarding_screen.dart';
-import 'package:football_provider_app/screens/splash_screen.dart';
-import 'package:football_provider_app/widgets/global_colors.dart';
+import 'package:simple_football_tracker/providers/settings.dart';
+import 'package:simple_football_tracker/providers/auth.dart';
+import 'package:simple_football_tracker/screens/auth_screen.dart';
+import 'package:simple_football_tracker/screens/matches_screen.dart';
+import 'package:simple_football_tracker/screens/splash_screen.dart';
+import 'package:simple_football_tracker/widgets/global_colors.dart';
 import 'package:provider/provider.dart';
 
 import './screens/settings_screen.dart';

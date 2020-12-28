@@ -11,6 +11,7 @@ class AuthProvider with ChangeNotifier {
   DateTime _expiryDate;
   String _userId;
   Timer _authTimer;
+  bool _isEmailVerified;
 
   List<String> _defaultTeams = [];
 
@@ -31,8 +32,32 @@ class AuthProvider with ChangeNotifier {
     return _userId;
   }
 
+  bool get isEmailVerified {
+    return _isEmailVerified;
+  }
+
   List<String> get defaultTeams {
     return _defaultTeams;
+  }
+
+  Future<bool> sendValidationEmail() async {
+    print('sending..');
+    const url =
+        'https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=AIzaSyByKh5Jee44_PGxhfkIk0TrNhsi0xeYvSs';
+    try {
+      final response = await http.post(url,
+          body: json.encode({
+            'requestType': 'VERIFY_EMAIL',
+            'idToken': token,
+          }));
+      final responseData = jsonDecode(response.body);
+      if (responseData['error'] != null) {
+        throw HttpException(responseData['error']['message']);
+      }
+      return true;
+    } catch (error) {
+      return false;
+    }
   }
 
   Future<void> authenticate(
@@ -50,12 +75,12 @@ class AuthProvider with ChangeNotifier {
       if (responseData['error'] != null) {
         throw HttpException(responseData['error']['message']);
       }
+
       _token = responseData['idToken'];
       _userId = responseData['localId'];
       _expiryDate = DateTime.now()
           .add(Duration(seconds: int.parse(responseData['expiresIn'])));
       setSettings();
-      _autoLogout();
       notifyListeners();
       final prefs = await SharedPreferences.getInstance();
       final userData = json.encode(
@@ -66,6 +91,11 @@ class AuthProvider with ChangeNotifier {
         },
       );
       prefs.setString('userData', userData);
+
+      //send verification email
+      if (urlSegment == 'signUp') {
+        sendValidationEmail();
+      }
     } catch (error) {
       throw error;
     }
@@ -96,8 +126,9 @@ class AuthProvider with ChangeNotifier {
     _userId = extractedUserData['userId'];
     _expiryDate = expiryDate;
     setSettings();
+
     notifyListeners();
-    _autoLogout();
+    // _autoLogout();
     return true;
   }
 
@@ -114,20 +145,22 @@ class AuthProvider with ChangeNotifier {
     prefs.remove('userData');
   }
 
-  void _autoLogout() {
-    if (_authTimer != null) {
-      _authTimer.cancel();
-    }
-    final timeToExpiry = _expiryDate.difference(DateTime.now()).inDays + 30;
-    _authTimer = Timer(Duration(days: timeToExpiry), logout);
-  }
+  // void _autoLogout() {
+  //   if (_authTimer != null) {
+  //     _authTimer.cancel();
+  //   }
+  //   final timeToExpiry = _expiryDate.difference(DateTime.now()).inDays + 30;
+  //   _authTimer = Timer(Duration(days: timeToExpiry), logout);
+  // }
 
   void setSettings() async {
     final prefs = await SharedPreferences.getInstance();
     if (!prefs.containsKey('settingsDefaultTeams')) {
       prefs.setStringList('settingsDefaultTeams', []);
+    }
+    if (!prefs.containsKey('settingsDefaultHalfTimeLength')) {
       prefs.setInt(
-        'settingsDefaultHaltTimeLength',
+        'settingsDefaultHalfTimeLength',
         45,
       );
     }

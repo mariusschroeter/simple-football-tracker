@@ -9,7 +9,7 @@ class Settings with ChangeNotifier {
   initSettings() async {
     final prefs = await SharedPreferences.getInstance();
     defaultTeams = prefs.getStringList('settingsDefaultTeams');
-    defaultHaltTimeLength = prefs.getInt('settingsDefaultHaltTimeLength');
+    defaultHaltTimeLength = prefs.getInt('settingsDefaultHalfTimeLength');
   }
 
   updateTeamChips(List<TeamChip> teamChips) {
@@ -28,6 +28,6 @@ class Settings with ChangeNotifier {
   void updatePrefs() async {
     final prefs = await SharedPreferences.getInstance();
     prefs.setStringList('settingsDefaultTeams', defaultTeams);
-    prefs.setInt('settingsDefaultHaltTimeLength', defaultHaltTimeLength);
+    prefs.setInt('settingsDefaultHalfTimeLength', defaultHaltTimeLength);
   }
 }

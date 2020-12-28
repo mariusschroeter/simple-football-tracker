@@ -13,7 +13,11 @@ class MatchesProvider with ChangeNotifier {
   final String authToken;
   final String userId;
 
-  MatchesProvider(this.authToken, this.userId, this._items);
+  MatchesProvider(
+    this.authToken,
+    this.userId,
+    this._items,
+  );
 
   List<Match> get items {
     return [..._items].reversed.toList();
@@ -172,6 +176,24 @@ class MatchesProvider with ChangeNotifier {
         throw HttpException('Could not delete the Match!');
       }
       matchToBeDeleted = null;
+    }
+  }
+
+  Future<bool> getCurrentUserData() async {
+    const url =
+        'https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=AIzaSyByKh5Jee44_PGxhfkIk0TrNhsi0xeYvSs';
+    try {
+      final response = await http.post(url,
+          body: json.encode({
+            'idToken': authToken,
+          }));
+      final responseData = jsonDecode(response.body);
+      if (responseData['error'] != null) {
+        throw HttpException(responseData['error']['message']);
+      }
+      return responseData['users'][0]['emailVerified'];
+    } catch (error) {
+      throw error;
     }
   }
 }

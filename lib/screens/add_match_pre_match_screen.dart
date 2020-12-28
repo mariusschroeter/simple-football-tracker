@@ -25,9 +25,13 @@ class _AddMatchPreMatchScreenState extends State<AddMatchPreMatchScreen> {
 
   @override
   void didChangeDependencies() {
+    _initSettings();
     super.didChangeDependencies();
+  }
+
+  void _initSettings() async {
+    await Provider.of<Settings>(context, listen: false).initSettings();
     _initHalfTimeValue();
-    Provider.of<Settings>(context).initSettings();
   }
 
   _checkInputs(String teamName) {
@@ -39,7 +43,8 @@ class _AddMatchPreMatchScreenState extends State<AddMatchPreMatchScreen> {
   }
 
   _initHalfTimeValue() {
-    final length = Provider.of<Settings>(context).defaultHaltTimeLength;
+    final length =
+        Provider.of<Settings>(context, listen: false).defaultHaltTimeLength;
     setState(() {
       _halfTimeValue = length;
       _halfTimeLength.text = length.toString();

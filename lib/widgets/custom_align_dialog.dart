@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 const EdgeInsets _defaultInsetPadding =
     EdgeInsets.symmetric(horizontal: 15.0, vertical: 24.0);
 
-class BottomDialog extends StatelessWidget {
+class CustomAlignDialog extends StatelessWidget {
   /// Creates a dialog.
   ///
   /// Typically used in conjunction with [showDialog].
-  const BottomDialog({
+  const CustomAlignDialog({
     Key key,
     this.backgroundColor,
     this.elevation,
@@ -17,9 +17,13 @@ class BottomDialog extends StatelessWidget {
     this.clipBehavior = Clip.none,
     this.shape,
     this.child,
+    this.align = Alignment.center,
   })  : assert(clipBehavior != null),
         super(key: key);
 
+  final Alignment align;
+
+  // Alignment align,
   /// {@template flutter.material.dialog.backgroundColor}
   /// The background color of the surface of this [Dialog].
   ///
@@ -109,7 +113,7 @@ class BottomDialog extends StatelessWidget {
         removeBottom: true,
         context: context,
         child: Align(
-          alignment: Alignment.bottomCenter,
+          alignment: align,
           child: ConstrainedBox(
             constraints: const BoxConstraints(minWidth: 280.0),
             child: Material(

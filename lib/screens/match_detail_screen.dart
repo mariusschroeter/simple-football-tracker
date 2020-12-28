@@ -94,7 +94,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> {
                 Expanded(
                   flex: 1,
                   child: Scoreboard(
-                    time: '90:00',
+                    time: loadedMatch.matchLength ?? '90:00',
                     homeTeam: loadedMatch.homeTeamAbb,
                     awayTeam: loadedMatch.awayTeamAbb,
                     homeGoals: loadedMatch.score[0],

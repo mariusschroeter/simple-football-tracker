@@ -119,6 +119,8 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen>
       totalZones: [],
       score: [],
       stats: {},
+      matchLength:
+          _printDuration(Duration(seconds: widget.halfTimeLength * 60 * 2)),
       // matchOutcome: MatchOutcome.DRAW,
     );
   }
@@ -296,7 +298,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen>
       oneSec,
       (Timer timer) => setState(
         () {
-          if (_start >= 10 && !_isExtraTime) {
+          if (_start >= halfTimeLengthInSeconds && !_isExtraTime) {
             _pauseTimer();
             showAlertDialog(context);
           } else {

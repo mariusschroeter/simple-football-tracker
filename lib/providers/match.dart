@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:simple_football_tracker/models/zone.dart';
 
-//Ist eigetnlich noch ein model weil keine daten geändert werden
 class Match {
   final String id;
   final DateTime dateTime;
@@ -14,6 +13,7 @@ class Match {
   List<ZonePercentages> totalZones;
   List<int> score;
   Map<String, Map<String, List<num>>> stats;
+  final String matchLength;
 
   Match({
     this.id,
@@ -27,6 +27,7 @@ class Match {
     this.secondHalfZones,
     @required this.score,
     @required this.stats,
+    this.matchLength,
   });
 
   // void toggleFavoriteStatus() {

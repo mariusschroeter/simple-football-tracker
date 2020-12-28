@@ -59,6 +59,7 @@ class MatchesProvider with ChangeNotifier {
             'score': match.score,
             'stats': match.stats,
             'userId': userId,
+            'matchLength': match.matchLength,
           }));
       notifyListeners();
     } catch (error) {
@@ -116,6 +117,7 @@ class MatchesProvider with ChangeNotifier {
           dateTime: DateTime.fromMillisecondsSinceEpoch(matchData['dateTime']),
           totalZones: totalZones,
           stats: statsMapOrdered,
+          matchLength: matchData['matchLength'],
           // firstHalfZones: [],
           // secondHalfZones: [],
         ));

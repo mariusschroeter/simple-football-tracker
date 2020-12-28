@@ -165,4 +165,24 @@ class AuthProvider with ChangeNotifier {
       );
     }
   }
+
+  Future<bool> resetPassword(String email) async {
+    final url =
+        'https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=AIzaSyByKh5Jee44_PGxhfkIk0TrNhsi0xeYvSs';
+
+    try {
+      final response = await http.post(url,
+          body: jsonEncode({
+            'requestType': 'PASSWORD_RESET',
+            'email': email,
+          }));
+      final responseData = jsonDecode(response.body);
+      if (responseData['error'] != null) {
+        throw HttpException(responseData['error']['message']);
+      }
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
 }

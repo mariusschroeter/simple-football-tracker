@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:simple_football_tracker/models/http_exception.dart';
 import 'package:simple_football_tracker/providers/auth.dart';
+import 'package:simple_football_tracker/widgets/global_colors.dart';
 import 'package:simple_football_tracker/widgets/svg.dart';
 import 'package:provider/provider.dart';
 
-enum AuthMode { Signup, Login }
+enum AuthMode { Signup, Login, Forgot_Password }
 
 class AuthScreen extends StatelessWidget {
   static const routeName = '/auth';
@@ -100,12 +101,19 @@ class _AuthCardState extends State<AuthCard> {
           _authData['email'].trim(),
           _authData['password'],
         );
-      } else {
+      } else if (_authMode == AuthMode.Signup) {
         // Sign user up
         await Provider.of<AuthProvider>(context, listen: false).signup(
           _authData['email'].trim(),
           _authData['password'],
         );
+      } else {
+        // Forgot Password
+        await Provider.of<AuthProvider>(context, listen: false)
+            .resetPassword(_authData['email'].trim())
+            .then((value) {
+          showAlertDialog(context);
+        });
       }
     } on HttpException catch (error) {
       var errorMessage = 'Authentication failed.';
@@ -132,16 +140,10 @@ class _AuthCardState extends State<AuthCard> {
     });
   }
 
-  void _switchAuthMode() {
-    if (_authMode == AuthMode.Login) {
-      setState(() {
-        _authMode = AuthMode.Signup;
-      });
-    } else {
-      setState(() {
-        _authMode = AuthMode.Login;
-      });
-    }
+  void _switchAuthMode(AuthMode authMode) {
+    setState(() {
+      _authMode = authMode;
+    });
   }
 
   @override
@@ -153,9 +155,9 @@ class _AuthCardState extends State<AuthCard> {
       ),
       elevation: 8.0,
       child: Container(
-        height: _authMode == AuthMode.Signup ? 320 : 260,
+        height: _authMode == AuthMode.Signup ? 320 : 280,
         constraints:
-            BoxConstraints(minHeight: _authMode == AuthMode.Signup ? 320 : 260),
+            BoxConstraints(minHeight: _authMode == AuthMode.Signup ? 320 : 280),
         width: deviceSize.width * 0.75,
         padding: EdgeInsets.all(16.0),
         child: Form(
@@ -179,20 +181,21 @@ class _AuthCardState extends State<AuthCard> {
                   },
                   cursorColor: Theme.of(context).primaryColor,
                 ),
-                TextFormField(
-                  decoration: InputDecoration(labelText: 'Password'),
-                  obscureText: true,
-                  controller: _passwordController,
-                  // ignore: missing_return
-                  validator: (value) {
-                    if (value.isEmpty || value.length < 5) {
-                      return 'Password is too short!';
-                    }
-                  },
-                  onSaved: (value) {
-                    _authData['password'] = value;
-                  },
-                ),
+                if (_authMode != AuthMode.Forgot_Password)
+                  TextFormField(
+                    decoration: InputDecoration(labelText: 'Password'),
+                    obscureText: true,
+                    controller: _passwordController,
+                    // ignore: missing_return
+                    validator: (value) {
+                      if (value.isEmpty || value.length < 5) {
+                        return 'Password is too short!';
+                      }
+                    },
+                    onSaved: (value) {
+                      _authData['password'] = value;
+                    },
+                  ),
                 if (_authMode == AuthMode.Signup)
                   TextFormField(
                     enabled: _authMode == AuthMode.Signup,
@@ -207,6 +210,17 @@ class _AuthCardState extends State<AuthCard> {
                           }
                         : null,
                   ),
+                if (_authMode == AuthMode.Login)
+                  FlatButton(
+                    child: Text(
+                      'Forgot password',
+                    ),
+                    onPressed: () => _switchAuthMode(AuthMode.Forgot_Password),
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 30.0, vertical: 4),
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    textColor: GlobalColors.secondary,
+                  ),
                 SizedBox(
                   height: 20,
                 ),
@@ -214,8 +228,11 @@ class _AuthCardState extends State<AuthCard> {
                   CircularProgressIndicator()
                 else
                   RaisedButton(
-                    child:
-                        Text(_authMode == AuthMode.Login ? 'LOGIN' : 'SIGN UP'),
+                    child: Text(_authMode == AuthMode.Login
+                        ? 'LOGIN'
+                        : _authMode == AuthMode.Signup
+                            ? 'SIGN UP'
+                            : 'RESET PASSWORD'),
                     onPressed: _submit,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
@@ -228,16 +245,39 @@ class _AuthCardState extends State<AuthCard> {
                 FlatButton(
                   child: Text(
                       '${_authMode == AuthMode.Login ? 'SIGNUP' : 'LOGIN'} INSTEAD'),
-                  onPressed: _switchAuthMode,
+                  onPressed: () => _switchAuthMode(_authMode != AuthMode.Login
+                      ? AuthMode.Login
+                      : AuthMode.Signup),
                   padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: 4),
                   materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   textColor: Theme.of(context).primaryColor,
-                ),
+                )
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+
+  showAlertDialog(BuildContext context) {
+    Widget okButton = FlatButton(
+      child: Text("Ok"),
+      onPressed: () {
+        Navigator.of(context, rootNavigator: true).pop();
+      },
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Email has been send.'),
+          content: Text('It may take a few minutes. Check your email inbox.'),
+          actions: [okButton],
+        );
+      },
     );
   }
 }

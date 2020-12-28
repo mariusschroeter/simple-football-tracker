@@ -47,20 +47,6 @@ class MatchesProvider with ChangeNotifier {
           'zone${i + 1}': [zone.homePercentage, zone.awayPercentage]
         });
       }
-      // Map<String, List<double>> firstHalf = Map<String, List<double>>();
-      // for (var i = 0; i < match.firstHalfZones.length; i++) {
-      //   var zone = match.firstHalfZones[i];
-      //   firstHalf.addAll({
-      //     'zone${i + 1}': [zone.homePercentage, zone.awayPercentage]
-      //   });
-      // }
-      // Map<String, List<double>> secondHalf = Map<String, List<double>>();
-      // for (var i = 0; i < match.secondHalfZones.length; i++) {
-      //   var zone = match.secondHalfZones[i];
-      //   secondHalf.addAll({
-      //     'zone${i + 1}': [zone.homePercentage, zone.awayPercentage]
-      //   });
-      // }
 
       await http.post(url,
           body: json.encode({
@@ -72,9 +58,6 @@ class MatchesProvider with ChangeNotifier {
             'dateTime': match.dateTime.millisecondsSinceEpoch,
             'score': match.score,
             'stats': match.stats,
-            // 'firstHalfPercentages': firstHalf,
-            // 'secondHalfPercentages': secondHalf,
-            // 'isWon': true,
             'userId': userId,
           }));
       notifyListeners();
@@ -100,27 +83,10 @@ class MatchesProvider with ChangeNotifier {
               homePercentage: element.value[0],
               awayPercentage: element.value[1]));
         });
-        // final Map<String, dynamic> firstHalf =
-        //     matchData['firstHalfPercentages'] as Map<String, dynamic>;
-        // final List<ZonePercentages> firstHalfZones = [];
-        // firstHalf.entries.forEach((element) {
-        //   firstHalfZones.add(ZonePercentages(
-        //       homePercentage: element.value[0],
-        //       awayPercentage: element.value[1]));
-        // });
-        // final Map<String, dynamic> secondHalf =
-        //     matchData['secondHalfPercentages'] as Map<String, dynamic>;
-        // final List<ZonePercentages> secondHalfZones = [];
-        // secondHalf.entries.forEach((element) {
-        //   secondHalfZones.add(ZonePercentages(
-        //       homePercentage: element.value[0],
-        //       awayPercentage: element.value[1]));
-        // });
 
         Map<String, Map<String, List<num>>> statsMap = {};
         Map<String, Map<String, List<num>>> statsMapOrdered = {};
 
-        //
         final Map<String, dynamic> stats =
             matchData['stats'] as Map<String, dynamic>;
 

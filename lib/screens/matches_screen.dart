@@ -107,7 +107,9 @@ class _MatchesScreenState extends State<MatchesScreen> {
         ],
       ),
       drawer: AppDrawer(),
-      floatingActionButton: AddMatchButton(),
+      floatingActionButton: AddMatchButton(
+        isEmailVerified: _isEmailVerified,
+      ),
       body: _isLoading
           ? Center(
               child: CircularProgressIndicator(),
@@ -181,7 +183,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
                                 padding: const EdgeInsets.fromLTRB(
                                     24.0, 20.0, 24.0, 0.0),
                                 child: Text(
-                                  'Email not verified! Your matches will not be saved!',
+                                  "Email not verified! You can't track matches right now!",
                                   style:
                                       TextStyle(color: GlobalColors.secondary),
                                 ),
@@ -221,7 +223,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Verification email send!'),
-          content: Text('Check your email inbox.'),
+          content: Text('It may take a few minutes. Check your email inbox.'),
           actions: [okButton],
         );
       },

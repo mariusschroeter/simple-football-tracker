@@ -296,7 +296,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen>
       oneSec,
       (Timer timer) => setState(
         () {
-          if (_start >= halfTimeLengthInSeconds && !_isExtraTime) {
+          if (_start >= 10 && !_isExtraTime) {
             _pauseTimer();
             showAlertDialog(context);
           } else {
@@ -394,14 +394,8 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen>
       final homeSecond = _match.secondHalfZones[i].homePercentage;
       final awayFirst = _match.firstHalfZones[i].awayPercentage;
       final awaySecond = _match.secondHalfZones[i].awayPercentage;
-      double homePercentage = (homeFirst == 100.0 && homeSecond == 0.0) ||
-              (homeFirst == 0.0 && homeSecond == 100.0)
-          ? 100.0
-          : (homeFirst + homeSecond) / 2;
-      double awayPercentage = (awayFirst == 100.0 && awaySecond == 0.0) ||
-              (awayFirst == 0.0 && awaySecond == 100.0)
-          ? 100.0
-          : (awayFirst + awaySecond) / 2;
+      double homePercentage = (homeFirst + homeSecond) / 2;
+      double awayPercentage = (awayFirst + awaySecond) / 2;
       zonePercentages.add(ZonePercentages(
         homePercentage: homePercentage,
         awayPercentage: awayPercentage,

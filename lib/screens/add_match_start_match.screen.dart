@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:provider/provider.dart';
+import 'package:simple_football_tracker/main.dart';
 import 'package:uuid/uuid.dart';
 
 import 'package:simple_football_tracker/screens/match_instructions_screen.dart';
@@ -45,7 +47,8 @@ class AddMatchStartMatchScreen extends StatefulWidget {
       _AddMatchStartMatchScreenState();
 }
 
-class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
+class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen>
+    with WidgetsBindingObserver {
   final GlobalKey<ScaffoldState> _startMatchScaffoldKey =
       GlobalKey<ScaffoldState>();
   final _bottomNavKey = GlobalKey();
@@ -54,6 +57,7 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _showInstructionsOverlay(context);
       _initField();
@@ -67,7 +71,17 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
     if (_timer != null) {
       _timer.cancel();
     }
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused) {
+      if (_start != 0 || _extraTime != 0) {
+        _setNotification();
+      }
+    }
   }
 
   double _screenWidth = 0;
@@ -1047,6 +1061,24 @@ class _AddMatchStartMatchScreenState extends State<AddMatchStartMatchScreen> {
         );
       },
     );
+  }
+
+  _setNotification() async {
+    final androidPlatformChannelSpecifics = AndroidNotificationDetails(
+      'alarm_notif',
+      'alarm_notif',
+      'Channel for alarm notification',
+      icon: '@mipmap/launcher_icon',
+    );
+
+    var platformChannelSpecifics =
+        NotificationDetails(android: androidPlatformChannelSpecifics);
+
+    await flutterLocalNotificationsPlugin.show(
+        0,
+        'Match still running.',
+        'Your match is still in progress. Keep tracking!',
+        platformChannelSpecifics);
   }
 }
 

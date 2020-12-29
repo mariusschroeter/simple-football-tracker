@@ -70,8 +70,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     List<TeamChip> currTeams = [];
     if (defaultTeams.length > 0) {
       defaultTeams.forEach((element) {
-        final initials =
-            element.split(" ").map((e) => e[0]).join().toUpperCase();
+        var initials = element.split(" ").map((e) => e[0]).join().toUpperCase();
+        if (initials.length > 2) initials.substring(0, 2);
         currTeams.add(
           TeamChip(
             initials: initials,
